@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cook &amp; Bake Academy — Cooking &amp; Bakery Training Center</title>
+  <meta name="description" content="Hands-on cooking and bakery courses taught by professional chefs. Sourdough, French pastry, sushi, Italian cuisine and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <header class="nav" id="top">
+    <div class="nav__inner">
+      <a href="#top" class="brand">
+        <span class="brand__mark">🍞</span>
+        <span class="brand__text">Cook&nbsp;&amp;&nbsp;Bake<small>Academy</small></span>
+      </a>
+      <nav class="nav__links">
+        <a href="#courses">Courses</a>
+        <a href="#why">Why Us</a>
+        <a href="#campus">Campus</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="btn btn--sm" onclick="window.CookBakeChat.open()">💬 Ask us</button>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="eyebrow">Singapore's hands-on culinary studio</p>
+      <h1>Master the art of <span>cooking</span> &amp; <span>baking</span></h1>
+      <p class="hero__sub">From artisan sourdough to French pastry, sushi to street food — learn
+        practical, job-ready skills from professional chefs in small classes.</p>
+      <div class="hero__cta">
+        <a href="#courses" class="btn btn--lg">Browse courses</a>
+        <button class="btn btn--ghost btn--lg" onclick="window.CookBakeChat.open()">💬 Chat with us</button>
+      </div>
+      <div class="hero__stats">
+        <div><strong>20+</strong><span>Courses</span></div>
+        <div><strong>12</strong><span>Max class size</span></div>
+        <div><strong>2</strong><span>Campuses</span></div>
+        <div><strong>4.9★</strong><span>Student rating</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COURSES ===== -->
+  <section class="section" id="courses">
+    <div class="section__head">
+      <p class="eyebrow">Our programmes</p>
+      <h2>Popular courses</h2>
+      <p class="muted">Bakery &amp; cooking courses for every level. Ask our chatbot about duration, fees and locations.</p>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="chip is-active" data-filter="all">All</button>
+      <button class="chip" data-filter="Bakery">🧁 Bakery</button>
+      <button class="chip" data-filter="Cooking">🍳 Cooking</button>
+    </div>
+
+    <div class="grid" id="course-grid"><!-- cards injected by JS --></div>
+  </section>
+
+  <!-- ===== WHY US ===== -->
+  <section class="section section--alt" id="why">
+    <div class="section__head">
+      <p class="eyebrow">Why Cook &amp; Bake Academy</p>
+      <h2>Learn by doing, every session</h2>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature__icon">👨‍🍳</div>
+        <h3>Pro chef instructors</h3>
+        <p>Every class is led by working chefs and pastry experts with industry experience.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">🙌</div>
+        <h3>100% hands-on</h3>
+        <p>No watching from the back. You cook and bake everything yourself, and take it home.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">📜</div>
+        <h3>Recognised certificate</h3>
+        <p>Earn a certificate on completion to kick-start a cafe, home business or new career.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">🧑‍🤝‍🧑</div>
+        <h3>Small classes</h3>
+        <p>Capped at 12 students so you get personal guidance and plenty of practice time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CAMPUS ===== -->
+  <section class="section" id="campus">
+    <div class="campus">
+      <div class="campus__media"></div>
+      <div class="campus__text">
+        <p class="eyebrow">Our campuses</p>
+        <h2>Two studio kitchens in the heart of the city</h2>
+        <ul class="campus__list">
+          <li><strong>🧁 Bakehouse Campus</strong><br />Sweet Heights Bakery Campus, 123 Orchard Road, #04-12, Singapore 238888</li>
+          <li><strong>🍳 Culinary Campus</strong><br />Flavour Lab Culinary Campus, 88 Bukit Timah Road, #02-05, Singapore 229841</li>
+        </ul>
+        <button class="btn" onclick="window.CookBakeChat.ask('Where are your campuses located?')">Ask about locations</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA / CONTACT ===== -->
+  <section class="cta" id="contact">
+    <h2>Ready to roll up your sleeves?</h2>
+    <p>Talk to our customer service assistant about any course — duration, fees, intakes and more.</p>
+    <button class="btn btn--lg" onclick="window.CookBakeChat.open()">💬 Open the chat assistant</button>
+    <p class="cta__contact">📞 +65 6888 1234 &nbsp;·&nbsp; ✉️ enrol@cookbakeacademy.sg</p>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 Cook &amp; Bake Academy. A demo cooking &amp; bakery training center.</p>
+    <p class="muted">RAG chatbot powered by n8n + Vector DB (Supabase / Pinecone / Qdrant).</p>
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+
+  <!-- ===== CHATBOT WIDGET ===== -->
+  <button class="chat-fab" id="chat-fab" aria-label="Open chat" onclick="window.CookBakeChat.toggle()">
+    <span class="chat-fab__icon">💬</span>
+    <span class="chat-fab__pulse"></span>
+  </button>
+
+  <div class="chat" id="chat" aria-hidden="true">
+    <div class="chat__header">
+      <div class="chat__id">
+        <span class="chat__avatar">🧑‍🍳</span>
+        <div>
+          <strong>Course Assistant</strong>
+          <small><i class="dot"></i> Ask about any course</small>
+        </div>
+      </div>
+      <button class="chat__close" onclick="window.CookBakeChat.close()" aria-label="Close chat">✕</button>
+    </div>
+
+    <div class="chat__body" id="chat-body"></div>
+
+    <div class="chat__suggest" id="chat-suggest">
+      <button>How much is the sourdough course?</button>
+      <button>How long is the French Pastry course?</button>
+      <button>Where are you located?</button>
+      <button>Do you have cooking courses for beginners?</button>
+    </div>
+
+    <form class="chat__input" id="chat-form" autocomplete="off">
+      <input id="chat-text" type="text" placeholder="Ask about a course…" aria-label="Message" />
+      <button type="submit" aria-label="Send">➤</button>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# secrets
+.env
+*.env
+!*/.env.example
+
+# python / models (large — regenerated per README)
+lab5-opensource/service/.venv/
+lab5-opensource/service/videos/
+**/__pycache__/
+*.pyc
+
+# node
+**/node_modules/
+
+# os
+.DS_Store
+**/.DS_Store
+.playwright-mcp/
+**/.playwright-mcp/
+
+# third-party Wav2Lip clone (re-clone per lab5-opensource/README.md)
+lab5-opensource/service/wav2lip/
+
+# unrelated to this course (kept local)
+elegance-journey/
+.codex/
