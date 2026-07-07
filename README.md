@@ -1,8 +1,10 @@
 # Automate Video and Voice AI Agents with n8n
 
-**WSQ course TGS-2024052081 · Tertiary Infotech Academy Pte Ltd**
+**WSQ course · Tertiary Infotech Academy Pte Ltd**
 
 Hands-on courseware for building **AI agents, voice agents, and AI avatar videos** with [n8n](https://n8n.io), local LLMs via [Ollama](https://ollama.com), and cloud AI services. The AI "brain" runs **locally and free** on your machine (Docker + n8n + Ollama/gemma4); the voice and video layers use cloud services (Retell, HeyGen, Replicate) — with a **100% free/local video option** too.
+
+> 🎓 **Register for this course:** [Build a Human–AI Workforce with Autonomous AI Agents](https://www.tertiarycourses.com.sg/wsq-build-a-human-ai-workforce-with-autonomous-ai-agents.html) — **Course Code TGS-2024043854** (WSQ, SkillsFuture-claimable), Tertiary Infotech Academy.
 
 📘 **Start here: [LEARNER_GUIDE.md](LEARNER_GUIDE.md)** — step-by-step, Windows + macOS.
 
