@@ -3370,10 +3370,24 @@ def archive_old(keep: set[str]) -> None:
 def main() -> None:
     COURSEWARE.mkdir(exist_ok=True)
     LABS_DIR.mkdir(exist_ok=True)
+    live = set()
     for lab in LABS:
         path = lab_dir(lab)
         path.mkdir(parents=True, exist_ok=True)
         (path / "README.md").write_text(lab_readme(lab), encoding="utf-8")
+        live.add(path.resolve())
+
+    # Prune labs that no longer exist. Renaming or renumbering a lab used to LEAVE the old
+    # folder behind, so labs/ accumulated ghosts - a Replicate lab and two HyperFrames labs
+    # were still sitting there, and the Drive push would have published all of them.
+    import shutil
+    for topic in LABS_DIR.iterdir():
+        if not topic.is_dir():
+            continue
+        for folder in topic.iterdir():
+            if folder.is_dir() and folder.resolve() not in live:
+                print(f"  pruned stale lab: {topic.name}/{folder.name}")
+                shutil.rmtree(folder)
 
     ppt = COURSEWARE / f"{PPT_STEM}.pptx"
     lg_docx = COURSEWARE / f"LG-{COURSE_TITLE.replace(' ', '-')}.docx"
