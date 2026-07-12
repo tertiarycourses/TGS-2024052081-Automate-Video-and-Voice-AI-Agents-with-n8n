@@ -1,71 +1,82 @@
 # Automate Video and Voice AI Agents with n8n
 
-**WSQ course · Tertiary Infotech Academy Pte Ltd**
+**WSQ course - Tertiary Infotech Academy Pte Ltd**
 
-Hands-on courseware for building **AI agents, voice agents, and AI avatar videos** with [n8n](https://n8n.io), local LLMs via [Ollama](https://ollama.com), and cloud AI services. The AI "brain" runs **locally and free** on your machine (Docker + n8n + Ollama/gemma4); the voice and video layers use cloud services (Retell, HeyGen, Replicate) — with a **100% free/local video option** too.
+This repository contains high-quality adult-training courseware for building AI agents, RAG assistants, voice agents, and AI avatar/video automations with n8n.
 
-> 🎓 **Register for this course:** [Build a Human–AI Workforce with Autonomous AI Agents](https://www.tertiarycourses.com.sg/wsq-build-a-human-ai-workforce-with-autonomous-ai-agents.html) — **Course Code TGS-2024043854** (WSQ, SkillsFuture-claimable), Tertiary Infotech Academy.
+The rebuilt courseware follows an **agentic AI loop engineering** standard:
 
-📘 **Start here: [LEARNER_GUIDE.md](LEARNER_GUIDE.md)** — step-by-step, Windows + macOS.
+**Define -> Build -> Observe -> Evaluate -> Improve -> Guardrail -> Document**
+
+## Courseware deliverables
+
+- [Learner Guide Markdown](courseware/LG-Automate-Video-and-Voice-AI-Agents-with-n8n.md)
+- [Learner Guide DOCX](courseware/LG-Automate-Video-and-Voice-AI-Agents-with-n8n.docx)
+- [PowerPoint deck](courseware/Automate-Video-and-Voice-AI-Agents-with-n8n-v3.0.pptx)
+- [Lesson Plan](courseware/LP-Automate-Video-and-Voice-AI-Agents-with-n8n.md)
+
+## Topics
+
+- **Topic 01 - Foundations of Agentic AI Loop Engineering:** Set up the local stack and learn the engineering loop used in every lab: define the task, give the agent tools, observe behavior, evaluate outputs, improve the workflow, and add guardrails.
+- **Topic 02 - Local AI Agents and RAG with n8n:** Build local agents with Ollama, memory, retrieval, chunking, and document-grounded answers that can be tested and improved.
+- **Topic 03 - Customer Experience and Tool-Using Agents:** Turn retrieval into a workplace assistant that can answer customer questions, collect structured data, and call workflow tools.
+- **Topic 04 - Voice AI Agents:** Design, connect, test, and improve a voice booking agent using Retell, n8n webhooks, and a browser front end.
+- **Topic 05 - AI Video and Avatar Automation:** Generate scripts, avatar videos, text-to-video clips with Veo 3.1, and open-source talking-head video pipelines that run entirely on the learner's own machine.
+- **Topic 06 - Publishing, Interactive Avatars, and Capstone Operations:** Publish video outputs, deploy interactive avatars, monitor automations, and assemble a production-ready AI workforce capstone.
 
 ## Labs
 
-| Lab | What you build | Folder |
-|-----|----------------|--------|
-| 0 | Local environment: Docker, n8n, Ollama, gemma4 | [`lab0/`](lab0/) |
-| 1 | Your first AI Agent (chat) with a local Ollama model | [`lab1/`](lab1/) |
-| 2 | RAG IT-Support chatbot — upload a PDF, chat over it | [`lab2/`](lab2/) |
-| 3 | CX Agent with RAG for a course-academy website | [`lab3/`](lab3/) |
-| 4 | Voice AI booking agent (Retell) on a website | [`lab4/`](lab4/) |
-| 5 | AI avatar news video — Ollama script → HeyGen video | [`lab5/`](lab5/) |
-| 5.5 | Same video, **100% free & local** (Ollama + Wav2Lip) | [`lab5-opensource/`](lab5-opensource/) |
-| 6 | Auto-post the avatar video to YouTube | [`lab6/`](lab6/) |
-| 7 | Cloud AI avatar with Replicate (Kokoro TTS → SadTalker) | [`lab7/`](lab7/) |
-| 8 | Interactive (real-time) HeyGen avatar, vertical, on a website | [`lab8/`](lab8/) |
+| Lab | Title | Time | Folder |
+|---|---:|---:|---|
+| 1.1 | Set Up the Local AI Automation Workstation | 60 min | [`labs/topic-01/lab-1.1-setup-local-ai-workstation/`](labs/topic-01/lab-1.1-setup-local-ai-workstation/) |
+| 1.2 | Map the Agentic AI Loop Before Building | 45 min | [`labs/topic-01/lab-1.2-agentic-loop-canvas/`](labs/topic-01/lab-1.2-agentic-loop-canvas/) |
+| 1.3 | Create a Workflow Quality Baseline | 45 min | [`labs/topic-01/lab-1.3-n8n-workflow-quality-baseline/`](labs/topic-01/lab-1.3-n8n-workflow-quality-baseline/) |
+| 2.1 | Build Your First Local AI Agent | 60 min | [`labs/topic-02/lab-2.1-first-local-ai-agent/`](labs/topic-02/lab-2.1-first-local-ai-agent/) |
+| 2.2 | Add Memory and Session Design | 45 min | [`labs/topic-02/lab-2.2-memory-and-session-design/`](labs/topic-02/lab-2.2-memory-and-session-design/) |
+| 2.3 | Build a PDF RAG IT Support Agent | 75 min | [`labs/topic-02/lab-2.3-rag-pdf-basics/`](labs/topic-02/lab-2.3-rag-pdf-basics/) |
+| 2.4 | Improve RAG with Chunking and Evaluation | 60 min | [`labs/topic-02/lab-2.4-rag-chunking-evaluation/`](labs/topic-02/lab-2.4-rag-chunking-evaluation/) |
+| 3.1 | Build a Course Advisory CX Agent | 75 min | [`labs/topic-03/lab-3.1-course-cx-rag-agent/`](labs/topic-03/lab-3.1-course-cx-rag-agent/) |
+| 3.2 | Add Structured Lead Capture | 60 min | [`labs/topic-03/lab-3.2-structured-lead-capture/`](labs/topic-03/lab-3.2-structured-lead-capture/) |
+| 3.3 | Create a Tool-Calling Booking Request Agent | 60 min | [`labs/topic-03/lab-3.3-tool-calling-booking-request/`](labs/topic-03/lab-3.3-tool-calling-booking-request/) |
+| 3.4 | Add Safety Guardrails and Escalation | 60 min | [`labs/topic-03/lab-3.4-agent-safety-guardrails/`](labs/topic-03/lab-3.4-agent-safety-guardrails/) |
+| 4.1 | Design a Voice Agent Conversation | 60 min | [`labs/topic-04/lab-4.1-voice-agent-conversation-design/`](labs/topic-04/lab-4.1-voice-agent-conversation-design/) |
+| 4.2 | Connect Retell Web Calls Through n8n | 75 min | [`labs/topic-04/lab-4.2-retell-web-call-n8n/`](labs/topic-04/lab-4.2-retell-web-call-n8n/) |
+| 4.3 | QA the Voice Agent with Call Analytics | 60 min | [`labs/topic-04/lab-4.3-voice-agent-qa-and-analytics/`](labs/topic-04/lab-4.3-voice-agent-qa-and-analytics/) |
+| 4.4 | Add Human Handoff and Notifications | 60 min | [`labs/topic-04/lab-4.4-voice-handoff-and-notification/`](labs/topic-04/lab-4.4-voice-handoff-and-notification/) |
+| 4.5 | Ground the Voice Agent with a Retell Knowledge Base | 60 min | [`labs/topic-04/lab-4.5-voice-agent-knowledge-base/`](labs/topic-04/lab-4.5-voice-agent-knowledge-base/) |
+| 4.6 | Clone Your Own Voice and Give It to the Agent | 60 min | [`labs/topic-04/lab-4.6-retell-voice-cloning/`](labs/topic-04/lab-4.6-retell-voice-cloning/) |
+| 4.7 | Book the Appointment into Google Calendar | 75 min | [`labs/topic-04/lab-4.7-voice-booking-google-calendar/`](labs/topic-04/lab-4.7-voice-booking-google-calendar/) |
+| 4.8 | Build a FAQ Voice Agent with Vapi | 75 min | [`labs/topic-04/lab-4.8-vapi-faq-voice-agent/`](labs/topic-04/lab-4.8-vapi-faq-voice-agent/) |
+| 5.1 | Lip-Sync Face-Off: Wav2Lip vs MuseTalk vs HeyGen | 75 min | [`labs/topic-05/lab-5.1-lipsync-musetalk-vs-heygen/`](labs/topic-05/lab-5.1-lipsync-musetalk-vs-heygen/) |
+| 5.2 | Build a Video Script Agent | 60 min | [`labs/topic-05/lab-5.2-video-script-agent/`](labs/topic-05/lab-5.2-video-script-agent/) |
+| 5.3 | Generate an Avatar News Video with HeyGen | 75 min | [`labs/topic-05/lab-5.3-heygen-avatar-news-video/`](labs/topic-05/lab-5.3-heygen-avatar-news-video/) |
+| 5.4 | Generate a Cinematic Video with Veo 3.1 and Gemini | 75 min | [`labs/topic-05/lab-5.4-veo-gemini-text-to-video/`](labs/topic-05/lab-5.4-veo-gemini-text-to-video/) |
+| 5.5 | Build the Free Local Avatar Video Pipeline | 90 min | [`labs/topic-05/lab-5.5-open-source-avatar-pipeline/`](labs/topic-05/lab-5.5-open-source-avatar-pipeline/) |
+| 6.1 | Publish the Avatar Video to YouTube | 75 min | [`labs/topic-06/lab-6.1-youtube-publishing-automation/`](labs/topic-06/lab-6.1-youtube-publishing-automation/) |
+| 6.2 | Build an Interactive Avatar That Renders in the Browser | 75 min | [`labs/topic-06/lab-6.2-interactive-browser-avatar/`](labs/topic-06/lab-6.2-interactive-browser-avatar/) |
+| 6.3 | Embed an Interactive HeyGen Avatar with LiveAvatar | 75 min | [`labs/topic-06/lab-6.3-interactive-heygen-liveavatar/`](labs/topic-06/lab-6.3-interactive-heygen-liveavatar/) |
+| 6.4 | Monitor, Debug, and Recover AI Workflows | 60 min | [`labs/topic-06/lab-6.4-workflow-monitoring-and-recovery/`](labs/topic-06/lab-6.4-workflow-monitoring-and-recovery/) |
+| 6.5 | Capstone - Build a Human-AI Workforce Automation | 120 min | [`labs/topic-06/lab-6.5-capstone-ai-workforce/`](labs/topic-06/lab-6.5-capstone-ai-workforce/) |
 
-## What each lab teaches
+## Existing runnable assets
 
-- **Local AI agents & RAG (Labs 1–3):** AI Agent nodes, the Ollama chat model, in-memory vector stores, embeddings (`nomic-embed-text`), and tool-calling — a chatbot that answers only from your uploaded documents.
-- **Voice agent (Lab 4):** a browser voice call, minted through an n8n webhook so the Retell API key never touches the front-end.
-- **AI avatar video (Labs 5–7):** Ollama writes a news script; the video is rendered by **HeyGen** (cloud), **Wav2Lip** (free/local), or **Replicate** (cloud, pay-per-second) — all driven by the same n8n flow shape.
-- **Publishing & interactivity (Labs 6, 8):** auto-upload to **YouTube** from n8n, and embed a real-time, two-way **interactive avatar**.
+The original runnable n8n workflows and websites remain in `lab0/` to `lab10/` and `lab7-opensource/`. The new `labs/` folder provides the adult-training lab instructions and quality standard around those assets.
 
 ## Quick start
 
-1. Install **Docker Desktop** and **Ollama**; pull the models:
-   ```bash
-   ollama pull gemma4
-   ollama pull nomic-embed-text
-   ```
-2. Start n8n:
-   ```bash
-   cd lab0 && docker compose up -d      # n8n at http://localhost:5678
-   ```
-3. In n8n, create the **Ollama** credential with Base URL `http://host.docker.internal:11434` (⚠️ not `localhost` — n8n runs in Docker).
-4. Import each lab's workflow JSON and follow **[LEARNER_GUIDE.md](LEARNER_GUIDE.md)**.
-
-> Full setup (Windows + macOS), the "why localhost?" explanation, per-lab steps, and a troubleshooting cheat-sheet are all in the Learner Guide.
-
-## Tech stack
-
-- **Orchestration:** n8n (self-hosted, Docker + Postgres)
-- **Local LLM:** Ollama — `gemma4` (chat + tools), `nomic-embed-text` (embeddings)
-- **Voice:** Retell AI (WebRTC)
-- **Avatar video:** HeyGen · Replicate (Kokoro TTS, SadTalker) · Wav2Lip (free/local) · ffmpeg
-- **Publishing:** YouTube Data API v3
-- **Web:** plain HTML/CSS/JS lab front-ends
-
-## Repository layout
-
-```
-lab0..lab8/            # one folder per lab (workflow JSON + website where applicable)
-lab5-opensource/       # free/local video pipeline (render service + n8n flow + website)
-LEARNER_GUIDE.md       # the full step-by-step guide
-.claude/               # WSQ courseware tooling (skills, agents, hooks)
+```bash
+cd lab0
+docker compose up -d
+ollama pull gemma4
+ollama pull nomic-embed-text
 ```
 
-Cloud services (Retell, HeyGen, Replicate) each require the learner's own account and credit; the flows are built to work the moment credit is added. API keys live in a local `.env` (git-ignored) and inside n8n credentials — never in the pushed code.
+Then open n8n at `http://localhost:5678` and create an Ollama credential with:
 
----
+```text
+http://host.docker.internal:11434
+```
 
-Powered by [Tertiary Infotech Academy Pte Ltd](https://www.tertiaryinfotech.com/)
+## Security rule
+
+API keys belong in n8n credentials or local environment files. They must not be placed in browser JavaScript, Markdown examples, screenshots, workflow notes, or committed JSON.

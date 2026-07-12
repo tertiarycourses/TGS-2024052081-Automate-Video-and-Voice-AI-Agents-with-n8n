@@ -22,6 +22,12 @@
     }
   </script>
 
+  <!-- Shown until the learner sets their own n8n webhook URL in ⚙ Settings.
+       Pinned to the BOTTOM so it never covers the fixed navbar's buttons. -->
+  <div id="setupBanner" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:90;background:#8E6E85;color:#fff;padding:.75rem 1.2rem;text-align:center;font:600 .9rem Inter,sans-serif;">
+    ⚙️ Not connected to n8n yet — click <strong>⚙ Settings</strong> and paste your <strong>Retell Web Call Trigger</strong> webhook URL.
+  </div>
+
   <!-- Navbar -->
   <nav class="nav">
     <div class="nav-inner">
@@ -30,6 +36,7 @@
         <a href="#services">Services</a>
         <a href="#gallery">Gallery</a>
         <a href="#visit">Visit Us</a>
+        <button class="btn btn-small btn-settings" onclick="openSettings()" title="Connect this page to your n8n"><span class="gear">⚙</span> Settings</button>
         <button class="btn btn-small" onclick="startVoiceCall()">📞 Book by Voice</button>
       </div>
     </div>
@@ -140,6 +147,26 @@
     <p>© GG Hair Salon · Tertiary Infotech n8n Course — Lab 4</p>
     <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
   </footer>
+
+  <!-- Settings: each learner points this page at THEIR OWN n8n + Retell agent.
+       Nothing is hardcoded; both values are saved in this browser (localStorage). -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card modal-card-wide">
+      <h3>⚙ Connect to your n8n</h3>
+      <p class="settings-lede">Paste the <strong>Production</strong> webhook URL from the <em>Retell Web Call Trigger</em> workflow. Saved in this browser only.</p>
+
+      <label class="settings-label" for="settingsUrl">n8n webhook URL <span>(required)</span></label>
+      <input class="settings-input" type="url" id="settingsUrl" spellcheck="false" />
+
+      <label class="settings-label" for="settingsAgent">Retell agent ID <span>(optional — blank uses the agent configured in n8n)</span></label>
+      <input class="settings-input" type="text" id="settingsAgent" placeholder="agent_…" spellcheck="false" />
+
+      <div class="settings-actions">
+        <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Voice call modal -->
   <div class="modal" id="voiceModal" aria-hidden="true">

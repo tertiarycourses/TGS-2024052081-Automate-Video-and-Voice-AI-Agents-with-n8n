@@ -216,6 +216,45 @@ img { max-width: 100%; display: block; }
   width: min(92vw, 360px);
 }
 .modal-card h3 { margin: 1.1rem 0 .4rem; }
+
+/* ---------- settings: the learner's own n8n webhook + agent ID ---------- */
+/* The gear is how learners connect the page to their n8n — keep it prominent. */
+.btn-settings {
+  background: var(--white);
+  color: var(--rose-dark);
+  border: 1.5px solid var(--rose);
+  padding: .5rem 1rem;
+  font-size: .85rem;
+}
+.btn-settings:hover { background: var(--blush, #f7edf1); }
+.btn-settings .gear {
+  display: inline-block;
+  font-size: 1.35rem;
+  line-height: 1;
+  vertical-align: -.18em;
+  transition: transform .3s ease;
+}
+.btn-settings:hover .gear { transform: rotate(90deg); }
+
+.modal-card-wide { width: min(94vw, 520px); text-align: left; padding: 2rem 2.2rem; }
+.settings-lede { color: var(--muted); font-size: .9rem; margin: .3rem 0 1.3rem; }
+.settings-label {
+  display: block; font-size: .82rem; font-weight: 600;
+  margin: 0 0 .35rem; color: var(--ink);
+}
+.settings-label span { font-weight: 400; color: var(--muted); }
+.settings-input {
+  width: 100%; box-sizing: border-box;
+  padding: .65rem .75rem; margin-bottom: 1.1rem;
+  border: 1.5px solid rgba(43, 35, 32, .18); border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem;
+  color: var(--ink); background: #fdfbfc;
+}
+.settings-input:focus {
+  outline: none; border-color: var(--rose);
+  box-shadow: 0 0 0 3px rgba(142, 110, 133, .15);
+}
+.settings-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: .4rem; }
 #voiceStatus { color: var(--muted); font-size: .95rem; min-height: 1.4em; }
 .timer { font: 600 1.3rem "Inter", sans-serif; color: var(--rose); margin: .6rem 0 1.2rem; }
 

@@ -1,110 +1,166 @@
 // ---------------------------------------------------------------------------
-// Lab 5 — AI Avatar News. No backend of its own:
-//   1. POST topic to the n8n "heygen-generate" webhook → Ollama writes the
-//      script, HeyGen starts rendering, returns { video_id, script }.
-//   2. Poll the n8n "heygen-status" webhook until the video is ready, then
-//      play it in the 16:9 (YouTube) player.
+// HomeMart — "Ask Ava" FAQ voice agent (Lab 4b), built on the Vapi Web SDK.
+//
+// Vapi differs from the Retell lab on purpose, and the difference IS the lesson:
+//   Retell (Lab 4)  browser -> n8n -> Retell API -> access token -> WebRTC
+//                   (a PRIVATE key must be kept server-side, so n8n mints the call)
+//   Vapi   (Lab 4b) browser -> Vapi directly, using a PUBLIC key
+//                   (a public key can ONLY start calls, so it is safe in the page)
+//
+// Nothing is hardcoded: the learner adds their own public key + assistant ID via
+// the ⚙ Settings panel, saved in this browser only (localStorage).
 // ---------------------------------------------------------------------------
-const GENERATE_URL = "http://localhost:5678/webhook/heygen-generate";
-const STATUS_URL = "http://localhost:5678/webhook/heygen-status";
-const POLL_MS = 15000; // HeyGen renders take a minute or more
+const STORE = {
+  key: "homemart_vapi_public_key",
+  assistant: "homemart_vapi_assistant_id",
+};
+
+const getKey = () => (localStorage.getItem(STORE.key) || "").trim();
+const getAssistant = () => (localStorage.getItem(STORE.assistant) || "").trim();
 
 const $ = (id) => document.getElementById(id);
-let polling = null;
 
-function setStatus(text, kind = "") {
-  const pill = $("statusPill");
-  pill.textContent = text;
-  pill.className = "status-pill" + (kind ? " " + kind : "");
+// The SDK is loaded lazily so a slow/blocked CDN never stops the rest of the page.
+// The CDN's ESM build wraps the CommonJS default export twice, so the constructor
+// can sit at mod.default.default. Unwrap until we actually find the function.
+async function loadVapi() {
+  const mod = await import("https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.3.8/+esm");
+  const Vapi = [mod.default?.default, mod.default, mod.Vapi, mod].find(
+    (candidate) => typeof candidate === "function",
+  );
+  if (!Vapi) throw new Error("Could not find the Vapi constructor in the SDK module");
+  return new Vapi(getKey());
 }
 
-async function generate() {
-  const topic = $("topic").value.trim();
-  if (!topic) return;
+// ===========================================================================
+// Settings
+// ===========================================================================
+function openSettings() {
+  $("settingsKey").value = getKey();
+  $("settingsAssistant").value = getAssistant();
+  $("settingsModal").classList.add("active");
+  setTimeout(() => $("settingsKey").focus(), 50);
+}
+function closeSettings() {
+  $("settingsModal").classList.remove("active");
+}
+function saveSettings() {
+  localStorage.setItem(STORE.key, $("settingsKey").value.trim());
+  localStorage.setItem(STORE.assistant, $("settingsAssistant").value.trim());
+  vapi = null; // rebuild the client with the new key on the next call
+  closeSettings();
+  renderSetupBanner();
+}
+function renderSetupBanner() {
+  $("setupBanner").style.display = getKey() && getAssistant() ? "none" : "block";
+}
 
-  clearInterval(polling);
-  $("genBtn").disabled = true;
-  $("player").style.display = "none";
-  $("poster").style.display = "block";
-  $("scriptText").textContent = "Writing the anchor script with Ollama…";
-  setStatus("Writing script…", "working");
+// ===========================================================================
+// Voice call
+// ===========================================================================
+let vapi = null;
+let callActive = false;
+let timerInterval = null;
+let callSeconds = 0;
 
-  let data;
+function setStatus(text) { $("voiceStatus").textContent = text; }
+function setTalking(on) { $("pulse").classList.toggle("talking", on); }
+function showModal() { $("voiceModal").classList.add("active"); }
+function hideModal() { $("voiceModal").classList.remove("active"); }
+
+function updateTimer() {
+  callSeconds++;
+  const m = String(Math.floor(callSeconds / 60)).padStart(2, "0");
+  const s = String(callSeconds % 60).padStart(2, "0");
+  $("voiceTimer").textContent = `${m}:${s}`;
+}
+
+function addTranscript(role, text) {
+  const el = document.createElement("div");
+  el.className = role === "user" ? "you" : "";
+  el.textContent = `${role === "user" ? "You" : "Ava"}: ${text}`;
+  $("transcript").appendChild(el);
+  $("transcript").scrollTop = $("transcript").scrollHeight;
+}
+
+function attachEvents(client) {
+  client.on("call-start", () => {
+    callActive = true;
+    setStatus("Listening — go ahead and ask.");
+    callSeconds = 0;
+    timerInterval = setInterval(updateTimer, 1000);
+  });
+  client.on("call-end", () => {
+    callActive = false;
+    setStatus("Call ended");
+    setTalking(false);
+    clearInterval(timerInterval);
+    timerInterval = null;
+    setTimeout(hideModal, 1500);
+  });
+  client.on("speech-start", () => setTalking(true));
+  client.on("speech-end", () => setTalking(false));
+
+  // Live transcript: proof to the learner that grounding worked (or did not).
+  client.on("message", (msg) => {
+    if (msg?.type === "transcript" && msg.transcriptType === "final") {
+      addTranscript(msg.role, msg.transcript);
+    }
+  });
+  client.on("error", (e) => {
+    console.error("Vapi error:", e);
+    callActive = false;
+    setStatus(`Call failed: ${e?.errorMsg || e?.message || "check your public key and assistant ID"}`);
+    setTalking(false);
+    clearInterval(timerInterval);
+    setTimeout(hideModal, 3500);
+  });
+}
+
+async function startVoiceCall() {
+  if (callActive) return;
+
+  // Not configured yet -> send the learner to Settings instead of failing cryptically.
+  if (!getKey() || !getAssistant()) {
+    openSettings();
+    return;
+  }
+
+  $("transcript").innerHTML = "";
+  $("voiceTimer").textContent = "00:00";
+  showModal();
+  setStatus("Connecting…");
+
   try {
-    const res = await fetch(GENERATE_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic }),
-    });
-    if (!res.ok) throw new Error(`n8n webhook ${res.status} — is the "HeyGen News Avatar" flow active?`);
-    data = await res.json();
+    if (!vapi) {
+      vapi = await loadVapi();
+      attachEvents(vapi);
+    }
+    await vapi.start(getAssistant());
   } catch (e) {
-    $("genBtn").disabled = false;
-    setStatus("Error", "error");
-    $("scriptText").textContent = `Could not reach the n8n flow. ${e.message}`;
-    return;
+    console.error("Could not start the call:", e);
+    setStatus(`Connection failed: ${e.message}`);
+    setTimeout(hideModal, 3500);
   }
-
-  if (data.script) $("scriptText").textContent = data.script;
-
-  if (!data.video_id) {
-    $("genBtn").disabled = false;
-    setStatus("Error", "error");
-    $("scriptText").textContent =
-      "HeyGen did not return a video id. " + (data.error ? JSON.stringify(data.error) : "");
-    return;
-  }
-
-  setStatus("Rendering video…", "working");
-  $("hint").textContent = `Video ID ${data.video_id} — rendering at HeyGen. This can take 1–3 minutes.`;
-  pollStatus(data.video_id);
 }
 
-function pollStatus(videoId) {
-  const check = async () => {
-    let s;
-    try {
-      const res = await fetch(STATUS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ video_id: videoId }),
-      });
-      s = await res.json();
-    } catch (e) {
-      return; // transient; try again next tick
-    }
-
-    if (s.status === "completed" && s.video_url) {
-      clearInterval(polling);
-      setStatus("● LIVE", "done");
-      const v = $("player");
-      v.src = s.video_url;
-      v.style.display = "block";
-      $("poster").style.display = "none";
-      v.play().catch(() => {});
-      $("genBtn").disabled = false;
-      $("hint").textContent = "Done! The AI news anchor video is playing above.";
-    } else if (s.status === "failed") {
-      clearInterval(polling);
-      $("genBtn").disabled = false;
-      const msg = s.error?.message || "";
-      if (/insufficient credit/i.test(msg)) {
-        setStatus("No API credits", "error");
-        $("hint").innerHTML =
-          "HeyGen rendered nothing: <strong>the account has no API credits</strong>. " +
-          "Add API credits in the HeyGen dashboard (Settings → Subscriptions / API), then generate again. " +
-          "The script above was still written by Ollama.";
-      } else {
-        setStatus("Render failed", "error");
-        $("hint").textContent = "HeyGen render failed: " + msg;
-      }
-    } else {
-      setStatus("Rendering… (" + (s.status || "processing") + ")", "working");
-    }
-  };
-
-  check();
-  polling = setInterval(check, POLL_MS);
+function endVoiceCall() {
+  try {
+    if (vapi) vapi.stop();
+  } catch (e) {
+    console.error("Error stopping the call:", e);
+  }
+  callActive = false;
+  setTalking(false);
+  clearInterval(timerInterval);
+  timerInterval = null;
+  hideModal();
 }
 
-window.generate = generate;
+window.startVoiceCall = startVoiceCall;
+window.endVoiceCall = endVoiceCall;
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.saveSettings = saveSettings;
+
+renderSetupBanner();

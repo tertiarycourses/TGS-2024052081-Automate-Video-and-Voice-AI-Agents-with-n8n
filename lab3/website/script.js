@@ -1,18 +1,25 @@
 /* =====================================================================
    Cook & Bake Academy — landing page + RAG chatbot widget
    ---------------------------------------------------------------------
-   The chatbot calls your n8n RAG webhook (CX Agent with RAG). Set the
-   WEBHOOK_URL below to your n8n "Webhook" / "Chat Trigger" production URL.
-   If the webhook is empty or unreachable, the widget falls back to a
+   The chatbot calls YOUR n8n RAG webhook (CX Agent with RAG). The URL is
+   NOT hardcoded: paste your own production webhook URL into the ⚙ panel
+   in the chat header. It is saved in this browser (localStorage), so each
+   learner points the same page at their own n8n.
+   If no webhook is set (or it is unreachable), the widget falls back to a
    local keyword search over the course data so the demo still works.
    ===================================================================== */
 
 const CONFIG = {
-  // e.g. "https://your-n8n-host/webhook/8c0c6a15-3665-41f0-bb60-f94e11fac572"
-  WEBHOOK_URL: "http://localhost:5678/webhook/8c0c6a15-3665-41f0-bb60-f94e11fac572",
+  // Where the learner's webhook URL is remembered in this browser.
+  STORAGE_KEY: "cb_n8n_webhook_url",
+  // Shown as the input placeholder — an example only, never used as a default.
+  URL_EXAMPLE: "http://localhost:5678/webhook/<your-webhook-id>",
   // n8n usually returns { output: "..." }. Adjust if your workflow differs.
   RESPONSE_KEYS: ["output", "text", "answer", "response", "message"],
 };
+
+const getWebhookUrl = () => (localStorage.getItem(CONFIG.STORAGE_KEY) || "").trim();
+const setWebhookUrl = (url) => localStorage.setItem(CONFIG.STORAGE_KEY, (url || "").trim());
 
 /* ---------------------------------------------------------------------
    Course catalogue (mirrors the 20 brochures in /brochures)
@@ -92,7 +99,39 @@ const CookBakeChat = (() => {
   const form   = document.getElementById("chat-form");
   const input  = document.getElementById("chat-text");
   const suggest= document.getElementById("chat-suggest");
+  const settings = document.getElementById("chat-settings");
+  const urlInput = document.getElementById("chat-webhook-url");
+  const urlState = document.getElementById("chat-webhook-state");
   let greeted = false;
+
+  /* ---- Webhook setting (⚙ in the chat header) ------------------------ */
+  urlInput.placeholder = CONFIG.URL_EXAMPLE;
+
+  function renderWebhookState() {
+    const url = getWebhookUrl();
+    urlInput.value = url;
+    urlState.textContent = url
+      ? "✅ Connected to your n8n webhook."
+      : "⚠️ No webhook set — answers come from the offline demo data, not your RAG agent.";
+    urlState.className = url ? "chat__hint chat__hint--ok" : "chat__hint chat__hint--warn";
+  }
+
+  function openSettings() {
+    settings.style.display = "block";
+    renderWebhookState();
+    setTimeout(() => urlInput.focus(), 50);
+  }
+  function toggleSettings() {
+    settings.style.display === "block" ? (settings.style.display = "none") : openSettings();
+  }
+  function saveWebhook() {
+    setWebhookUrl(urlInput.value);
+    renderWebhookState();
+    addMsg("bot", getWebhookUrl()
+      ? "Webhook saved. Ask me something and I'll route it through **your** n8n RAG agent."
+      : "Webhook cleared. I'll answer from the local demo data until you add one.");
+    settings.style.display = "none";
+  }
 
   function open() {
     panel.classList.add("is-open");
@@ -112,6 +151,12 @@ const CookBakeChat = (() => {
     addMsg("bot",
       "👋 Hi! I'm the **Cook & Bake Academy** course assistant.\n\n" +
       "Ask me anything about our cooking & bakery courses — duration, course fees, locations, schedules or what you'll learn!");
+    if (!getWebhookUrl()) {
+      addMsg("bot",
+        "⚙️ **Setup needed:** I'm not connected to an n8n agent yet, so I'm answering from local demo data.\n\n" +
+        "Click the ⚙ icon above and paste the **production webhook URL** of your *CX Agent with RAG* workflow.");
+      openSettings();
+    }
   }
 
   function addMsg(who, text) {
@@ -149,19 +194,21 @@ const CookBakeChat = (() => {
 
     let reply;
     try {
-      reply = CONFIG.WEBHOOK_URL
+      reply = getWebhookUrl()
         ? await callWebhook(text)
         : localAnswer(text);
     } catch (err) {
       console.warn("Webhook failed, using local fallback:", err);
-      reply = localAnswer(text);
+      reply = localAnswer(text) +
+        "\n\n_(Your n8n webhook could not be reached, so this answer came from local demo data. " +
+        "Check the ⚙ URL and that the workflow is Active.)_";
     }
     typing.remove();
     addMsg("bot", reply);
   }
 
   async function callWebhook(text) {
-    const res = await fetch(CONFIG.WEBHOOK_URL, {
+    const res = await fetch(getWebhookUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chatInput: text, message: text, sessionId: getSession() }),
@@ -261,7 +308,13 @@ const CookBakeChat = (() => {
     if (b) { open(); send(b.textContent); }
   });
 
-  return { open, close, toggle, ask: (q) => { open(); setTimeout(() => send(q), 300); } };
+  renderWebhookState();
+
+  return {
+    open, close, toggle,
+    toggleSettings, saveWebhook,
+    ask: (q) => { open(); setTimeout(() => send(q), 300); },
+  };
 })();
 
 window.CookBakeChat = CookBakeChat;

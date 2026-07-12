@@ -1,0 +1,370 @@
+{
+  "id": "LabTenVeoVideoGen",
+  "name": "Lab 10 - AI Video Generation (Gemini Veo 3)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "veo-generate",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -260,
+        0
+      ],
+      "id": "d0000001-0000-4000-8000-000000000001",
+      "name": "Generate Webhook",
+      "webhookId": "d0000002-0000-4000-8000-000000000002"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.topic || 'Singapore MRT expansion adds twelve new stations by 2030' }}",
+        "options": {
+          "systemMessage": "You are a video prompt writer for Google's Veo 3 text-to-video model.\n\nTurn the user's TOPIC into ONE cinematic shot description of about 40-60 words that Veo can film.\n\nRules:\n- Describe what the CAMERA SEES: the subject, the setting, the lighting, the camera move.\n- Veo 3 also generates audio, so name the sound: the speaker's voice, the ambience.\n- One shot only. No shot lists, no scene numbers, no markdown, no headings.\n- Output ONLY the prompt text \u2014 it is sent to the model verbatim.\n\nExample:\nA professional news anchor in a modern television studio speaks directly to camera about the city's new metro line. Warm key lighting, glass desk, screens glowing behind her. The camera pushes in slowly. Her voice is clear and measured, with the low hum of a busy newsroom behind her."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -20,
+        0
+      ],
+      "id": "d0000003-0000-4000-8000-000000000003",
+      "name": "Write Video Prompt (Ollama)"
+    },
+    {
+      "parameters": {
+        "model": "gemma4:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        200
+      ],
+      "id": "d0000004-0000-4000-8000-000000000004",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "E2TBIVWPZ64avN7z",
+          "name": "Ollama local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $('Generate Webhook').item.json.body.model || 'veo-3.1-fast-generate-preview' }}:predictLongRunning",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ instances: [ { prompt: $json.output } ], parameters: { aspectRatio: '16:9' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "d0000005-0000-4000-8000-000000000005",
+      "name": "Veo 3: Generate Video",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qXJysSd7yeLApPI6",
+          "name": "Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Veo is a LONG-RUNNING operation: this returns an operation name, not a video.\n// The website polls /webhook/veo-status with it until the video is ready.\nconst res = $input.first().json;\nconst prompt = $('Write Video Prompt (Ollama)').first().json.output;\n\nif (!res.name) {\n  return [{ json: {\n    operation: null,\n    prompt,\n    error: res.error?.message || 'Veo did not return an operation. Is GEMINI_API_KEY set in the n8n container?',\n  } }];\n}\n\nreturn [{ json: { operation: res.name, prompt } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "d0000006-0000-4000-8000-000000000006",
+      "name": "Build Response"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        700,
+        0
+      ],
+      "id": "d0000007-0000-4000-8000-000000000007",
+      "name": "Respond (operation)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "veo-status",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -260,
+        340
+      ],
+      "id": "d0000008-0000-4000-8000-000000000008",
+      "name": "Status Webhook",
+      "webhookId": "d0000009-0000-4000-8000-000000000009"
+    },
+    {
+      "parameters": {
+        "url": "=https://generativelanguage.googleapis.com/v1beta/{{ $json.body.operation }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        340
+      ],
+      "id": "d0000010-0000-4000-8000-000000000010",
+      "name": "Veo 3: Get Status",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qXJysSd7yeLApPI6",
+          "name": "Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// While generating: { done: false }. When finished, the response carries a files URI.\n// That URI needs the API key to download, so we hand the browser a proxied URL instead\n// of leaking the key into the page.\nconst d = $input.first().json;\n\nif (d.error) {\n  return [{ json: { done: true, failed: true, error: d.error.message || 'Veo failed' } }];\n}\n\nif (!d.done) {\n  return [{ json: { done: false, status: 'generating' } }];\n}\n\nconst blob = JSON.stringify(d.response || {});\nconst match = blob.match(/https:\\/\\/[^\"]+?:download[^\"]*/);\nif (!match) {\n  return [{ json: { done: true, failed: true, error: 'Finished, but no video URI was returned.' } }];\n}\n\n// The file id is the last path segment before :download\nconst uri = match[0];\nconst fileId = (uri.match(/files\\/([^:]+):download/) || [])[1] || null;\n\nreturn [{ json: {\n  done: true,\n  failed: false,\n  file_id: fileId,\n  // The site calls this to stream the MP4 without ever seeing the API key.\n  video_url: `http://localhost:5678/webhook/veo-file?file_id=${fileId}`,\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        340
+      ],
+      "id": "d0000011-0000-4000-8000-000000000011",
+      "name": "Parse Status"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        480,
+        340
+      ],
+      "id": "d0000012-0000-4000-8000-000000000012",
+      "name": "Respond (status)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "veo-file",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -260,
+        660
+      ],
+      "id": "d0000013-0000-4000-8000-000000000013",
+      "name": "File Webhook",
+      "webhookId": "d0000014-0000-4000-8000-000000000014"
+    },
+    {
+      "parameters": {
+        "url": "=https://generativelanguage.googleapis.com/v1beta/files/{{ $json.query.file_id }}:download?alt=media",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        660
+      ],
+      "id": "d0000015-0000-4000-8000-000000000015",
+      "name": "Fetch MP4 (key stays in n8n)",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qXJysSd7yeLApPI6",
+          "name": "Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        660
+      ],
+      "id": "d0000016-0000-4000-8000-000000000016",
+      "name": "Respond (mp4)"
+    }
+  ],
+  "connections": {
+    "Generate Webhook": {
+      "main": [
+        [
+          {
+            "node": "Write Video Prompt (Ollama)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Video Prompt (Ollama)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Video Prompt (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Veo 3: Generate Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo 3: Generate Video": {
+      "main": [
+        [
+          {
+            "node": "Build Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Response": {
+      "main": [
+        [
+          {
+            "node": "Respond (operation)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Webhook": {
+      "main": [
+        [
+          {
+            "node": "Veo 3: Get Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo 3: Get Status": {
+      "main": [
+        [
+          {
+            "node": "Parse Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Status": {
+      "main": [
+        [
+          {
+            "node": "Respond (status)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch MP4 (key stays in n8n)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch MP4 (key stays in n8n)": {
+      "main": [
+        [
+          {
+            "node": "Respond (mp4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

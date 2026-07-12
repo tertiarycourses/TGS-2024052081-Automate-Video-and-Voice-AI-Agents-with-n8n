@@ -3,9 +3,15 @@
 *.env
 !*/.env.example
 
+# CONFIDENTIAL — assessment material never goes to GitHub. The question papers, the answer
+# keys and the original papers pulled from the TMS live on Google Drive only.
+assessment/
+assessment */
+reference/
+
 # python / models (large — regenerated per README)
-lab5-opensource/service/.venv/
-lab5-opensource/service/videos/
+lab7-opensource/service/.venv/
+lab7-opensource/service/videos/
 **/__pycache__/
 *.pyc
 
@@ -18,9 +24,19 @@ lab5-opensource/service/videos/
 .playwright-mcp/
 **/.playwright-mcp/
 
-# third-party Wav2Lip clone (re-clone per lab5-opensource/README.md)
-lab5-opensource/service/wav2lip/
+# third-party Wav2Lip clone (re-clone per lab7-opensource/README.md)
+lab7-opensource/service/wav2lip/
 
 # unrelated to this course (kept local)
 elegance-journey/
 .codex/
+
+# Lab 6 vendors the lip-sync studio (source is committed); these are build artifacts
+lab6/python/.venv/
+lab6/python/models/
+lab6/python/renders/
+lab6/.env
+lab6/python/repo/
+
+# scratch API dumps
+heygen_voices.json

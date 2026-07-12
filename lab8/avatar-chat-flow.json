@@ -1,0 +1,139 @@
+{
+  "id": "LabEightAvatarChat",
+  "name": "Lab 8 - Interactive Avatar Brain (Ollama, low latency)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "avatar-chat",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "e0000001-0000-4000-8000-000000000001",
+      "name": "Chat Webhook",
+      "webhookId": "e0000002-0000-4000-8000-000000000002"
+    },
+    {
+      "parameters": {
+        "jsCode": "// WHY NOT THE AI AGENT NODE?\n// Measured on this machine: the LangChain Agent node took ~14s per reply, while the\n// SAME model with the SAME prompt answers in ~2s when called directly. The agent runs\n// a ReAct loop (several LLM round-trips, a scratchpad, tool-choice reasoning) \u2014 none of\n// which this lab needs. For a conversation you must not keep waiting for, that overhead\n// is the whole difference between \"interactive\" and \"awkward\".\n//\n// So we build the chat payload ourselves and call Ollama once.\n//\n// History comes from the BROWSER (it already has the transcript), which also keeps this\n// flow stateless \u2014 no memory node, no session store.\n\nconst body = $input.first().json.body || {};\nconst message = (body.message || '').toString().trim();\nconst history = Array.isArray(body.history) ? body.history.slice(-6) : [];\n\nconst SYSTEM = `You are Aria, a friendly AI receptionist for Tertiary Infotech Academy.\n\nYou are SPOKEN ALOUD by a talking avatar, so:\n- Reply in ONE short sentence. Two at the very most.\n- Plain spoken English. No markdown, no bullets, no emoji, no URLs.\n- Say numbers in words: \"two days\", \"nine thirty in the morning\".\n- If you do not know, say so briefly and offer a colleague follow-up. Never invent a price, a date or a policy.\n\nWHAT YOU KNOW\n- The academy runs WSQ short courses in AI, automation and data.\n- Classes run 9:30am to 6:30pm on weekdays at our training centre.\n- Course fees vary; funding is available for eligible Singaporeans.\n- To enrol, a learner registers on the website.`;\n\nconst messages = [\n  { role: 'system', content: SYSTEM },\n  ...history.map((h) => ({ role: h.role === 'you' ? 'user' : 'assistant', content: h.text })),\n  { role: 'user', content: message || 'Hello' },\n];\n\nreturn [{ json: {\n  ollama: {\n    model: 'gemma4:latest',\n    stream: false,\n    // gemma4 is a THINKING model: left alone it spends its whole token budget on an\n    // internal monologue and returns message.content EMPTY (done_reason: 'length').\n    // The avatar then says \"Sorry, I did not catch that\" while the model is busy\n    // reasoning beautifully in private. Turn thinking off \u2014 this is a receptionist,\n    // not a maths olympiad.\n    think: false,\n    keep_alive: '30m',          // keep the 9.6 GB model resident \u2014 a cold load costs seconds\n    messages,\n    options: {\n      num_predict: 120,         // enough for two spoken sentences, not enough to ramble\n      temperature: 0.6,\n    },\n  },\n  warm: !!body.warm,\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        0
+      ],
+      "id": "e0000003-0000-4000-8000-000000000003",
+      "name": "Build Chat Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:11434/api/chat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.ollama) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        0
+      ],
+      "id": "e0000004-0000-4000-8000-000000000004",
+      "name": "Ollama: Chat"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The avatar SPEAKS this, so strip anything that does not read aloud: a stray asterisk\n// becomes an audible \"asterisk\" in the browser's voice.\nconst res = $input.first().json;\n// If a thinking model ever slips through with an empty content field, we would\n// rather say something true from its reasoning than 'I did not catch that'.\nlet reply = (res.message?.content || '').toString();\nconst starved = !reply && res.done_reason === 'length';\n\nreply = reply\n  .replace(/[*_`#>]/g, '')\n  .replace(/^\\s*[-\u2022]\\s*/gm, '')\n  .replace(/https?:\\/\\/\\S+/g, 'the link on our website')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nif (!reply) {\n  reply = res.error\n    ? 'My brain is not answering. Check that Ollama is running.'\n    : starved\n      ? 'Sorry, I ran out of words. Ask me that again?'\n      : 'Sorry, I did not catch that. Could you say it again?';\n}\n\n// Report where the time went, so the lab can SHOW the latency rather than claim it.\nconst ms = (n) => Math.round((n || 0) / 1e6);\n\nreturn [{ json: {\n  reply,\n  timing: {\n    total_ms: ms(res.total_duration),\n    model_load_ms: ms(res.load_duration),\n    prompt_ms: ms(res.prompt_eval_duration),\n    generate_ms: ms(res.eval_duration),\n    tokens: res.eval_count || 0,\n  },\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "e0000005-0000-4000-8000-000000000005",
+      "name": "Make It Speakable"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        0
+      ],
+      "id": "e0000006-0000-4000-8000-000000000006",
+      "name": "Respond (reply)"
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build Chat Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Chat Request": {
+      "main": [
+        [
+          {
+            "node": "Ollama: Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama: Chat": {
+      "main": [
+        [
+          {
+            "node": "Make It Speakable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make It Speakable": {
+      "main": [
+        [
+          {
+            "node": "Respond (reply)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

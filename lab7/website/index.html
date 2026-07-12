@@ -3,42 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GG News Studio — Replicate AI Avatar</title>
+  <title>GG News Studio — AI Avatar News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
+
+  <!-- Warns if opened as file:// (module script + fetch blocked) -->
   <div id="fileWarning" class="file-warning">
-    ⚠️ Open this page via the local server — <strong>http://localhost:8097</strong> — not by double-clicking the file.
+    ⚠️ Open this page via the local server — <strong>http://localhost:8095</strong> — not by double-clicking the file.
   </div>
   <script>
     if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
   </script>
 
+  <!-- Top bar -->
   <header class="topbar">
     <div class="brand"><span class="live">● LIVE</span> GG News Studio</div>
-    <div class="ticker">Cloud render · n8n + Ollama + Replicate (SadTalker) — pay-per-second, no server</div>
+    <div class="ticker">AI-generated news avatar · powered by n8n + Ollama + HeyGen</div>
   </header>
 
   <main class="studio">
+    <!-- Left: the broadcast -->
     <section class="broadcast">
       <div class="screen" id="screen">
-        <img id="poster" src="broadcaster.jpg" alt="News anchor" />
+        <!-- video appears here when ready; poster shows until then -->
+        <img id="poster" src="broadcaster.jpg?v=2" alt="News anchor" />
         <video id="player" playsinline controls style="display:none"></video>
         <div class="screen-badge">FIFA WORLD CUP 2026 · LIVE BROADCAST</div>
         <div class="status-pill" id="statusPill">Ready</div>
       </div>
+
+      <!-- Render progress. HeyGen reports no percentage, only processing/completed,
+           so the bar is an elapsed-time ESTIMATE and says so. It never reaches 100%
+           until HeyGen actually reports completed. -->
+      <div class="progress" id="progress" hidden>
+        <div class="progress-head">
+          <span id="progressLabel">Writing the anchor script…</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <span class="step is-active" id="step1">1 · Ollama writes the script</span>
+          <span class="step" id="step2">2 · HeyGen renders the video</span>
+          <span class="step" id="step3">3 · Playing</span>
+        </div>
+      </div>
+
       <div class="teleprompter">
         <h3>📜 Anchor Script</h3>
         <p id="scriptText">Enter a news topic and generate a video — the AI anchor script will appear here.</p>
       </div>
     </section>
 
+    <!-- Right: the control desk -->
     <aside class="desk">
       <h2>News Desk</h2>
-      <p class="desk-sub">Ollama writes the script; <strong>Replicate</strong> runs open-source models in the cloud (Kokoro TTS → SadTalker talking head) — pay-per-second, no GPU of your own.</p>
+      <p class="desk-sub">Ollama writes the script, HeyGen turns your news anchor photo into a talking video.</p>
 
       <label for="topic">News topic</label>
       <textarea id="topic" rows="4">FIFA World Cup 2026 Round of 16 — Belgium beats co-hosts USA 4-1 to reach the quarter-finals alongside Spain, France and England; Argentina face Egypt for the last spot.</textarea>
@@ -46,20 +71,20 @@
       <button id="genBtn" class="btn" onclick="generate()">🎬 Generate News Video</button>
 
       <div class="hint" id="hint">
-        The n8n flow <code>replicate-generate</code> must be active and the Replicate account needs credit. Rendering takes ~1–3 minutes.
+        The n8n flow <code>heygen-generate</code> must be active. Rendering a 1080p video takes ~1–3 minutes.
       </div>
 
       <ol class="steps">
-        <li><span>1</span> Ollama (gemma4) writes a ~15-second anchor script.</li>
-        <li><span>2</span> Replicate: Kokoro TTS → SadTalker animates the anchor photo.</li>
+        <li><span>1</span> Ollama (gemma4) writes a ~20-second anchor script from your topic.</li>
+        <li><span>2</span> HeyGen animates the broadcaster photo speaking that script (YouTube 1920×1080).</li>
         <li><span>3</span> The finished video plays here automatically.</li>
       </ol>
     </aside>
   </main>
 
-  <footer class="foot">Tertiary Infotech · n8n Course — Lab 7 · Cloud AI Avatar (Replicate)  <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  <footer class="foot">Tertiary Infotech · n8n Course — Lab 5 · AI Avatar News  <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
   </footer>
 
-  <script src="main.js"></script>
+  <script type="module" src="main.js?v=2"></script>
 </body>
 </html>

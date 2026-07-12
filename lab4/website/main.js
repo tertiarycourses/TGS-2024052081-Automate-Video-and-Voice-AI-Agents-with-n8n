@@ -2,8 +2,19 @@
 // Single-page app — no backend of its own. "Book by Voice" calls the n8n
 // "Retell Web Call Trigger" flow, which creates a Retell web call (keeping the
 // API key in n8n) and returns an access_token to start the WebRTC voice session.
+//
+// NOTHING IS HARDCODED. Each learner points this page at their own n8n and
+// their own Retell agent via the ⚙ Settings panel; both values are saved in
+// this browser only (localStorage).
 // ---------------------------------------------------------------------------
-const N8N_WEB_CALL_URL = "http://localhost:5678/webhook/retell-web-call";
+const STORE = {
+  url: "gg_n8n_web_call_url",   // n8n "Retell Web Call Trigger" production webhook URL
+  agent: "gg_retell_agent_id",  // optional: your own Retell agent_… ID
+};
+const URL_EXAMPLE = "http://localhost:5678/webhook/retell-web-call";
+
+const getWebhookUrl = () => (localStorage.getItem(STORE.url) || "").trim();
+const getAgentId = () => (localStorage.getItem(STORE.agent) || "").trim();
 
 // The Retell SDK is loaded lazily (only when a call starts) so that a slow or
 // blocked CDN never stops the rest of the page (buttons) from working.
@@ -71,8 +82,45 @@ function attachRetellEvents(client) {
   });
 }
 
+// ===========================================================================
+// Settings — the learner's own n8n webhook URL + Retell agent ID
+// ===========================================================================
+function openSettings() {
+  $("settingsUrl").value = getWebhookUrl();
+  $("settingsUrl").placeholder = URL_EXAMPLE;
+  $("settingsAgent").value = getAgentId();
+  $("settingsModal").classList.add("active");
+  setTimeout(() => $("settingsUrl").focus(), 50);
+}
+
+function closeSettings() {
+  $("settingsModal").classList.remove("active");
+}
+
+function saveSettings() {
+  localStorage.setItem(STORE.url, $("settingsUrl").value.trim());
+  localStorage.setItem(STORE.agent, $("settingsAgent").value.trim());
+  closeSettings();
+  renderSetupBanner();
+}
+
+// Tells the learner, before they click anything, that the page is not wired up yet.
+function renderSetupBanner() {
+  const banner = $("setupBanner");
+  if (!banner) return;
+  banner.style.display = getWebhookUrl() ? "none" : "block";
+}
+
 async function startVoiceCall() {
   if (callActive) return;
+
+  // No webhook yet → send the learner to Settings instead of failing cryptically.
+  const webhookUrl = getWebhookUrl();
+  if (!webhookUrl) {
+    openSettings();
+    return;
+  }
+
   showModal();
   setStatus("Connecting…");
   setTalking(false);
@@ -86,14 +134,16 @@ async function startVoiceCall() {
       attachRetellEvents(retellClient);
     }
 
-    const res = await fetch(N8N_WEB_CALL_URL, {
+    // agent_id is optional: the n8n flow falls back to its own configured agent.
+    const agentId = getAgentId();
+    const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
+      body: JSON.stringify(agentId ? { agent_id: agentId } : {}),
     });
 
     if (!res.ok) {
-      throw new Error(`n8n webhook error ${res.status} — is the "Retell Web Call Trigger" workflow active?`);
+      throw new Error(`n8n webhook error ${res.status} — is the "Retell Web Call Trigger" workflow active, and is the ⚙ URL correct?`);
     }
 
     const data = await res.json();
@@ -127,3 +177,8 @@ function endVoiceCall() {
 // Expose handlers to inline onclick attributes
 window.startVoiceCall = startVoiceCall;
 window.endVoiceCall = endVoiceCall;
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.saveSettings = saveSettings;
+
+renderSetupBanner();

@@ -1,11 +1,17 @@
 @echo off
-REM GG News Studio - one-click launcher (Windows). Double-click this file.
+REM HomeMart - one-click launcher (Windows)
+REM Double-click this file. It serves the website on http://localhost:8096
+REM (so the browser trusts it for the microphone) and opens it for you.
+REM Uses Python if available, else Node (npx).
 cd /d "%~dp0"
-set PORT=8095
+
+set PORT=8096
 set URL=http://localhost:%PORT%
-echo Serving GG News Studio at %URL%  (close window to stop)
+echo Serving HomeMart at %URL%
+echo Keep this window open while you use the site. Close it to stop.
 start "" %URL%
+
 where python >nul 2>nul && (python -m http.server %PORT% & goto :eof)
 where npx >nul 2>nul && (npx --yes serve -l %PORT% . & goto :eof)
-echo Install Python or Node, or use VS Code Live Server.
+echo Neither Python nor Node (npx) found. Install one, or use VS Code Live Server.
 pause

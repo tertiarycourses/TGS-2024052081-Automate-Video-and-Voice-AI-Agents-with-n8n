@@ -3,69 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GG News Studio — AI Avatar News</title>
+  <title>HomeMart — Ask Ava, the FAQ Voice Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Warns if opened as file:// (module script + fetch blocked) -->
+  <!-- file:// blocks module scripts and the microphone, so every button would silently die. -->
   <div id="fileWarning" class="file-warning">
-    ⚠️ Open this page via the local server — <strong>http://localhost:8095</strong> — not by double-clicking the file.
+    ⚠️ Serve this page over <strong>http://localhost</strong> — buttons and the microphone do not work on <code>file://</code>.
   </div>
   <script>
     if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
   </script>
 
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="brand"><span class="live">● LIVE</span> GG News Studio</div>
-    <div class="ticker">AI-generated news avatar · powered by n8n + Ollama + HeyGen</div>
+  <!-- Shown until the learner adds their own Vapi keys. Pinned bottom so it never covers the nav. -->
+  <div id="setupBanner" class="setup-banner">
+    ⚙️ Not connected to Vapi yet — click <strong>⚙ Settings</strong> and add your <strong>public key</strong> and <strong>assistant ID</strong>.
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">🏠</span> Home<span>Mart</span>
+      </a>
+      <div class="nav-links">
+        <a href="#faq">FAQ</a>
+        <a href="#topics">Topics</a>
+        <a href="#how">How it works</a>
+        <button class="btn btn-outline" onclick="openSettings()"><span class="gear">⚙</span> Settings</button>
+        <button class="btn btn-primary" onclick="startVoiceCall()">🎙️ Ask Ava</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Voice support, powered by Vapi</p>
+        <h1>Questions about your order?<br /><span>Just ask Ava.</span></h1>
+        <p class="lede">
+          Ava is HomeMart's FAQ voice assistant. Ask about delivery, returns, warranty, installation or
+          payment — she answers out loud, in seconds, and never guesses.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="startVoiceCall()">🎙️ Ask Ava by voice</button>
+          <a class="btn btn-ghost btn-lg" href="#faq">Read the FAQ</a>
+        </div>
+        <div class="stats">
+          <div><strong>6</strong><span>FAQ topics</span></div>
+          <div><strong>&lt;2s</strong><span>to first answer</span></div>
+          <div><strong>24/7</strong><span>voice support</span></div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="hc-head">
+          <span class="avatar">🎧</span>
+          <div>
+            <strong>Ava</strong>
+            <small><i class="dot"></i> FAQ voice assistant</small>
+          </div>
+        </div>
+        <div class="bubble bubble-user">“When will my air fryer arrive?”</div>
+        <div class="bubble bubble-ava">“Standard delivery is 3 to 5 working days, and it's free above fifty dollars.”</div>
+        <div class="bubble bubble-user">“And if I don't like it?”</div>
+        <div class="bubble bubble-ava">“You have 30 days to return it, unused and in its original box.”</div>
+        <p class="hc-foot">Grounded in the FAQ below — nothing invented.</p>
+      </aside>
+    </div>
   </header>
 
-  <main class="studio">
-    <!-- Left: the broadcast -->
-    <section class="broadcast">
-      <div class="screen" id="screen">
-        <!-- video appears here when ready; poster shows until then -->
-        <img id="poster" src="broadcaster.jpg" alt="News anchor" />
-        <video id="player" playsinline controls style="display:none"></video>
-        <div class="screen-badge">FIFA WORLD CUP 2026 · LIVE BROADCAST</div>
-        <div class="status-pill" id="statusPill">Ready</div>
-      </div>
+  <!-- The knowledge Ava answers from. Same text goes in the Vapi assistant prompt. -->
+  <section class="section" id="faq">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <p class="section-sub">Ava answers from exactly these six topics — and says so when a question falls outside them.</p>
 
-      <div class="teleprompter">
-        <h3>📜 Anchor Script</h3>
-        <p id="scriptText">Enter a news topic and generate a video — the AI anchor script will appear here.</p>
-      </div>
-    </section>
+    <div class="faq-list" id="faqList">
+      <details open>
+        <summary>How long does delivery take, and what does it cost?</summary>
+        <p>Standard delivery is <strong>3 to 5 working days</strong>. Express delivery is next working day if you order before 2 PM.
+        Delivery is <strong>free on orders above $50</strong>; below that it is a flat $5. We deliver across Singapore only.</p>
+      </details>
+      <details>
+        <summary>What is your returns policy?</summary>
+        <p>You may return any item within <strong>30 days</strong> of delivery, unused and in its original packaging.
+        Refunds go back to the original payment method within 5 to 7 working days. Opened personal-care items cannot be returned.</p>
+      </details>
+      <details>
+        <summary>Do products come with a warranty?</summary>
+        <p>All electrical appliances carry a <strong>1-year local manufacturer warranty</strong>; Dyson and KitchenAid carry
+        <strong>2 years</strong>. Keep your order number — it is your proof of purchase.</p>
+      </details>
+      <details>
+        <summary>Which payment methods do you accept?</summary>
+        <p>PayNow, Visa, Mastercard, American Express, Apple Pay and Google Pay. We do not accept cash on delivery.
+        Instalments are available on orders above $300.</p>
+      </details>
+      <details>
+        <summary>Do you install large appliances?</summary>
+        <p>Yes. Washing machines and air conditioners include <strong>free basic installation</strong>.
+        Installation is scheduled within 3 working days of delivery, and the old unit can be hauled away for $20.</p>
+      </details>
+      <details>
+        <summary>Can I get a price match?</summary>
+        <p>Yes. If you find the identical item cheaper at a local retailer within <strong>7 days</strong> of your purchase,
+        we refund the difference. Send the order number and a link to the competitor's listing.</p>
+      </details>
+    </div>
+  </section>
 
-    <!-- Right: the control desk -->
-    <aside class="desk">
-      <h2>News Desk</h2>
-      <p class="desk-sub">Ollama writes the script, HeyGen turns your news anchor photo into a talking video.</p>
+  <section class="section section-alt" id="topics">
+    <h2 class="section-title">What you can ask</h2>
+    <p class="section-sub">Say it however you like — Ava matches meaning, not keywords.</p>
+    <div class="topic-grid">
+      <button class="topic" onclick="startVoiceCall()"><span>📦</span><strong>Delivery</strong><small>“When will it arrive?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>↩️</span><strong>Returns</strong><small>“Can I send it back?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🛡️</span><strong>Warranty</strong><small>“How long is it covered?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>💳</span><strong>Payment</strong><small>“Do you take PayNow?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🔧</span><strong>Installation</strong><small>“Do you fit it for me?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🏷️</span><strong>Price match</strong><small>“It's cheaper elsewhere.”</small></button>
+    </div>
+  </section>
 
-      <label for="topic">News topic</label>
-      <textarea id="topic" rows="4">FIFA World Cup 2026 Round of 16 — Belgium beats co-hosts USA 4-1 to reach the quarter-finals alongside Spain, France and England; Argentina face Egypt for the last spot.</textarea>
+  <section class="section" id="how">
+    <h2 class="section-title">How the voice agent works</h2>
+    <div class="how-grid">
+      <div class="how-step"><span class="n">1</span><strong>Browser</strong><p>The page starts a WebRTC call with the <strong>Vapi Web SDK</strong> using your <em>public</em> key.</p></div>
+      <div class="how-step"><span class="n">2</span><strong>Vapi</strong><p>Vapi runs the assistant: speech-to-text, the model, and the voice back to you.</p></div>
+      <div class="how-step"><span class="n">3</span><strong>Grounding</strong><p>The assistant answers only from the FAQ in its prompt, and refuses anything outside it.</p></div>
+    </div>
+    <p class="how-note">
+      A <strong>public</strong> key is designed to be visible in the browser and can only start calls.
+      Your <strong>private</strong> key manages assistants and must never appear in front-end code.
+    </p>
+  </section>
 
-      <button id="genBtn" class="btn" onclick="generate()">🎬 Generate News Video</button>
-
-      <div class="hint" id="hint">
-        The n8n flow <code>heygen-generate</code> must be active. Rendering a 1080p video takes ~1–3 minutes.
-      </div>
-
-      <ol class="steps">
-        <li><span>1</span> Ollama (gemma4) writes a ~20-second anchor script from your topic.</li>
-        <li><span>2</span> HeyGen animates the broadcaster photo speaking that script (YouTube 1920×1080).</li>
-        <li><span>3</span> The finished video plays here automatically.</li>
-      </ol>
-    </aside>
-  </main>
-
-  <footer class="foot">Tertiary Infotech · n8n Course — Lab 5 · AI Avatar News  <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  <footer class="footer">
+    <p>© 2026 HomeMart — a training storefront for the Tertiary Infotech n8n course (Lab 4b).</p>
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
   </footer>
+
+  <!-- Settings: the learner's own Vapi public key + assistant ID. Nothing is hardcoded. -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card modal-card-wide">
+      <h3>⚙ Connect to your Vapi assistant</h3>
+      <p class="settings-lede">Both values come from the Vapi dashboard. They are saved in <strong>this browser only</strong>.</p>
+
+      <label class="settings-label" for="settingsKey">Vapi <strong>public</strong> key <span>(required — Dashboard → API Keys)</span></label>
+      <input class="settings-input" type="text" id="settingsKey" placeholder="00000000-0000-0000-0000-000000000000" spellcheck="false" />
+
+      <label class="settings-label" for="settingsAssistant">Assistant ID <span>(required — Dashboard → Assistants)</span></label>
+      <input class="settings-input" type="text" id="settingsAssistant" placeholder="00000000-0000-0000-0000-000000000000" spellcheck="false" />
+
+      <p class="settings-warn">⚠️ Never paste your <strong>private</strong> key here — anything in this page is visible to every visitor.</p>
+
+      <div class="settings-actions">
+        <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice call modal -->
+  <div class="modal" id="voiceModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="pulse" id="pulse"><span>🎙️</span></div>
+      <h3>Ava — FAQ Voice Assistant</h3>
+      <p id="voiceStatus">Connecting…</p>
+      <p class="timer" id="voiceTimer">00:00</p>
+      <div class="transcript" id="transcript"></div>
+      <button class="btn btn-danger" onclick="endVoiceCall()">End call</button>
+    </div>
+  </div>
 
   <script type="module" src="main.js"></script>
 </body>

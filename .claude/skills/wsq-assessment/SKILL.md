@@ -21,6 +21,21 @@ Generate two WSQ assessment instruments, each as a **question paper** and a matc
 - **Everything is "covered in class."** Do not test content that is not in the slides or labs.
 - **Keep the question/task count stable** when revising an existing assessment — update the wording and answers, don't change the count, unless asked.
 
+## Step 0 — pull the original from the TMS (before you write a single question)
+
+**The original paper comes from the TMS, not from `reference/`.** The `lms-tms.tertiaryinfotech.com` course record links the paper the ATO actually has on file; a DOCX in `reference/` may be stale, a draft, or another course's copy. Read the live one first:
+
+```bash
+python3 .claude/scripts/tms_assessment.py --course-code TGS-XXXXXXXXXX [--save-dir reference/tms]
+```
+
+It resolves the course, follows `writtenAssessmentLink` and the enabled `assessmentMethods` link, exports each Google Doc as text, and prints the **instrument, question count, K/A codes and timings** to mirror. Take the course code **from the courseware itself** (deck cover / LG / LP), never from the repo folder name.
+
+Then mirror the original exactly — **same instrument, same question count, same K/A codes and mapping, same timings**. Only the content (scenario, questions, model answers) is rewritten, from *this* course's slides and labs.
+
+- **The paper's own title decides the instrument, not the TMS field it is filed under.** A Case Study is routinely stored in the `practicalExam` / `practicalPerformanceAssessmentLink` slot. The heading printed on the paper is what the assessor and the auditor hold — it wins, and it decides which builder you run (`build_assessment.py` for PP, `build_wsq_assessment.py` for CS). The script flags the mismatch.
+- Fall back to `reference/` **only** when the TMS carries no link or the Doc is not anyone-with-link — and say so in your report.
+
 ## How to use `build_assessment.py` (WA + PP)
 The script lives **in this skill** and runs **in place** — do NOT copy it into the course repo. It auto-detects the course repo root by walking up from its own location to the nearest dir containing a `.git` folder (or both `courseware/` and `assessment/`), and writes the four DOCX into `<repo>/assessment/`. Override with `REPO=/path/to/course` if needed.
 
