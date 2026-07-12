@@ -433,11 +433,18 @@ def build_wa(answers):
     para(doc, "Short-Answer Questions (Knowledge)", size=13, bold=True, color=BRAND, after=4)
     para(doc, "Answer all questions in your own words. Each question tests underpinning knowledge covered in the "
               "course slides.", size=10.5, italic=True, color=GREY, after=8)
+    # Pagination is EXPLICIT — two questions to a page on the paper, one model answer to a
+    # page in the key. Do not swap this for Word's keepNext/cantSplit: Word pushes an
+    # oversized box to the next page, but Google Docs draws the border anyway and prints the
+    # question text and the page footer straight THROUGH it. See SKILL.md → Pagination.
+    per_page = 1 if answers else 2
     for i, (crit, ctx, q, pts) in enumerate(WRITTEN, 1):
         para(doc, f"Question {i}:", size=11.5, bold=True, after=2, before=6)
         para(doc, ctx, size=11, after=3)
         para(doc, f"{q}  ({crit})", size=11, bold=True, after=4)
         answer_box(doc, lines=pts if answers else None)
+        if i % per_page == 0 and i < len(WRITTEN):
+            page_break(doc)
     suffix = A_VER if answers else Q_VER
     name = (f"Answer to WA (SAQ) - {TITLE} - {suffix}.docx" if answers
             else f"WA (SAQ) - {TITLE} - {suffix}.docx")
@@ -461,11 +468,15 @@ def build_pp(answers):
     para(doc, "Practical Problem", size=13, bold=True, color=BRAND, after=4)
     para(doc, "Scenario", size=11.5, bold=True, after=2)
     para(doc, SCENARIO, size=11, after=8)
-    for label, crit, prompt, cap, pts in PRACTICAL:
+    # Practical tasks are long and their boxes are tall, so they get a page each — on the
+    # paper AND in the key. Same rule as the WA: the page break is ours, not the renderer's.
+    for i, (label, crit, prompt, cap, pts) in enumerate(PRACTICAL, 1):
         para(doc, f"{label} ({crit}):", size=11.5, bold=True, after=2, before=6)
         para(doc, prompt, size=11, after=3)
         para(doc, cap, size=10.5, italic=True, color=GREY, after=4)
         answer_box(doc, code=pts if answers else None, height_pt=150)
+        if i < len(PRACTICAL):
+            page_break(doc)
     suffix = A_VER if answers else Q_VER
     name = (f"Answer to PP Assessment - {TITLE} - {suffix}.docx" if answers
             else f"PP Assessment - {TITLE} - {suffix}.docx")

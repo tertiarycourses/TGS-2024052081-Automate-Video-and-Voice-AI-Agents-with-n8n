@@ -59,6 +59,15 @@ The script lives **in this skill** and runs **in place** — do NOT copy it into
 - **Answer document** — the model answers / marking guide: each question/task with "Suggestive answers (not exhaustive):" bullet points (WA cites the slide/module; PP lists the lab build steps and cites the activities).
 - Body is **Arial 11**; every page has the copyright + page-number footer.
 
+## Pagination — decide it yourself, never leave it to the renderer
+
+A question must never be separated from its answer box, and an answer box must never be broken open. **Do not solve this with Word's `keepNext` / `cantSplit`** — solve it with **explicit page breaks**.
+
+- **Question papers: N questions per page** (two is right for a ~1in stem + a 1.5in box). **Answer keys: one model answer per page.** Emit a `page_break()` after every Nth item and the layout is fixed, identical in every renderer.
+- **Why not `cantSplit`.** It *reads* like the correct tool — keep the box whole. Word honours it by pushing the box to the next page. **Google Docs does not**: when the box will not fit the space left, it draws the border anyway and lets the question text **and the page footer print straight through it**. The candidate gets a question sitting inside a box, with "Page 4 of 1" stamped across it. This shipped once. It is not hypothetical.
+
+> **Verify in the renderer the reader actually uses.** LibreOffice (`soffice --convert-to pdf`) passed that broken file cleanly — the defect only appears in Google Docs, which is what a trainer opens from Drive. A PDF render is necessary but **not sufficient**: after pushing, open the DOCX from Drive and look at the page a box lands on. Passing one renderer tells you nothing about another.
+
 ## Criterion tagging
 - Written knowledge items → `K1, K2, …`.
 - Practical/case-study tasks → `LO1, LO2, …` (or `A1, A2, …`). Keep the same numbering across the question paper and its answer key.
@@ -70,7 +79,15 @@ The script lives **in this skill** and runs **in place** — do NOT copy it into
 - [ ] Cover page present (no version-control record); question paper has Trainee Information, Instructions, boxed answers, and For Official Use Only.
 - [ ] Instructions to Candidate carry the clickable LMS submission link (https://lms-tms.tertiaryinfotech.com/), not a Google Drive / email note.
 - [ ] Answer-key wording is guidance ("award the mark where the candidate covers…"), not a rigid script.
+- [ ] **Pagination is explicit** (page breaks, not `cantSplit`/`keepNext`): no question separated from its box, no box with text or the footer printing through it.
+- [ ] **Checked in Google Docs, not only in a PDF render** — open the pushed DOCX from Drive and look at it.
 - [ ] Old/mismatched assessment files (previous versions, other courses) removed from the output folder.
+
+## Re-pushing a corrected paper — the links change
+
+Replacing a file on Drive **mints a new file ID**. The old link keeps resolving — to the archived copy — so nothing looks broken while the LMS quietly points at the superseded paper, and an open browser tab shows the old content forever.
+
+**After any re-push of the assessment to Drive, re-run `/tms-push` immediately** so the LMS record carries the new IDs. When a trainer says "it still shows the old one", check the filename on what they are looking at before assuming the push failed: a copy with no `- vN.N` suffix is the archived original, not a failed upload.
 
 ## Versioning rule (MANDATORY — every update)
 
