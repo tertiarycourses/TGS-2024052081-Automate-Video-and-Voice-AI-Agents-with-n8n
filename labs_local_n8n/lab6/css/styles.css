@@ -1,0 +1,278 @@
+:root {
+  --bg: #0d0f14;
+  --panel: #151922;
+  --panel-2: #1c2130;
+  --line: #2a3142;
+  --text: #e7ebf3;
+  --muted: #8b95a9;
+  --accent: #6ea8ff;
+  --accent-2: #57e0b0;
+  --danger: #ff6b6b;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── top bar ─────────────────────────────────────────────── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #121620, #0d0f14);
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { font-size: 15px; margin: 0; letter-spacing: .2px; }
+.brand .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent));
+  box-shadow: 0 0 12px rgba(110,168,255,.6);
+}
+.tag { color: var(--muted); font-size: 12px; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.badge {
+  font-size: 11px; padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--muted);
+}
+.badge-local { color: var(--accent-2); border-color: rgba(87,224,176,.35); background: rgba(87,224,176,.08); }
+.badge-cloud { color: var(--accent);  border-color: rgba(110,168,255,.35); background: rgba(110,168,255,.08); }
+
+/* ── layout ──────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  padding: 20px;
+  align-items: start;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.panel h2 {
+  font-size: 12px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--muted); margin: 22px 0 10px;
+}
+.panel h2:first-child { margin-top: 0; }
+
+/* ── inputs ──────────────────────────────────────────────── */
+.field { margin-bottom: 10px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.field label b { color: var(--text); font-weight: 600; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+input[type=text], input[type=password], select, textarea {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 8px 10px;
+  font: inherit;
+  outline: none;
+}
+input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(110,168,255,.12);
+}
+textarea { resize: vertical; line-height: 1.55; }
+
+input[type=range] {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 4px; background: var(--line); outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer; border: 2px solid var(--panel);
+}
+input[type=range]:disabled::-webkit-slider-thumb { background: var(--muted); }
+
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.checks label { font-size: 12.5px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+input[type=checkbox] { accent-color: var(--accent); }
+
+.row { display: flex; gap: 8px; margin-top: 8px; }
+.row.between { justify-content: space-between; align-items: center; }
+.row.end { justify-content: flex-end; margin-top: 14px; }
+
+/* ── buttons ─────────────────────────────────────────────── */
+button {
+  font: inherit; font-weight: 600; cursor: pointer;
+  border-radius: 8px; padding: 8px 14px; border: 1px solid transparent;
+  transition: transform .05s ease, background .15s ease, opacity .15s ease;
+}
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+.primary   { background: var(--accent); color: #08101f; }
+.primary:hover:not(:disabled) { background: #86b8ff; }
+.secondary { background: var(--panel-2); color: var(--text); border-color: var(--line); }
+.secondary:hover:not(:disabled) { background: #242b3c; }
+.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+.ghost:hover { color: var(--text); }
+
+/* ── dropzone ────────────────────────────────────────────── */
+.dropzone {
+  display: block; border: 1.5px dashed var(--line); border-radius: var(--radius);
+  padding: 22px; text-align: center; cursor: pointer;
+  background: var(--panel-2); transition: border-color .15s, background .15s;
+}
+.dropzone.small { padding: 14px; }
+.dropzone:hover, .dropzone.over { border-color: var(--accent); background: rgba(110,168,255,.06); }
+.dz-inner strong { display: block; font-size: 13px; }
+.dz-inner span { color: var(--muted); font-size: 12px; }
+.dropzone.has-file { border-style: solid; border-color: rgba(87,224,176,.5); }
+
+/* Dragging a file anywhere over the window lights up the whole app as a target. */
+body.dragging .stage-canvas,
+body.dragging .dropzone { border-color: var(--accent); background-color: rgba(110,168,255,.07); }
+body.dragging::after {
+  content: 'Drop a portrait, an audio file, or a .txt script';
+  position: fixed; inset: auto 0 24px 0; margin: 0 auto; width: max-content;
+  background: var(--accent); color: #08101f; font-weight: 600;
+  padding: 8px 16px; border-radius: 999px; z-index: 100; pointer-events: none;
+}
+
+/* sample portraits */
+.samples { margin-top: 12px; }
+.samples-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.sample-row { display: flex; gap: 8px; margin-top: 6px; }
+.sample {
+  padding: 0; border: 2px solid var(--line); border-radius: 10px;
+  overflow: hidden; background: none; line-height: 0; cursor: pointer;
+  flex: 1; aspect-ratio: 3 / 4;
+}
+.sample:hover { border-color: var(--accent); }
+.sample img { width: 100%; height: 100%; object-fit: cover; }
+
+/* voice cloning */
+.clone { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.clone summary { cursor: pointer; font-size: 12.5px; color: var(--accent); }
+.clone summary:hover { text-decoration: underline; }
+.clone .dropzone { margin: 10px 0; }
+.clone button { width: 100%; }
+
+.file-inline { font-size: 12px; color: var(--accent); cursor: pointer; }
+.file-inline:hover { text-decoration: underline; }
+
+.hint { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+.hint code, code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+
+.status {
+  margin-top: 10px; padding: 8px 10px; border-radius: 8px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  font-size: 12px; color: var(--muted);
+}
+
+/* ── stage ───────────────────────────────────────────────── */
+.stage {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: sticky; top: 76px;
+}
+.stage-canvas {
+  position: relative;
+  background: repeating-conic-gradient(#12151d 0% 25%, #171b25 0% 50%) 50% / 22px 22px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 420px;
+}
+#stage, #hgVideo { max-width: 100%; max-height: 68vh; display: block; }
+#hgVideo { background: #000; }
+/* `display: block` above would otherwise beat the [hidden] attribute, leaving the
+   HeyGen player on screen as a black slab behind the canvas. */
+[hidden] { display: none !important; }
+.stage-empty { position: absolute; color: var(--muted); font-size: 13px; pointer-events: none; }
+.viseme-readout {
+  position: absolute; left: 10px; top: 10px;
+  background: rgba(13,15,20,.75); border: 1px solid var(--line);
+  padding: 4px 9px; border-radius: 999px; font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent-2);
+}
+
+.transport { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.transport .spacer { flex: 1; }
+.meter { width: 140px; height: 6px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+.meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width .06s linear; }
+
+.scrub { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.scrub input { flex: 1; }
+.time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.statusline { color: var(--muted); font-size: 12px; margin: 10px 0 0; min-height: 18px; }
+.statusline.err { color: var(--danger); }
+.statusline.ok  { color: var(--accent-2); }
+
+/* ── dialogs ─────────────────────────────────────────────── */
+dialog {
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; max-width: 640px; width: 92vw;
+}
+dialog::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(2px); }
+dialog h3 { margin: 0 0 6px; font-size: 15px; }
+.face-editor { margin-top: 12px; display: flex; justify-content: center; background: #0b0d12; border-radius: 8px; padding: 8px; }
+#faceCanvas { max-width: 100%; cursor: crosshair; touch-action: none; }
+.help { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+.help li { margin-bottom: 8px; }
+.help b { color: var(--text); }
+.hint-inline { font-weight: 400; color: var(--muted); font-size: 11px; margin-left: 6px; }
+input.from-env { border-color: rgba(87,224,176,.45); }
+input.from-env::placeholder { color: var(--accent-2); }
+.accent { background: linear-gradient(135deg, #57e0b0, #6ea8ff); color: #08101f; }
+.accent:hover:not(:disabled) { filter: brightness(1.1); }
+
+/* ── footer ──────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding: 16px 20px;
+  text-align: center;
+}
+.powered-by { margin: 0; font-size: 12px; color: var(--muted); }
+.powered-by a { color: var(--accent); text-decoration: none; }
+.powered-by a:hover { text-decoration: underline; }
+
+
+/* ── render progress (Wav2Lip / MuseTalk / HeyGen) ───────────────────────── */
+.render-prog { margin: 10px 0 4px; }
+.rp-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: .82rem; margin-bottom: 6px;
+}
+#rpPct { font-variant-numeric: tabular-nums; opacity: .85; }
+.rp-track {
+  height: 8px; border-radius: 999px; overflow: hidden;
+  background: rgba(255, 255, 255, .09);
+}
+.rp-fill {
+  height: 100%; width: 0%; border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #34d399);
+  transition: width .4s cubic-bezier(.4, 0, .2, 1);
+}
+.rp-fill.done  { background: linear-gradient(90deg, #16a34a, #4ade80); }
+.rp-fill.error { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+
+
+/* Loop toggle for the rendered video (off by default — a clip that repeats
+   forever is distracting when you are judging lip sync). */
+.loop-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .85rem; opacity: .8; cursor: pointer; user-select: none;
+}
+.loop-toggle input { cursor: pointer; }

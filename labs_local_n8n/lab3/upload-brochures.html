@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brochure Uploader — Cook &amp; Bake Academy RAG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } },
+    };
+  </script>
+  <style>
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn .3s ease forwards; }
+  </style>
+</head>
+<body class="bg-amber-50/40 text-slate-800 font-sans min-h-screen">
+
+  <div class="max-w-3xl mx-auto px-5 py-10">
+
+    <!-- Title -->
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-600 text-white mb-3">
+        <i data-lucide="chef-hat" class="w-6 h-6"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-900">Course Brochure Uploader</h1>
+      <p class="text-sm text-slate-500 mt-1">Load the Cook &amp; Bake Academy brochures into the CX Agent's vector store, then chat on the website.</p>
+    </header>
+
+    <!-- How it works -->
+    <div class="bg-white border border-amber-100 rounded-2xl p-6 mb-8 shadow-sm">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 text-center">How it works</h2>
+      <div class="flex items-center justify-between gap-2 text-center">
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mb-2"><i data-lucide="files" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">Brochures</p>
+          <p class="text-[11px] text-slate-400">.txt / .pdf files</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mb-2"><i data-lucide="database" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">Vector Store</p>
+          <p class="text-[11px] text-slate-400">Ollama embeddings</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-2"><i data-lucide="bot" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">CX Agent</p>
+          <p class="text-[11px] text-slate-400">gemma4 via Ollama</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mb-2"><i data-lucide="message-circle" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">Website Chat</p>
+          <p class="text-[11px] text-slate-400">customers ask here</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Webhook URL -->
+    <section class="bg-white border border-amber-100 rounded-2xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-amber-600 text-white text-sm font-bold flex items-center justify-center shrink-0">1</span>
+        <h2 class="text-base font-semibold text-slate-900">Brochure upload webhook URL</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-3 ml-10">
+        The n8n <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">brochure-upload</span> webhook of the <strong>CX Agent with RAG</strong> workflow.
+      </p>
+      <div class="ml-10">
+        <input type="url" id="webhookUrl" placeholder="http://localhost:5678/webhook/brochure-upload"
+          class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-sm font-mono text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100 transition" />
+        <p class="text-[11px] text-slate-400 mt-1.5">Saved automatically in your browser.</p>
+      </div>
+    </section>
+
+    <!-- STEP 2: Upload brochures -->
+    <section class="bg-white border border-amber-100 rounded-2xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-amber-600 text-white text-sm font-bold flex items-center justify-center shrink-0">2</span>
+        <h2 class="text-base font-semibold text-slate-900">Select the brochure files</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4 ml-10">Select all 20 brochures from the <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">brochures/</span> folder (multi-select). Text is extracted in your browser and sent in one batch — the store is replaced on every upload, so always send the full set.</p>
+
+      <div class="ml-10">
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-amber-400 bg-slate-50 hover:bg-amber-50/40 rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center gap-2">
+          <input type="file" id="fileInput" accept=".txt,.pdf,text/plain,application/pdf" multiple class="hidden" />
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center"><i data-lucide="upload-cloud" class="w-6 h-6"></i></div>
+          <p class="text-sm font-medium text-slate-700">Drop brochures here, or <span class="text-amber-600 underline">browse</span></p>
+          <p class="text-[11px] text-slate-400">.txt or .pdf · select multiple files at once</p>
+        </div>
+
+        <!-- File list -->
+        <div id="fileList" class="hidden mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4 animate-fade-in">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-semibold text-slate-600"><span id="fileCount">0</span> brochure(s) ready</p>
+            <button onclick="clearFiles()" class="text-[11px] text-rose-500 hover:underline cursor-pointer">Clear all</button>
+          </div>
+          <ul id="fileItems" class="space-y-1 max-h-48 overflow-y-auto text-[12px] font-mono text-slate-600"></ul>
+        </div>
+
+        <button onclick="sendBrochures()" id="btnSend" disabled
+          class="mt-4 w-full py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-lg transition flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Upload to Vector Store</span>
+        </button>
+
+        <div id="status" class="hidden mt-3 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in"></div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Chat on the website -->
+    <section class="bg-white border border-amber-100 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-amber-600 text-white text-sm font-bold flex items-center justify-center shrink-0">3</span>
+        <h2 class="text-base font-semibold text-slate-900">Chat with the CX Agent on the website</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4 ml-10">Open <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">website/index.html</span> and click the chat bubble. The agent answers from the brochures you just uploaded.</p>
+      <div class="ml-10 space-y-2">
+        <div class="bg-sky-50 border border-sky-100 rounded-lg px-4 py-2.5 text-sm text-sky-800 flex items-center gap-2">
+          <i data-lucide="message-circle" class="w-4 h-4 shrink-0"></i>
+          <span>"How much is the sourdough bread course?"</span>
+        </div>
+        <div class="bg-sky-50 border border-sky-100 rounded-lg px-4 py-2.5 text-sm text-sky-800 flex items-center gap-2">
+          <i data-lucide="message-circle" class="w-4 h-4 shrink-0"></i>
+          <span>"Which campus runs the sushi course and how long is it?"</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center mt-8 space-y-1">
+      <p class="text-[11px] text-slate-400">Tertiary Infotech · n8n RAG Module · Lab 3</p>
+      <p class="powered-by text-[11px] text-slate-400">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener" class="text-amber-600 hover:underline">Tertiary Infotech Academy Pte Ltd</a></p>
+    </footer>
+  </div>
+
+  <script>
+    let webhookUrl = localStorage.getItem("brochure_webhook_url") || "http://localhost:5678/webhook/brochure-upload";
+    let files = []; // { name, text }
+
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      const urlInput = document.getElementById("webhookUrl");
+      urlInput.value = webhookUrl;
+      urlInput.addEventListener("input", () => {
+        webhookUrl = urlInput.value.trim();
+        localStorage.setItem("brochure_webhook_url", webhookUrl);
+      });
+
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      dropZone.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", (e) => handleFiles([...e.target.files]));
+      dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("border-amber-400", "bg-amber-50/40"); });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("border-amber-400", "bg-amber-50/40"));
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("border-amber-400", "bg-amber-50/40");
+        handleFiles([...e.dataTransfer.files]);
+      });
+    });
+
+    async function extractText(file) {
+      if (file.name.toLowerCase().endsWith(".txt") || file.type === "text/plain") {
+        return await file.text();
+      }
+      if (file.name.toLowerCase().endsWith(".pdf") || file.type === "application/pdf") {
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        const pages = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          pages.push(content.items.map(it => it.str).join(" "));
+        }
+        return pages.join("\n\n").trim();
+      }
+      return null;
+    }
+
+    async function handleFiles(selected) {
+      for (const file of selected) {
+        try {
+          const text = await extractText(file);
+          if (!text) { showStatus("error", `"${file.name}" is not a .txt or .pdf file, or has no extractable text.`); continue; }
+          // replace if same name re-added
+          files = files.filter(f => f.name !== file.name);
+          files.push({ name: file.name, text });
+        } catch (err) {
+          showStatus("error", `Could not read "${file.name}".`);
+        }
+      }
+      renderFileList();
+    }
+
+    function renderFileList() {
+      const list = document.getElementById("fileList");
+      const items = document.getElementById("fileItems");
+      document.getElementById("fileCount").textContent = files.length;
+      items.innerHTML = files.map(f =>
+        `<li class="flex items-center gap-2"><span class="text-emerald-500">✓</span>${f.name} <span class="text-slate-400">(${f.text.length.toLocaleString()} chars)</span></li>`).join("");
+      list.classList.toggle("hidden", files.length === 0);
+      document.getElementById("btnSend").disabled = files.length === 0;
+    }
+
+    function clearFiles() {
+      files = [];
+      document.getElementById("fileInput").value = "";
+      renderFileList();
+      hideStatus();
+    }
+
+    async function sendBrochures() {
+      if (!webhookUrl) return showStatus("error", "Enter the webhook URL in Step 1 first.");
+      if (!files.length) return showStatus("error", "Select the brochure files first.");
+
+      const btn = document.getElementById("btnSend");
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> <span>Uploading ${files.length} brochure(s)…</span>`;
+      lucide.createIcons();
+
+      // The n8n flow splits body.documents into one vector-store document per brochure
+      const payload = {
+        documents: files.map(f => f.text),
+        filenames: files.map(f => f.name),
+      };
+
+      try {
+        const res = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          showStatus("success", `${files.length} brochure(s) uploaded and embedded. Now chat with the CX Agent on the website (Step 3).`);
+        } else {
+          showStatus("error", `Webhook returned HTTP ${res.status} ${res.statusText}.`);
+        }
+      } catch (err) {
+        showStatus("error", `Could not reach the webhook. Check the URL and that the n8n workflow is active. (${err.message})`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="database" class="w-4 h-4"></i> <span>Upload to Vector Store</span>`;
+        lucide.createIcons();
+      }
+    }
+
+    function showStatus(type, msg) {
+      const el = document.getElementById("status");
+      const styles = {
+        success: "bg-emerald-50 border border-emerald-200 text-emerald-700",
+        error: "bg-rose-50 border border-rose-200 text-rose-700",
+      };
+      const icon = type === "success" ? "check-circle" : "alert-triangle";
+      el.className = `mt-3 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in ${styles[type]}`;
+      el.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 mt-0.5 shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function hideStatus() {
+      document.getElementById("status").classList.add("hidden");
+    }
+  </script>
+</body>
+</html>

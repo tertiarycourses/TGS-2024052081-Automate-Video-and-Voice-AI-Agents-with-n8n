@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aria — Interactive Avatar (in-browser)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+
+  <div id="fileWarning" class="file-warning">
+    ⚠️ Serve this page over <strong>http://localhost:8100</strong> — the microphone is blocked on <code>file://</code>.
+  </div>
+  <script>
+    if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
+  </script>
+
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span> Aria <small>interactive avatar · rendered in your browser</small></div>
+    <div class="head-actions">
+      <span class="badge" id="engineBadge">100% local · free</span>
+      <button class="ghost" onclick="openSettings()">⚙ Settings</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- The avatar -->
+    <section class="panel stage-panel">
+      <div class="stage">
+        <canvas id="stage"></canvas>
+        <div class="stage-empty" id="stageEmpty">
+          <span>🧑‍💼</span>
+          <p>Pick a face, then hold the mic and talk</p>
+        </div>
+        <div class="pill" id="statePill">Idle</div>
+      </div>
+
+      <div class="controls">
+        <button class="mic" id="micBtn" onclick="toggleMic()">
+          <span class="mic-icon">🎙️</span>
+          <span id="micLabel">Hold to talk</span>
+        </button>
+        <button class="ghost" id="stopBtn" onclick="stopAll()" disabled>■ Stop</button>
+      </div>
+
+      <p class="statusline" id="status">Ready. Chrome or Edge required for speech recognition.</p>
+    </section>
+
+    <!-- The conversation -->
+    <section class="panel">
+      <h1>Talk to Aria.<br /><span>She answers in your browser.</span></h1>
+      <p class="lede">
+        Your voice → <strong>speech-to-text</strong> (browser) → <strong>n8n + gemma4</strong> writes the reply →
+        <strong>text-to-speech</strong> (browser) → the mouth is <strong>rendered live</strong> on the photo.
+        No cloud avatar, no credits, no render wait.
+      </p>
+
+      <label class="lbl">Face</label>
+      <div class="faces" id="faces">
+        <button class="face" data-sample="man-glasses"><img src="samples/man-glasses.jpg" alt="" /></button>
+        <button class="face" data-sample="man-headshot"><img src="samples/man-headshot.jpg" alt="" /></button>
+        <label class="face upload">
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <span>＋<br /><small>Your photo</small></span>
+        </label>
+      </div>
+
+      <label class="lbl" for="voice">Voice</label>
+      <select id="voice"></select>
+
+      <div class="chat" id="chat">
+        <div class="msg bot">Hi, I'm Aria. Hold the mic button and ask me about our courses.</div>
+      </div>
+
+      <label class="lbl" for="typed">Or type instead of talking</label>
+      <form class="typed-row" id="typedForm" autocomplete="off">
+        <input id="typed" type="text" placeholder="Ask about a course…" />
+        <button class="primary" type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Tertiary Infotech · n8n Course — Lab 8 · Interactive Avatar (in-browser rendering)
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+
+  <!-- Settings: the learner's own n8n webhook. Nothing is hardcoded. -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card">
+      <h3>⚙ Connect to your n8n</h3>
+      <p class="settings-lede">Paste the <strong>Production</strong> webhook URL of the <em>Lab 8 – Interactive Avatar Brain</em> flow. Saved in this browser only.</p>
+      <label class="lbl" for="webhookUrl">n8n webhook URL</label>
+      <input class="settings-input" id="webhookUrl" type="url" placeholder="http://localhost:5678/webhook/avatar-chat" spellcheck="false" />
+      <div class="settings-actions">
+        <button class="ghost" onclick="closeSettings()">Cancel</button>
+        <button class="primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/visemes.js"></script>
+  <script src="js/face.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="main.js?v=2"></script>
+</body>
+</html>

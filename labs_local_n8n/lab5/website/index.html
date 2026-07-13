@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediRefill — Ask Ava, the Prescription Refill Voice Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- file:// blocks module scripts and the microphone, so every button would silently die. -->
+  <div id="fileWarning" class="file-warning">
+    ⚠️ Serve this page over <strong>http://localhost</strong> — buttons and the microphone do not work on <code>file://</code>.
+  </div>
+  <script>
+    if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
+  </script>
+
+  <!-- Shown until the learner adds their own Vapi keys. Pinned bottom so it never covers the nav. -->
+  <div id="setupBanner" class="setup-banner">
+    ⚙️ Not connected to Vapi yet — click <strong>⚙ Settings</strong> and add your <strong>public key</strong> and <strong>assistant ID</strong>.
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">💊</span> Medi<span>Refill</span>
+      </a>
+      <div class="nav-links">
+        <a href="#faq">FAQ</a>
+        <a href="#topics">Topics</a>
+        <a href="#how">How it works</a>
+        <button class="btn btn-outline" onclick="openSettings()"><span class="gear">⚙</span> Settings</button>
+        <button class="btn btn-primary" onclick="startVoiceCall()">🎙️ Ask Ava</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Voice support, powered by Vapi</p>
+        <h1>Questions about your refill?<br /><span>Just ask Ava.</span></h1>
+        <p class="lede">
+          Ava is MediRefill's prescription refill assistant. Ask about refills, delivery, repeat prescriptions,
+          payment or collection — she answers out loud, in seconds, and never guesses.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="startVoiceCall()">🎙️ Ask Ava by voice</button>
+          <a class="btn btn-ghost btn-lg" href="#faq">Read the FAQ</a>
+        </div>
+        <div class="stats">
+          <div><strong>6</strong><span>FAQ topics</span></div>
+          <div><strong>&lt;2s</strong><span>to first answer</span></div>
+          <div><strong>0</strong><span>medical advice</span></div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="hc-head">
+          <span class="avatar">🎧</span>
+          <div>
+            <strong>Ava</strong>
+            <small><i class="dot"></i> refill voice assistant</small>
+          </div>
+        </div>
+        <div class="bubble bubble-user">“When will my refill arrive?”</div>
+        <div class="bubble bubble-ava">“Standard delivery is two to three working days, and it's free above sixty dollars.”</div>
+        <div class="bubble bubble-user">“Can I take two instead of one?”</div>
+        <div class="bubble bubble-ava">“I'm not able to advise on medicines. I'll have our pharmacist call you back — would that be alright?”</div>
+        <p class="hc-foot">Grounded in the FAQ below — and she refuses to give medical advice.</p>
+      </aside>
+    </div>
+  </header>
+
+  <!-- The knowledge Ava answers from. Same text goes in the Vapi assistant prompt. -->
+  <section class="section" id="faq">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <p class="section-sub">Ava answers from exactly these six topics — and says so when a question falls outside them.</p>
+
+    <div class="faq-list" id="faqList">
+      <details open>
+        <summary>How do I order a refill, and how long does it take?</summary>
+        <p>Give us your <strong>prescription number</strong> and the last four characters of your NRIC. Your order is prepared
+        within <strong>1 working day</strong> once the pharmacist has checked it. We refill <strong>repeat prescriptions only</strong> —
+        a new prescription must come from your doctor.</p>
+      </details>
+      <details>
+        <summary>How long does delivery take, and what does it cost?</summary>
+        <p>Standard delivery is <strong>2 to 3 working days</strong>, islandwide in Singapore. Delivery is
+        <strong>free above $60</strong>; below that it is a flat $5. Refrigerated medicines are sent in a cold pack and must be
+        handed to a person — they are never left at the door.</p>
+      </details>
+      <details>
+        <summary>How long is a repeat prescription valid?</summary>
+        <p>A repeat prescription is valid for <strong>6 months or 3 refills</strong>, whichever comes first. After that your
+        doctor must review it before we can dispense again. <strong>Controlled medicines</strong> cannot be refilled over the
+        phone and must be collected in person.</p>
+      </details>
+      <details>
+        <summary>Which payment methods do you accept?</summary>
+        <p>PayNow, Visa, Mastercard, Apple Pay and Google Pay. We do not accept cash on delivery. We do not process
+        insurance or Medisave claims, but we issue a receipt you can claim with.</p>
+      </details>
+      <details>
+        <summary>When can I collect, and what do I bring?</summary>
+        <p>The pharmacy is open <strong>Monday to Saturday, 9am to 7pm</strong>, closed Sunday. A prepared order is held for
+        <strong>7 days</strong>, then returned to stock. Bring your order number and photo identification.</p>
+      </details>
+      <details>
+        <summary>Can Ava tell me how to take my medicine?</summary>
+        <p><strong>No — and this is deliberate.</strong> Ava will not advise on a dose, a side effect, a substitute or whether
+        a medicine is safe for you. She offers a <strong>pharmacist callback</strong> instead, within one working day. A confident
+        wrong answer from a pharmacy is not an inconvenience; it is a safety incident.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="topics">
+    <h2 class="section-title">What you can ask</h2>
+    <p class="section-sub">Say it however you like — Ava matches meaning, not keywords.</p>
+    <div class="topic-grid">
+      <button class="topic" onclick="startVoiceCall()"><span>💊</span><strong>Refills</strong><small>“Reorder my prescription.”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>📦</span><strong>Delivery</strong><small>“When will it arrive?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🔁</span><strong>Repeat scripts</strong><small>“How many refills left?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>💳</span><strong>Payment</strong><small>“Do you take PayNow?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🏪</span><strong>Collection</strong><small>“When are you open?”</small></button>
+      <button class="topic" onclick="startVoiceCall()"><span>🚫</span><strong>Medical advice</strong><small>“Watch her refuse.”</small></button>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <h2 class="section-title">How the voice agent works</h2>
+    <div class="how-grid">
+      <div class="how-step"><span class="n">1</span><strong>Browser</strong><p>The page starts a WebRTC call with the <strong>Vapi Web SDK</strong> using your <em>public</em> key.</p></div>
+      <div class="how-step"><span class="n">2</span><strong>Vapi</strong><p>Vapi runs speech-to-text and the voice, then calls <strong>your n8n workflow</strong> as its Custom LLM.</p></div>
+      <div class="how-step"><span class="n">3</span><strong>Guardrail</strong><p>The agent answers only from the FAQ, and refuses every request for medical advice.</p></div>
+    </div>
+    <p class="how-note">
+      A <strong>public</strong> key is designed to be visible in the browser and can only start calls.
+      Your <strong>private</strong> key manages assistants and must never appear in front-end code.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 MediRefill — a training storefront for the Tertiary Infotech n8n course (Lab 5).</p>
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+
+  <!-- Settings: the learner's own Vapi public key + assistant ID. Nothing is hardcoded. -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card modal-card-wide">
+      <h3>⚙ Connect to your Vapi assistant</h3>
+      <p class="settings-lede">Both values come from the Vapi dashboard. They are saved in <strong>this browser only</strong>.</p>
+
+      <label class="settings-label" for="settingsKey">Vapi <strong>public</strong> key <span>(required — Dashboard → API Keys)</span></label>
+      <input class="settings-input" type="text" id="settingsKey" placeholder="00000000-0000-0000-0000-000000000000" spellcheck="false" />
+
+      <label class="settings-label" for="settingsAssistant">Assistant ID <span>(required — Dashboard → Assistants)</span></label>
+      <input class="settings-input" type="text" id="settingsAssistant" placeholder="00000000-0000-0000-0000-000000000000" spellcheck="false" />
+
+      <p class="settings-warn">⚠️ Never paste your <strong>private</strong> key here — anything in this page is visible to every visitor.</p>
+
+      <div class="settings-actions">
+        <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice call modal -->
+  <div class="modal" id="voiceModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="pulse" id="pulse"><span>🎙️</span></div>
+      <h3>Ava — Prescription Refill Assistant</h3>
+      <p id="voiceStatus">Connecting…</p>
+      <p class="timer" id="voiceTimer">00:00</p>
+      <div class="transcript" id="transcript"></div>
+      <button class="btn btn-danger" onclick="endVoiceCall()">End call</button>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+{
+  "id": "LabNineLiveAvatar",
+  "name": "Lab 9 - Interactive Avatar Session (LiveAvatar)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "liveavatar-session",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -260,
+        0
+      ],
+      "id": "f0000001-0000-4000-8000-000000000001",
+      "name": "Session Webhook",
+      "webhookId": "f0000002-0000-4000-8000-000000000002"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.liveavatar.com/v2/embeddings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ avatar_id: $json.body.avatar_id || '513fd1b7-7ef9-466d-9af2-344e51eeb833', context_id: $json.body.context_id || '16649c93-338e-4dac-8540-937bcf441fad', orientation: $json.body.orientation || 'horizontal' }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f0000003-0000-4000-8000-000000000003",
+      "name": "LiveAvatar: Create Embed",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "56DfJTVwM2VXyfkP",
+          "name": "LiveAvatar API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// The website gets a short-lived EMBED URL \u2014 never the API key. Same rule as the\n// ElevenLabs and Veo labs: the secret lives in n8n, the browser gets a ticket.\nconst r = $input.first().json;\nconst d = r.data || {};\n\nif (!d.url) {\n  return [{ json: {\n    ok: false,\n    error: r.message || 'LiveAvatar did not return an embed URL. Check the API key and the avatar id.',\n  } }];\n}\n\nreturn [{ json: {\n  ok: true,\n  embed_id: d.embed_id,\n  url: d.url,\n  orientation: d.orientation,\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "f0000004-0000-4000-8000-000000000004",
+      "name": "Build Response"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        460,
+        0
+      ],
+      "id": "f0000005-0000-4000-8000-000000000005",
+      "name": "Respond (embed url)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "liveavatar-contexts",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -260,
+        260
+      ],
+      "id": "f0000006-0000-4000-8000-000000000006",
+      "name": "Contexts Webhook",
+      "webhookId": "f0000007-0000-4000-8000-000000000007"
+    },
+    {
+      "parameters": {
+        "url": "https://api.liveavatar.com/v1/contexts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        260
+      ],
+      "id": "f0000008-0000-4000-8000-000000000008",
+      "name": "LiveAvatar: List Contexts",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "56DfJTVwM2VXyfkP",
+          "name": "LiveAvatar API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// A context is the avatar's PERSONA (its prompt + knowledge). The learner picks one\n// on the page, so they can see the same face behave like a coach or a recruiter.\nconst rows = ($input.first().json.data || {}).results || [];\nreturn [{ json: { contexts: rows.map((c) => ({ id: c.id, name: c.name })) } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        260
+      ],
+      "id": "f0000009-0000-4000-8000-000000000009",
+      "name": "Simplify Contexts"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        460,
+        260
+      ],
+      "id": "f0000010-0000-4000-8000-000000000010",
+      "name": "Respond (contexts)"
+    }
+  ],
+  "connections": {
+    "Session Webhook": {
+      "main": [
+        [
+          {
+            "node": "LiveAvatar: Create Embed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiveAvatar: Create Embed": {
+      "main": [
+        [
+          {
+            "node": "Build Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Response": {
+      "main": [
+        [
+          {
+            "node": "Respond (embed url)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexts Webhook": {
+      "main": [
+        [
+          {
+            "node": "LiveAvatar: List Contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LiveAvatar: List Contexts": {
+      "main": [
+        [
+          {
+            "node": "Simplify Contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simplify Contexts": {
+      "main": [
+        [
+          {
+            "node": "Respond (contexts)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

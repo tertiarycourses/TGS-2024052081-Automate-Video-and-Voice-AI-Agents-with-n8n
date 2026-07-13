@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Support RAG Demo — PDF → Vector Store → Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } },
+    };
+  </script>
+  <style>
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn .3s ease forwards; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+  <div class="max-w-3xl mx-auto px-5 py-10">
+
+    <!-- Title -->
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white mb-3">
+        <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-900">IT Support RAG Demo</h1>
+      <p class="text-sm text-slate-500 mt-1">Upload a PDF into the vector store, then ask questions in the built-in IT Support chatbot below.</p>
+    </header>
+
+    <!-- How RAG works: visual flow -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 text-center">How this RAG works</h2>
+      <div class="flex items-center justify-between gap-2 text-center">
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mb-2"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">PDF</p>
+          <p class="text-[11px] text-slate-400">your document</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mb-2"><i data-lucide="database" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">Vector Store</p>
+          <p class="text-[11px] text-slate-400">text + embeddings</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-2"><i data-lucide="bot" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">AI Agent</p>
+          <p class="text-[11px] text-slate-400">retrieves + answers</p>
+        </div>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
+        <div class="flex-1">
+          <div class="mx-auto w-11 h-11 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center mb-2"><i data-lucide="message-circle" class="w-5 h-5"></i></div>
+          <p class="text-xs font-semibold text-slate-700">Chatbot</p>
+          <p class="text-[11px] text-slate-400">you chat here</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Webhook URL -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0">1</span>
+        <h2 class="text-base font-semibold text-slate-900">Enter your upload webhook URL</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-3 ml-10">
+        Paste the n8n <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">rag-upload</span> webhook URL. This is where the PDF text gets sent to fill the vector store.
+      </p>
+      <div class="ml-10">
+        <div class="flex gap-2">
+          <input type="url" id="webhookUrl" placeholder="https://n8n.tertiarytraining.com/webhook/rag-upload"
+            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-sm font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" />
+          <button onclick="testWebhook()" id="btnTest"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition flex items-center gap-1.5 cursor-pointer shrink-0">
+            <i data-lucide="activity" class="w-4 h-4"></i><span>Test</span>
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1.5">Saved automatically in your browser.</p>
+        <div id="testStatus" class="hidden mt-2.5 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in"></div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Upload PDF -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0">2</span>
+        <h2 class="text-base font-semibold text-slate-900">Upload a PDF to the vector store</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-4 ml-10">The PDF text is extracted in your browser and sent to the webhook, which embeds and stores it.</p>
+
+      <div class="ml-10">
+        <!-- Drop zone -->
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50 hover:bg-indigo-50/40 rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center gap-2">
+          <input type="file" id="fileInput" accept=".pdf,application/pdf" class="hidden" />
+          <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><i data-lucide="upload-cloud" class="w-6 h-6"></i></div>
+          <p class="text-sm font-medium text-slate-700">Drop a PDF here, or <span class="text-indigo-600 underline">browse</span></p>
+          <p class="text-[11px] text-slate-400">Max 20 MB · text extracted automatically</p>
+        </div>
+
+        <!-- Selected file preview -->
+        <div id="fileCard" class="hidden mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4 animate-fade-in">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+              <div class="min-w-0">
+                <p id="fileName" class="text-sm font-semibold text-slate-800 truncate"></p>
+                <p id="fileMeta" class="text-[11px] text-slate-400 font-mono"></p>
+              </div>
+            </div>
+            <button onclick="clearFile()" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-slate-100 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+          </div>
+          <details class="mt-3">
+            <summary class="text-[11px] text-indigo-600 cursor-pointer select-none">Preview extracted text</summary>
+            <pre id="filePreview" class="mt-2 text-[11px] text-slate-600 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto bg-white border border-slate-200 rounded-lg p-3"></pre>
+          </details>
+        </div>
+
+        <!-- Send button -->
+        <button onclick="sendToVectorStore()" id="btnSend" disabled
+          class="mt-4 w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-lg transition flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Send to Vector Store</span>
+        </button>
+
+        <!-- Status -->
+        <div id="status" class="hidden mt-3 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in"></div>
+      </div>
+    </section>
+
+    <!-- STEP 3: IT Support Chatbot -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0">3</span>
+        <h2 class="text-base font-semibold text-slate-900">Ask the IT Support chatbot</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-3 ml-10">Ask about the PDF you uploaded. The AI Agent retrieves the relevant text from the vector store and answers right here.</p>
+
+      <div class="ml-10">
+        <!-- Chat webhook URL -->
+        <div class="flex gap-2 mb-4">
+          <input type="url" id="chatWebhookUrl" placeholder="https://n8n.tertiarytraining.com/webhook/rag-chat"
+            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" />
+        </div>
+
+        <!-- Chat window -->
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <div class="bg-indigo-600 text-white px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><i data-lucide="headset" class="w-4 h-4"></i></div>
+            <div>
+              <p class="text-sm font-semibold leading-tight">IT Support Assistant</p>
+              <p class="text-[11px] text-indigo-200 leading-tight">Answers from your uploaded documents</p>
+            </div>
+          </div>
+          <div id="chatMessages" class="h-80 overflow-y-auto bg-slate-50 p-4 space-y-3">
+            <div class="flex gap-2 items-start">
+              <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5"></i></div>
+              <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-3.5 py-2.5 text-sm text-slate-700 max-w-[85%]">
+                Hi! I'm your IT Support assistant. Upload a PDF above, then ask me anything about it — e.g. "What is the password reset policy?"
+              </div>
+            </div>
+          </div>
+          <div id="chatSuggest" class="border-t border-slate-200 bg-white px-3 pt-3 pb-1 flex flex-wrap gap-2">
+            <button onclick="askSuggestion(this)" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 rounded-full px-3 py-1.5 transition cursor-pointer">How do I reset my password?</button>
+            <button onclick="askSuggestion(this)" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 rounded-full px-3 py-1.5 transition cursor-pointer">What is the wifi policy?</button>
+            <button onclick="askSuggestion(this)" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 rounded-full px-3 py-1.5 transition cursor-pointer">Who do I contact for IT support?</button>
+            <button onclick="askSuggestion(this)" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 rounded-full px-3 py-1.5 transition cursor-pointer">Summarise the uploaded document</button>
+          </div>
+          <div class="border-t border-slate-200 bg-white p-3 flex gap-2">
+            <input type="text" id="chatInput" placeholder="Type your question…"
+              class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" />
+            <button onclick="sendChat()" id="btnChat"
+              class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed shrink-0">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center mt-8 space-y-1">
+      <p class="text-[11px] text-slate-400">Tertiary Infotech · n8n RAG Module</p>
+      <p class="powered-by text-[11px] text-slate-400">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">Tertiary Infotech Academy Pte Ltd</a></p>
+      <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+  </div>
+
+  <script>
+    const DEFAULT_UPLOAD_URL = "https://n8n.tertiarytraining.com/webhook/rag-upload";
+    const DEFAULT_CHAT_URL = "https://n8n.tertiarytraining.com/webhook/rag-chat";
+    // This is the REMOTE build. Purge any localhost URL left in the browser by the
+    // local build of this lab, otherwise the page keeps calling an n8n that is not there.
+    function savedUrl(key, fallback) {
+      const v = localStorage.getItem(key);
+      if (!v || v.includes("localhost:5678")) { localStorage.setItem(key, fallback); return fallback; }
+      return v;
+    }
+    let webhookUrl = savedUrl("rag_webhook_url", DEFAULT_UPLOAD_URL);
+    let chatUrl = savedUrl("rag_chat_url", DEFAULT_CHAT_URL);
+    const sessionId = sessionStorage.getItem("rag_session") || (() => {
+      const id = "web-" + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem("rag_session", id);
+      return id;
+    })();
+    let currentFile = null; // { name, size, text }
+
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      const urlInput = document.getElementById("webhookUrl");
+      if (webhookUrl) urlInput.value = webhookUrl;
+      urlInput.addEventListener("input", () => {
+        webhookUrl = urlInput.value.trim();
+        localStorage.setItem("rag_webhook_url", webhookUrl);
+      });
+
+      const chatUrlInput = document.getElementById("chatWebhookUrl");
+      chatUrlInput.value = chatUrl;
+      chatUrlInput.addEventListener("input", () => {
+        chatUrl = chatUrlInput.value.trim();
+        localStorage.setItem("rag_chat_url", chatUrl);
+      });
+      document.getElementById("chatInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+      });
+
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      dropZone.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+      dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("border-indigo-400", "bg-indigo-50/40"); });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("border-indigo-400", "bg-indigo-50/40"));
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("border-indigo-400", "bg-indigo-50/40");
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+      });
+    });
+
+    async function handleFile(file) {
+      const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type === "application/pdf";
+      if (!isPdf) return showStatus("error", `"${file.name}" is not a PDF.`);
+      if (file.size > 20 * 1024 * 1024) return showStatus("error", `"${file.name}" exceeds the 20 MB limit.`);
+
+      showFileCard(file.name, file.size, "Extracting text…");
+      document.getElementById("btnSend").disabled = true;
+
+      let text = "";
+      try {
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        const pages = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          pages.push(content.items.map(it => it.str).join(" "));
+        }
+        text = pages.join("\n\n").trim();
+      } catch (err) {
+        console.error(err);
+        return showStatus("error", `Could not read text from "${file.name}".`);
+      }
+
+      if (!text) return showStatus("error", "No extractable text found in this PDF (it may be scanned images).");
+
+      currentFile = { name: file.name, size: file.size, text };
+      document.getElementById("filePreview").textContent = text.slice(0, 4000) + (text.length > 4000 ? "\n…" : "");
+      document.getElementById("fileMeta").textContent = `${(file.size / 1024).toFixed(0)} KB · ${text.length.toLocaleString()} chars extracted`;
+      document.getElementById("btnSend").disabled = false;
+      hideStatus();
+    }
+
+    function showFileCard(name, size, meta) {
+      document.getElementById("fileCard").classList.remove("hidden");
+      document.getElementById("fileName").textContent = name;
+      document.getElementById("fileMeta").textContent = meta;
+      lucide.createIcons();
+    }
+
+    function clearFile() {
+      currentFile = null;
+      document.getElementById("fileCard").classList.add("hidden");
+      document.getElementById("fileInput").value = "";
+      document.getElementById("btnSend").disabled = true;
+      hideStatus();
+    }
+
+    async function sendToVectorStore() {
+      if (!webhookUrl) return showStatus("error", "Enter your webhook URL in Step 1 first.");
+      if (!currentFile) return showStatus("error", "Upload a PDF first.");
+
+      const btn = document.getElementById("btnSend");
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> <span>Sending…</span>`;
+      lucide.createIcons();
+
+      // n8n flow reads body.documents[0] as the document text string
+      const payload = { documents: [currentFile.text], filename: currentFile.name };
+
+      try {
+        const res = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          showStatus("success", `"${currentFile.name}" added to the vector store. Now ask the IT Support chatbot about it (Step 3).`);
+        } else {
+          showStatus("error", `Webhook returned HTTP ${res.status} ${res.statusText}.`);
+        }
+      } catch (err) {
+        showStatus("error", `Could not reach the webhook. Check the URL and that the n8n workflow is active. (${err.message})`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="database" class="w-4 h-4"></i> <span>Send to Vector Store</span>`;
+        lucide.createIcons();
+      }
+    }
+
+    function showStatus(type, msg) {
+      const el = document.getElementById("status");
+      const styles = {
+        success: "bg-emerald-50 border border-emerald-200 text-emerald-700",
+        error: "bg-rose-50 border border-rose-200 text-rose-700",
+      };
+      const icon = type === "success" ? "check-circle" : "alert-triangle";
+      el.className = `mt-3 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in ${styles[type]}`;
+      el.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 mt-0.5 shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function hideStatus() {
+      document.getElementById("status").classList.add("hidden");
+    }
+
+    async function testWebhook() {
+      if (!webhookUrl) return showTestStatus("error", "Enter your webhook URL first.");
+      const btn = document.getElementById("btnTest");
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i><span>Testing…</span>`;
+      lucide.createIcons();
+      try {
+        const res = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documents: ["connection test"], test: true }),
+        });
+        if (res.ok) showTestStatus("success", `Connected — webhook responded HTTP ${res.status}.`);
+        else showTestStatus("error", `Reached webhook but got HTTP ${res.status} ${res.statusText}.`);
+      } catch (err) {
+        showTestStatus("error", `Could not reach the webhook. Check the URL and that the workflow is active.`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="activity" class="w-4 h-4"></i><span>Test</span>`;
+        lucide.createIcons();
+      }
+    }
+
+    function appendChatMessage(role, text) {
+      const box = document.getElementById("chatMessages");
+      const wrap = document.createElement("div");
+      if (role === "user") {
+        wrap.className = "flex justify-end animate-fade-in";
+        wrap.innerHTML = `<div class="bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap"></div>`;
+        wrap.firstChild.textContent = text;
+      } else {
+        wrap.className = "flex gap-2 items-start animate-fade-in";
+        wrap.innerHTML = `<div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5"></i></div><div class="bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-3.5 py-2.5 text-sm text-slate-700 max-w-[85%] whitespace-pre-wrap"></div>`;
+        wrap.lastChild.textContent = text;
+      }
+      box.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+      lucide.createIcons();
+      return wrap;
+    }
+
+    function askSuggestion(btn) {
+      document.getElementById("chatInput").value = btn.textContent;
+      sendChat();
+    }
+
+    async function sendChat() {
+      const input = document.getElementById("chatInput");
+      const question = input.value.trim();
+      if (!question) return;
+      if (!chatUrl) return appendChatMessage("bot", "Please enter the chat webhook URL above first.");
+      document.getElementById("chatSuggest").classList.add("hidden");
+
+      input.value = "";
+      appendChatMessage("user", question);
+      const typing = appendChatMessage("bot", "…thinking");
+      const btn = document.getElementById("btnChat");
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(chatUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chatInput: question, sessionId }),
+        });
+        const data = await res.json().catch(() => ({}));
+        typing.remove();
+        if (res.ok && data.output) {
+          appendChatMessage("bot", data.output);
+        } else {
+          appendChatMessage("bot", `Sorry, something went wrong (HTTP ${res.status}). Check that the n8n workflow is active.`);
+        }
+      } catch (err) {
+        typing.remove();
+        appendChatMessage("bot", "Could not reach the chatbot webhook. Check the URL and that the n8n workflow is active.");
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    function showTestStatus(type, msg) {
+      const el = document.getElementById("testStatus");
+      const styles = {
+        success: "bg-emerald-50 border border-emerald-200 text-emerald-700",
+        error: "bg-rose-50 border border-rose-200 text-rose-700",
+      };
+      const icon = type === "success" ? "check-circle" : "alert-triangle";
+      el.className = `mt-2.5 text-sm rounded-lg px-3.5 py-2.5 flex items-start gap-2 animate-fade-in ${styles[type]}`;
+      el.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 mt-0.5 shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove("hidden");
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

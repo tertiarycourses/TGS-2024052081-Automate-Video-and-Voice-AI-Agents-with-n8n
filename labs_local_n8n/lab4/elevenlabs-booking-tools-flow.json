@@ -1,0 +1,310 @@
+{
+  "name": "Lab 4 - ElevenLabs Booking Tools (Google Calendar)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check-availability",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -220,
+        -160
+      ],
+      "id": "a1111111-1111-4111-8111-111111111111",
+      "name": "Webhook - check_availability",
+      "webhookId": "b1111111-1111-4111-8111-111111111111"
+    },
+    {
+      "parameters": {
+        "jsCode": "// An ElevenLabs server tool POSTs its parameters as a flat JSON body:\n// { service, date, time }. (`body.args ?? body` below also accepts the nested\n// shape, so the same flow still works if you test it with a wrapped payload.)\n// Turn the caller's words into a concrete 1-hour slot in the salon timezone.\nconst TZ_OFFSET = '+08:00';            // Singapore\nconst OPEN_HOUR = 8;                   // 8:00 AM\nconst CLOSE_HOUR = 21;                 // 9:00 PM (last slot starts 20:00)\n\nconst body = $input.first().json.body ?? {};\nconst args = body.args ?? body;        // tolerate a flat test payload\n\nconst service = (args.service || 'Appointment').toString();\nconst date = (args.date || '').toString();   // expected YYYY-MM-DD\nconst time = (args.time || '').toString();   // expected HH:MM (24h)\n\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || !/^\\d{2}:\\d{2}$/.test(time)) {\n  return [{ json: { valid: false, service, date, time,\n    speak: 'I did not catch the day and time. What day and what time would you like?' } }];\n}\n\nconst start = `${date}T${time}:00${TZ_OFFSET}`;\nconst end = new Date(new Date(start).getTime() + 60 * 60 * 1000).toISOString();\nconst hour = Number(time.slice(0, 2));\n\n// Sunday = closed; outside opening hours = closed.\nconst dow = new Date(start).getDay();\nif (dow === 0 || hour < OPEN_HOUR || hour >= CLOSE_HOUR) {\n  return [{ json: { valid: false, service, date, time, start, end,\n    speak: 'We are open Monday to Saturday, eight in the morning to nine at night. Would another time work?' } }];\n}\n\nreturn [{ json: { valid: true, service, date, time, start, end } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -160
+      ],
+      "id": "a2222222-2222-4222-8222-222222222222",
+      "name": "Parse Slot"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        -160
+      ],
+      "id": "a3333333-3333-4333-8333-333333333333",
+      "name": "Slot understood?"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list",
+          "cachedResultName": "primary"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $json.start }}",
+        "timeMax": "={{ $json.end }}",
+        "options": {
+          "singleEvents": true
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        -260
+      ],
+      "id": "a4444444-4444-4444-8444-444444444444",
+      "name": "Google Calendar - Busy?",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// The Calendar node returns one item per event in the window (none = free).\n// alwaysOutputData gives us a single empty item when there are no events.\nconst events = $input.all().filter(i => i.json && i.json.id);\nconst slot = $('Parse Slot').first().json;\nconst free = events.length === 0;\n\nconst spokenTime = new Date(slot.start).toLocaleTimeString('en-SG', {\n  hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Singapore',\n});\n\nreturn [{ json: {\n  available: free,\n  service: slot.service,\n  date: slot.date,\n  time: slot.time,\n  start: slot.start,\n  end: slot.end,\n  // `speak` is what Nina reads out. Keep it one short sentence.\n  speak: free\n    ? `Yes, ${spokenTime} on ${slot.date} is free for a ${slot.service}. Shall I book it?`\n    : `Sorry, ${spokenTime} is already taken. Would an hour earlier or later work?`,\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        -260
+      ],
+      "id": "a5555555-5555-4555-8555-555555555555",
+      "name": "Availability Answer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        900,
+        -160
+      ],
+      "id": "a6666666-6666-4666-8666-666666666666",
+      "name": "Respond - availability"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "book-appointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -220,
+        220
+      ],
+      "id": "b2222222-2222-4222-8222-222222222222",
+      "name": "Webhook - book_appointment",
+      "webhookId": "b3333333-3333-4333-8333-333333333333"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The ElevenLabs book_appointment tool POSTs { service, date, time, name, phone }.\nconst TZ_OFFSET = '+08:00';\nconst body = $input.first().json.body ?? {};\nconst args = body.args ?? body;\n\nconst service = (args.service || 'Appointment').toString();\nconst date = (args.date || '').toString();\nconst time = (args.time || '').toString();\nconst name = (args.name || 'Guest').toString();\nconst phone = (args.phone || '').toString();\n\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || !/^\\d{2}:\\d{2}$/.test(time)) {\n  return [{ json: { valid: false,\n    speak: 'I still need the day and the time before I can book that.' } }];\n}\n\nconst start = `${date}T${time}:00${TZ_OFFSET}`;\nconst end = new Date(new Date(start).getTime() + 60 * 60 * 1000).toISOString();\n\nreturn [{ json: { valid: true, service, date, time, name, phone, start, end,\n  summary: `${service} - ${name}`,\n  description: `Booked by Nina (ElevenLabs voice agent).\\nService: ${service}\\nCustomer: ${name}\\nPhone: ${phone}` } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        220
+      ],
+      "id": "b4444444-4444-4444-8444-444444444444",
+      "name": "Build Event"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list",
+          "cachedResultName": "primary"
+        },
+        "start": "={{ $json.start }}",
+        "end": "={{ $json.end }}",
+        "additionalFields": {
+          "summary": "={{ $json.summary }}",
+          "description": "={{ $json.description }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        220
+      ],
+      "id": "b5555555-5555-4555-8555-555555555555",
+      "name": "Google Calendar - Create Event"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Confirm back to ElevenLabs. The whole JSON is handed to the agent; `speak` is\n// the line it reads aloud.\nconst ev = $input.first().json;\nconst slot = $('Build Event').first().json;\n\nconst spokenTime = new Date(slot.start).toLocaleTimeString('en-SG', {\n  hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Singapore',\n});\n\nreturn [{ json: {\n  booked: true,\n  eventId: ev.id ?? null,\n  htmlLink: ev.htmlLink ?? null,\n  speak: `Done. I've booked your ${slot.service} on ${slot.date} at ${spokenTime} under ${slot.name}. See you then!`,\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        220
+      ],
+      "id": "b6666666-6666-4666-8666-666666666666",
+      "name": "Booking Answer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        900,
+        220
+      ],
+      "id": "b7777777-7777-4777-8777-777777777777",
+      "name": "Respond - booking"
+    }
+  ],
+  "connections": {
+    "Webhook - check_availability": {
+      "main": [
+        [
+          {
+            "node": "Parse Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Slot": {
+      "main": [
+        [
+          {
+            "node": "Slot understood?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slot understood?": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Busy?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Busy?": {
+      "main": [
+        [
+          {
+            "node": "Availability Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Availability Answer": {
+      "main": [
+        [
+          {
+            "node": "Respond - availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - book_appointment": {
+      "main": [
+        [
+          {
+            "node": "Build Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Event": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Create Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Create Event": {
+      "main": [
+        [
+          {
+            "node": "Booking Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Booking Answer": {
+      "main": [
+        [
+          {
+            "node": "Respond - booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

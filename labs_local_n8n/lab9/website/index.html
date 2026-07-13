@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova — Interactive Avatar (HeyGen LiveAvatar)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+
+  <div id="fileWarning" class="file-warning">
+    ⚠️ Serve this page over <strong>http://localhost:8099</strong> — the microphone is blocked on <code>file://</code>.
+  </div>
+  <script>
+    if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
+  </script>
+
+  <header class="topbar">
+    <div class="brand">🗣️ Nova — Interactive Avatar</div>
+    <div class="sub">HeyGen LiveAvatar · the session is minted by n8n, so the API key never reaches this page</div>
+  </header>
+
+  <main class="wrap">
+    <section class="stage">
+      <div class="avatar-frame" id="avatarFrame">
+        <div class="placeholder" id="placeholder">
+          <div class="dot"></div>
+          <p>Press <strong>Start session</strong> — n8n will mint a live avatar for you.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="startBtn" onclick="startSession()">▶ Start session</button>
+        <button class="btn ghost" id="endBtn" onclick="endSession()" disabled>■ End session</button>
+      </div>
+      <p class="statusline" id="status">Ready. A live session costs HeyGen credits.</p>
+    </section>
+
+    <aside class="panel">
+      <h2>Interactive Avatar</h2>
+      <p class="muted">
+        A LiveAvatar streams real-time video and talks back — like a video call with an AI.
+        This page never sees the API key: it asks <strong>n8n</strong>, n8n calls the
+        <strong>LiveAvatar API</strong>, and hands back a short-lived <strong>embed URL</strong>.
+      </p>
+
+      <label for="context">Persona (context)</label>
+      <select id="context"><option value="">Loading personas…</option></select>
+      <p class="hint">A <em>context</em> is the avatar's persona — its prompt and knowledge. Same face, different behaviour.</p>
+
+      <label for="avatarId">Avatar ID</label>
+      <input id="avatarId" type="text" value="513fd1b7-7ef9-466d-9af2-344e51eeb833" spellcheck="false" />
+
+      <label for="baseUrl">n8n webhook base</label>
+      <input id="baseUrl" type="url" placeholder="http://localhost:5678/webhook" spellcheck="false" />
+      <p class="hint">Exposes <code>liveavatar-session</code> and <code>liveavatar-contexts</code>. Saved in this browser only.</p>
+
+      <div class="divider"></div>
+
+      <h3>Lab 8 vs Lab 9 — the same conversation, two engines</h3>
+      <table class="cmp">
+        <tr><th></th><th>Lab 8 · in-browser</th><th>Lab 9 · LiveAvatar</th></tr>
+        <tr><td>Where</td><td>your machine</td><td>the cloud</td></tr>
+        <tr><td>Cost</td><td>free</td><td><strong>credits</strong></td></tr>
+        <tr><td>Mouth</td><td>drawn geometry</td><td><strong>photoreal, head moves</strong></td></tr>
+        <tr><td>Latency</td><td>instant</td><td>a streaming session</td></tr>
+        <tr><td>Brain</td><td>your n8n + gemma4</td><td>LiveAvatar's context</td></tr>
+      </table>
+
+      <div class="note">
+        <strong>Fallback:</strong> if you have an Interactive Avatar <em>share URL</em> from the HeyGen UI,
+        paste it below and load it directly — no API key, no n8n.
+        <input id="shareUrl" type="url" placeholder="https://embed.liveavatar.com/v1/… or a HeyGen share URL" />
+        <button class="btn ghost" onclick="loadShareUrl()">Load that URL instead</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="foot">Tertiary Infotech · n8n Course — Lab 9 · Interactive Avatar (HeyGen LiveAvatar)
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+
+  <script src="main.js?v=2"></script>
+</body>
+</html>

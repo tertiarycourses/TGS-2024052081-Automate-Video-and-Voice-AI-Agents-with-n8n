@@ -1,4 +1,0 @@
-service/.venv/
-service/wav2lip/checkpoints/*.pth
-service/wav2lip/face_detection/detection/sfd/*.pth
-service/videos/

@@ -9,9 +9,10 @@ assessment/
 assessment */
 reference/
 
-# python / models (large — regenerated per README)
-lab7-opensource/service/.venv/
-lab7-opensource/service/videos/
+# python / models (large — regenerated per README).
+# Paths are tree-agnostic: the labs now live under labs_local_n8n/ and labs_remote_n8n/.
+**/lab7-opensource/service/.venv/
+**/lab7-opensource/service/videos/
 **/__pycache__/
 *.pyc
 
@@ -25,18 +26,19 @@ lab7-opensource/service/videos/
 **/.playwright-mcp/
 
 # third-party Wav2Lip clone (re-clone per lab7-opensource/README.md)
-lab7-opensource/service/wav2lip/
+**/lab7-opensource/service/wav2lip/
 
 # unrelated to this course (kept local)
 elegance-journey/
 .codex/
 
-# Lab 6 vendors the lip-sync studio (source is committed); these are build artifacts
-lab6/python/.venv/
-lab6/python/models/
-lab6/python/renders/
-lab6/.env
-lab6/python/repo/
+# Lab 6 vendors the lip-sync studio (source is committed); these are build artifacts.
+# ~5 GB of model weights live under labs_local_n8n/ — never commit them.
+**/lab6/python/.venv/
+**/lab6/python/models/
+**/lab6/python/renders/
+**/lab6/.env
+**/lab6/python/repo/
 
 # scratch API dumps
 heygen_voices.json

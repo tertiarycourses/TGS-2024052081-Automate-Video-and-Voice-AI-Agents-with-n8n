@@ -1,0 +1,245 @@
+{
+  "name": "Lab 7 - HeyGen News Avatar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "heygen-generate",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "11111111-1111-4111-8111-111111111111",
+      "name": "Generate Webhook",
+      "webhookId": "a1a1a1a1-b2b2-4c3c-8d4d-e5e5e5e5e5e5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.topic || 'FIFA World Cup 2026 Round of 16 \u2014 latest results and what happens next' }}",
+        "options": {
+          "systemMessage": "You are a TV sports news scriptwriter. Write a short, energetic news-anchor script about the given topic that runs about 20 seconds when read aloud (roughly 55-70 words).\n\nRules:\n- Output ONLY the words the anchor speaks \u2014 one flowing paragraph.\n- No stage directions, no timestamps, no camera notes, no speaker labels, no markdown, no quotation marks around the whole thing.\n- Start with a warm welcome, deliver the key update with excitement, and end with a hook to keep watching.\n- Keep it broadcast-natural and easy to say."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "22222222-2222-4222-8222-222222222222",
+      "name": "Write Script (OpenAI)"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        208
+      ],
+      "id": "33333333-3333-4333-8333-333333333333",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ video_inputs: [ { character: { type: 'talking_photo', talking_photo_id: $('Generate Webhook').item.json.body.talking_photo_id || '6269abc2c2c04fe4be8f45a24f26f043', scale: 1 }, voice: { type: 'text', input_text: $('Write Script (OpenAI)').item.json.output, voice_id: '5d8c378ba8c3434586081a52ac368738', speed: 1.05 } } ], dimension: { width: 1920, height: 1080 } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "44444444-4444-4444-8444-444444444444",
+      "name": "HeyGen: Create Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lPBgcyXNUS6nABB1",
+          "name": "HeyGen API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { video_id: ($json.data && $json.data.video_id) || null, script: $('Write Script (OpenAI)').item.json.output, error: $json.error || null } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        420,
+        0
+      ],
+      "id": "55555555-5555-4555-8555-555555555555",
+      "name": "Respond (video_id)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "heygen-status",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        320
+      ],
+      "id": "66666666-6666-4666-8666-666666666666",
+      "name": "Status Webhook",
+      "webhookId": "b2b2b2b2-c3c3-4d4d-8e5e-f6f6f6f6f6f6"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.heygen.com/v1/video_status.get?video_id={{ $json.body.video_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        320
+      ],
+      "id": "77777777-7777-4777-8777-777777777777",
+      "name": "HeyGen: Get Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lPBgcyXNUS6nABB1",
+          "name": "HeyGen API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: ($json.data && $json.data.status) || 'unknown', video_url: ($json.data && $json.data.video_url) || null, error: ($json.data && $json.data.error) || null } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        200,
+        320
+      ],
+      "id": "88888888-8888-4888-8888-888888888888",
+      "name": "Respond (status)"
+    }
+  ],
+  "connections": {
+    "Generate Webhook": {
+      "main": [
+        [
+          {
+            "node": "Write Script (OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Script (OpenAI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Script (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "HeyGen: Create Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HeyGen: Create Video": {
+      "main": [
+        [
+          {
+            "node": "Respond (video_id)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Webhook": {
+      "main": [
+        [
+          {
+            "node": "HeyGen: Get Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HeyGen: Get Status": {
+      "main": [
+        [
+          {
+            "node": "Respond (status)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

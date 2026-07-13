@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veo Studio — AI Video Generation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+
+  <div id="fileWarning" class="file-warning">
+    ⚠️ Open this page via the local server — <strong>http://localhost:8098</strong> — not by double-clicking the file.
+  </div>
+  <script>
+    if (location.protocol === "file:") document.getElementById("fileWarning").style.display = "block";
+  </script>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span> Veo Studio
+      <small>n8n + gemma4 + Google Veo 3.1</small>
+    </div>
+    <button class="ghost" onclick="openSettings()">⚙ Settings</button>
+  </header>
+
+  <main class="wrap">
+    <!-- Left: the ask -->
+    <section class="panel">
+      <h1>Describe a video.<br /><span>Get an 8-second film.</span></h1>
+      <p class="lede">
+        Type a <strong>topic</strong>, not a prompt. A local <strong>gemma4</strong> model turns it into a
+        cinematic shot description, and <strong>Veo 3.1</strong> films it — with sound.
+      </p>
+
+      <label class="lbl" for="topic">Topic</label>
+      <textarea id="topic" rows="3">Singapore's MRT expansion adds twelve new stations by 2030</textarea>
+
+      <label class="lbl" for="model">Model</label>
+      <select id="model">
+        <option value="veo-3.1-fast-generate-preview">Veo 3.1 Fast — cheapest, ~60s (recommended)</option>
+        <option value="veo-3.1-generate-preview">Veo 3.1 — best quality, slower, costs more</option>
+        <option value="veo-3.1-lite-generate-preview">Veo 3.1 Lite</option>
+      </select>
+
+      <button class="primary" id="genBtn" onclick="generate()">🎬 Generate video</button>
+
+      <p class="cost">
+        Google bills Veo <strong>per second of video generated</strong>. One 8-second clip per click.
+      </p>
+
+      <!-- What gemma4 wrote, before Veo saw it. This is the teaching moment. -->
+      <div class="prompt-box" id="promptBox" hidden>
+        <h3>📝 The shot gemma4 wrote</h3>
+        <p id="promptText"></p>
+      </div>
+    </section>
+
+    <!-- Right: the film -->
+    <section class="panel stage-panel">
+      <div class="stage">
+        <div class="stage-empty" id="stageEmpty">
+          <span>🎞️</span>
+          <p>Your video appears here</p>
+        </div>
+        <video id="player" playsinline controls hidden></video>
+      </div>
+
+      <!-- Veo reports no percentage — only done / not done — so the bar is an honest
+           elapsed-time estimate that stops at 95% until the video actually arrives. -->
+      <div class="progress" id="progress" hidden>
+        <div class="p-head">
+          <span id="pLabel">Starting…</span>
+          <span id="pPct">0%</span>
+        </div>
+        <div class="p-track"><div class="p-fill" id="pFill"></div></div>
+        <div class="steps">
+          <span class="step is-active" id="step1">1 · gemma4 writes the shot</span>
+          <span class="step" id="step2">2 · Veo 3.1 films it</span>
+          <span class="step" id="step3">3 · Download</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="primary dl" id="dlBtn" hidden download="veo-video.mp4">⬇ Download MP4</a>
+      </div>
+
+      <p class="statusline" id="status">Ready.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Tertiary Infotech · n8n Course — Lab 10 · AI Video Generation
+    <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  </footer>
+
+  <!-- Settings: the learner's own n8n webhook base. Nothing is hardcoded. -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card">
+      <h3>⚙ Connect to your n8n</h3>
+      <p class="settings-lede">Paste the <strong>Production</strong> webhook base of your n8n. Saved in this browser only.</p>
+      <label class="lbl" for="baseUrl">n8n webhook base</label>
+      <input class="settings-input" id="baseUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook" spellcheck="false" />
+      <p class="hint">The flow exposes <code>veo-generate</code>, <code>veo-status</code> and <code>veo-file</code> under this base.</p>
+      <div class="settings-actions">
+        <button class="ghost" onclick="closeSettings()">Cancel</button>
+        <button class="primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js?v=2"></script>
+</body>
+</html>
