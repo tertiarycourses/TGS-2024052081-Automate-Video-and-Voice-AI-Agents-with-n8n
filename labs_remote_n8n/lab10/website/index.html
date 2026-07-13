@@ -21,7 +21,7 @@
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span> Veo Studio
-      <small>n8n + gemma4 + Google Veo 3.1</small>
+      <small>n8n + OpenAI + Google Veo 3.1</small>
     </div>
     <button class="ghost" onclick="openSettings()">⚙ Settings</button>
   </header>
@@ -31,7 +31,7 @@
     <section class="panel">
       <h1>Describe a video.<br /><span>Get an 8-second film.</span></h1>
       <p class="lede">
-        Type a <strong>topic</strong>, not a prompt. A local <strong>gemma4</strong> model turns it into a
+        Type a <strong>topic</strong>, not a prompt. An <strong>OpenAI</strong> model (gpt-4.1-mini) turns it into a
         cinematic shot description, and <strong>Veo 3.1</strong> films it — with sound.
       </p>
 
@@ -51,9 +51,9 @@
         Google bills Veo <strong>per second of video generated</strong>. One 8-second clip per click.
       </p>
 
-      <!-- What gemma4 wrote, before Veo saw it. This is the teaching moment. -->
+      <!-- What OpenAI wrote, before Veo saw it. This is the teaching moment. -->
       <div class="prompt-box" id="promptBox" hidden>
-        <h3>📝 The shot gemma4 wrote</h3>
+        <h3>📝 The shot OpenAI wrote</h3>
         <p id="promptText"></p>
       </div>
     </section>
@@ -77,7 +77,7 @@
         </div>
         <div class="p-track"><div class="p-fill" id="pFill"></div></div>
         <div class="steps">
-          <span class="step is-active" id="step1">1 · gemma4 writes the shot</span>
+          <span class="step is-active" id="step1">1 · OpenAI writes the shot</span>
           <span class="step" id="step2">2 · Veo 3.1 films it</span>
           <span class="step" id="step3">3 · Download</span>
         </div>
@@ -102,7 +102,7 @@
       <h3>⚙ Connect to your n8n</h3>
       <p class="settings-lede">Paste the <strong>Production</strong> webhook base of your n8n. Saved in this browser only.</p>
       <label class="lbl" for="baseUrl">n8n webhook base</label>
-      <input class="settings-input" id="baseUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook" spellcheck="false" />
+      <input class="settings-input" id="baseUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook" spellcheck="false" data-n8n-test="safe" data-n8n-key="lab10_base" data-n8n-path="veo-generate" />
       <p class="hint">The flow exposes <code>veo-generate</code>, <code>veo-status</code> and <code>veo-file</code> under this base.</p>
       <div class="settings-actions">
         <button class="ghost" onclick="closeSettings()">Cancel</button>
@@ -112,5 +112,6 @@
   </div>
 
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>

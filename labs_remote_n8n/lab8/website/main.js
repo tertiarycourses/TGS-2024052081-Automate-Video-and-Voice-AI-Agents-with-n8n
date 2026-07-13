@@ -3,7 +3,7 @@
 //
 //   🎙️ you speak
 //     -> Web Speech API  (speech-to-text, in the browser, free)
-//        -> n8n webhook  -> gemma4 writes a short spoken reply
+//        -> n8n webhook  -> OpenAI (gpt-4.1-mini) writes a short spoken reply
 //     -> speechSynthesis (text-to-speech, in the browser, free)
 //     -> the mouth is drawn on the photo, live, at 60fps
 //
@@ -189,7 +189,7 @@ async function ask(message) {
   addMsg("you", message);
   state.history.push({ role: "you", text: message });
   setPill("Thinking", "thinking");
-  setStatus("gemma4 is thinking…");
+  setStatus("Aria is thinking…");
 
   let reply;
   let timing = {};
@@ -333,8 +333,8 @@ window.addEventListener("DOMContentLoaded", () => {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 
-  // Warm the model. gemma4 is 9.6 GB; if it is not resident, the FIRST reply pays a
-  // multi-second load tax and the demo looks broken. This costs one throwaway call.
+  // One throwaway call on load: it proves the webhook is registered and the workflow
+  // is Active, so the first real question does not fail in front of the learner.
   fetch(webhook(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },

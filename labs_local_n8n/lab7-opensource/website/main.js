@@ -1,7 +1,12 @@
 // Lab 5 (open-source) — free, local AI avatar news.
 // Website → n8n "os-generate" webhook → Ollama script → local render service
 // (macOS `say` + ffmpeg, or Wav2Lip if installed) → 1080p video URL. Synchronous.
-const GENERATE_URL = "http://localhost:5678/webhook/os-generate";
+const WEBHOOK_KEY = "lab7os_base";
+// The base the learner saved in the settings box (see n8n-connect.js). The old
+// hardcoded localhost URL was wrong for anyone not running n8n on this machine.
+const webhookBase = () =>
+  (window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || "http://localhost:5678/webhook";
+const GENERATE_URL = () => `${webhookBase()}/os-generate`;
 const RENDER_ESTIMATE_S = 25; // measured: ~17s for a 7s clip (TTS + Wav2Lip on Apple Silicon)
 
 const $ = (id) => document.getElementById(id);
@@ -84,7 +89,7 @@ async function generate() {
   startProgress();
 
   try {
-    const res = await fetch(GENERATE_URL, {
+    const res = await fetch(GENERATE_URL(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic }),

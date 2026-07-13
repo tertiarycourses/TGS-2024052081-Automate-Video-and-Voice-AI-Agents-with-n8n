@@ -19,7 +19,7 @@
 
   <header class="topbar">
     <div class="brand"><span class="live">● LIVE</span> GG News Studio</div>
-    <div class="ticker">100% free &amp; local · n8n + Ollama + macOS say + ffmpeg (no cloud, no credits)</div>
+    <div class="ticker">Local rendering · n8n + OpenAI + macOS say + ffmpeg (the video is rendered on your machine)</div>
   </header>
 
   <main class="studio">
@@ -42,7 +42,7 @@
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="progress-steps">
-          <span class="step is-active" id="step1">1 · Ollama writes the script</span>
+          <span class="step is-active" id="step1">1 · OpenAI writes the script</span>
           <span class="step" id="step2">2 · TTS + Wav2Lip render locally</span>
           <span class="step" id="step3">3 · Playing</span>
         </div>
@@ -56,7 +56,15 @@
 
     <aside class="desk">
       <h2>News Desk</h2>
-      <p class="desk-sub">Ollama writes the script; a local service (macOS <code>say</code> + ffmpeg) renders a 1080p video on your machine. No API keys, no credits.</p>
+      <p class="desk-sub">OpenAI writes the script; a local service (macOS <code>say</code> + ffmpeg) renders a 1080p video on your machine. No API keys, no credits.</p>
+    <!-- The learner's own n8n. Nothing is hardcoded; Test proves it before you generate. -->
+    <div class="n8n-settings">
+      <label for="baseUrl">n8n webhook base</label>
+      <p class="n8n-settings__hint">The <strong>Production</strong> webhook base of the <em>Open-Source News Avatar</em> flow. Saved in this browser only.</p>
+      <input id="baseUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook" spellcheck="false"
+             data-n8n-test="safe" data-n8n-key="lab7os_base" data-n8n-path="os-generate" />
+    </div>
+
 
       <label for="topic">News topic</label>
       <textarea id="topic" rows="4">FIFA World Cup 2026 Round of 16 — Belgium beats co-hosts USA 4-1 to reach the quarter-finals alongside Spain, France and England; Argentina face Egypt for the last spot.</textarea>
@@ -68,16 +76,17 @@
       </div>
 
       <ol class="steps">
-        <li><span>1</span> Ollama (gemma4) writes a ~20-second anchor script.</li>
+        <li><span>1</span> OpenAI (gpt-4.1-mini) writes a ~20-second anchor script.</li>
         <li><span>2</span> Local service turns text → speech → 1920×1080 video — free, on your machine.</li>
         <li><span>3</span> The finished video plays here automatically.</li>
       </ol>
     </aside>
   </main>
 
-  <footer class="foot">Tertiary Infotech · n8n Course — Lab 5 (Open-Source) · Free Local AI Avatar  <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
+  <footer class="foot">Tertiary Infotech · n8n Course — Lab 5 (Open-Source) · Local-Render AI Avatar  <p class="powered-by">Powered by <a href="https://www.tertiaryinfotech.com/" target="_blank" rel="noopener">Tertiary Infotech Academy Pte Ltd</a></p>
   </footer>
 
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>

@@ -115,6 +115,20 @@ A production `/webhook/…` path does not exist in n8n until the workflow is swi
 inactive workflow returns `404` and the lab's website will report that it cannot reach n8n. This is
 the single most common failure in class.
 
+**Every lab website now has a webhook URL box and a “Test connection” button** — press it before you
+start, and it names the failure instead of leaving you with a blank screen:
+
+| What Test says | What is actually wrong |
+|---|---|
+| *Connected. The workflow is Active…* | Nothing — go. |
+| *…the workflow is almost certainly NOT Active* | The flow is imported but the **Active** toggle is off. |
+| *Cannot reach n8n at …* | n8n is not running, or the host/port/`http` vs `https` is wrong. |
+| *That is the Test URL* | You pasted `/webhook-test/…`. Use the **Production** URL, `/webhook/…`. |
+
+Labs **2, 3, 4, 8, 9** prove activation by sending a real (free) probe request. Labs **7, 7-os and
+10** only check reachability — firing their workflow would spend HeyGen/Veo credits, so a Test click
+must never do it. Each result says which of the two it did.
+
 ## Security rule
 
 API keys belong in n8n credentials or a local `.env` (which is gitignored). They must never appear in

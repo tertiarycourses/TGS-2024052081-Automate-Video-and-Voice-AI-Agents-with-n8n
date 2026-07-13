@@ -4,7 +4,7 @@ The same idea as Lab 7, but with **zero cloud and zero credits**. Everything run
 
 ```
 Website → n8n webhook (os-generate)
-            → Write Script (Ollama gemma4)
+            → Write Script (OpenAI gpt-4.1-mini)
             → HTTP → local render service (http://host.docker.internal:8099/render)
                        • macOS `say`  → speech.wav        (TTS)
                        • Wav2Lip      → lip-synced video   (talking mouth)
@@ -13,13 +13,13 @@ Website → n8n webhook (os-generate)
 Website plays the finished video.
 ```
 
-**HeyGen vs this:** in `lab7/` the video is rendered by HeyGen (cloud, needs API credits). Here the *same n8n flow shape* points at a local render service instead — no account, no credits. Ollama still writes the script in both.
+**HeyGen vs this:** in `lab7/` the video is rendered by HeyGen (cloud, needs API credits). Here the *same n8n flow shape* points at a local render service instead — no avatar account, no HeyGen credits. OpenAI still writes the script in both.
 
 ## What's inside
 
 ```
 lab5-opensource/
-├── os-news-avatar-flow.json     # n8n flow: Ollama → local render → respond
+├── os-news-avatar-flow.json     # n8n flow: OpenAI → local render → respond
 ├── service/
 │   ├── render_service.py        # HTTP render service on :8099
 │   ├── broadcaster.jpg          # the anchor photo (the "avatar")
@@ -32,12 +32,12 @@ lab5-opensource/
 ## Requirements
 
 - **ffmpeg** on `PATH` (`brew install ffmpeg` / `winget install Gyan.FFmpeg`), Python 3, and the Wav2Lip env (`service/.venv`).
-- Local **n8n** (Lab 0) with the **Ollama local** credential.
+- The hosted **n8n** with the **OpenAI account** credential.
 - **TTS is built into the OS** — the service auto-selects: macOS `say`, Windows PowerShell *System.Speech* (SAPI), Linux `espeak-ng`. Optional upgrade: open-source **Piper**.
 
 ## Run
 
-1. Import `os-news-avatar-flow.json` into n8n and set it **Active** (it uses the existing **Ollama local** credential).
+1. Import `os-news-avatar-flow.json` into n8n and set it **Active** (it uses the existing **OpenAI account** credential).
 2. Start the render service (:8099) + website and open the browser:
    - **Mac:** double-click **`start.command`**
    - **Windows:** double-click **`start.bat`**
@@ -47,7 +47,7 @@ lab5-opensource/
      |---|---|---|
      | Service | `cd service && python3 render_service.py` | `cd service && python render_service.py` |
      | Website | `cd website && python3 -m http.server 8097` | `cd website && python -m http.server 8097` |
-3. Open **http://localhost:8097**, enter a topic, click **Generate News Video**. Ollama writes the script; the service renders a lip-synced 1080p video locally (~30–60s).
+3. Open **http://localhost:8097**, enter a topic, click **Generate News Video**. OpenAI writes the script; the service renders a lip-synced 1080p video locally (~30–60s).
 
 ## The render engines
 

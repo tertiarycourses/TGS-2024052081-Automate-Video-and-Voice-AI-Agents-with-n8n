@@ -1,12 +1,17 @@
 // ---------------------------------------------------------------------------
 // Lab 5 — AI Avatar News. No backend of its own:
-//   1. POST topic to the n8n "heygen-generate" webhook → Ollama writes the
+//   1. POST topic to the n8n "heygen-generate" webhook → OpenAI writes the
 //      script, HeyGen starts rendering, returns { video_id, script }.
 //   2. Poll the n8n "heygen-status" webhook until the video is ready, then
 //      play it in the 16:9 (YouTube) player.
 // ---------------------------------------------------------------------------
-const GENERATE_URL = "https://n8n.tertiarytraining.com/webhook/heygen-generate";
-const STATUS_URL = "https://n8n.tertiarytraining.com/webhook/heygen-status";
+const WEBHOOK_KEY = "lab7_base";
+// The base the learner saved in the settings box (see n8n-connect.js). The old
+// hardcoded localhost URL was wrong for anyone not running n8n on this machine.
+const webhookBase = () =>
+  (window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || "https://n8n.tertiarytraining.com/webhook";
+const GENERATE_URL = () => `${webhookBase()}/heygen-generate`;
+const STATUS_URL = () => `${webhookBase()}/heygen-status`;
 const POLL_MS = 5000;        // ask HeyGen every 5s so the bar tracks reality closely
 const RENDER_ESTIMATE_S = 120; // measured: a ~20s script renders in about two minutes
 
@@ -53,7 +58,7 @@ function setStep(n) {
   });
 }
 
-// Ollama is quick; give the script phase the first 15% of the bar.
+// The script step is quick; give it the first 15% of the bar.
 function startRenderProgress() {
   renderStartedAt = Date.now();
   clearInterval(progressTimer);
@@ -83,13 +88,13 @@ async function generate() {
   $("genBtn").disabled = true;
   $("player").style.display = "none";
   $("poster").style.display = "block";
-  $("scriptText").textContent = "Writing the anchor script with Ollama…";
+  $("scriptText").textContent = "Writing the anchor script with OpenAI…";
   setStatus("Writing script…", "working");
   showProgress();
 
   let data;
   try {
-    const res = await fetch(GENERATE_URL, {
+    const res = await fetch(GENERATE_URL(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic }),
@@ -129,7 +134,7 @@ function pollStatus(videoId) {
   const check = async () => {
     let s;
     try {
-      const res = await fetch(STATUS_URL, {
+      const res = await fetch(STATUS_URL(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ video_id: videoId }),
@@ -161,7 +166,7 @@ function pollStatus(videoId) {
         $("hint").innerHTML =
           "HeyGen rendered nothing: <strong>the account has no API credits</strong>. " +
           "Add API credits in the HeyGen dashboard (Settings → Subscriptions / API), then generate again. " +
-          "The script above was still written by Ollama.";
+          "The script above was still written by OpenAI.";
       } else {
         finishProgress(false, "HeyGen render failed");
         setStatus("Render failed", "error");

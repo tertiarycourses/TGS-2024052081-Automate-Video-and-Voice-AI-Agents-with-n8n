@@ -102,7 +102,7 @@
       <h3>⚙ Connect to your n8n</h3>
       <p class="settings-lede">Paste the <strong>Production</strong> webhook base of your n8n. Saved in this browser only.</p>
       <label class="lbl" for="baseUrl">n8n webhook base</label>
-      <input class="settings-input" id="baseUrl" type="url" placeholder="http://localhost:5678/webhook" spellcheck="false" />
+      <input class="settings-input" id="baseUrl" type="url" placeholder="http://localhost:5678/webhook" spellcheck="false" data-n8n-test="safe" data-n8n-key="lab10_base" data-n8n-path="veo-generate" />
       <p class="hint">The flow exposes <code>veo-generate</code>, <code>veo-status</code> and <code>veo-file</code> under this base.</p>
       <div class="settings-actions">
         <button class="ghost" onclick="closeSettings()">Cancel</button>
@@ -112,5 +112,6 @@
   </div>
 
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>

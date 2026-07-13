@@ -55,7 +55,7 @@
       <input id="avatarId" type="text" value="513fd1b7-7ef9-466d-9af2-344e51eeb833" spellcheck="false" />
 
       <label for="baseUrl">n8n webhook base</label>
-      <input id="baseUrl" type="url" placeholder="http://localhost:5678/webhook" spellcheck="false" />
+      <input id="baseUrl" type="url" placeholder="http://localhost:5678/webhook" spellcheck="false" data-n8n-test="post" data-n8n-key="lab9_base" data-n8n-path="liveavatar-session" />
       <p class="hint">Exposes <code>liveavatar-session</code> and <code>liveavatar-contexts</code>. Saved in this browser only.</p>
 
       <div class="divider"></div>
@@ -84,5 +84,6 @@
   </footer>
 
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>

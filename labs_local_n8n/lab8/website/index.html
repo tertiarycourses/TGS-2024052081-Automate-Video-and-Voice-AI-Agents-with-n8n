@@ -94,7 +94,7 @@
       <h3>⚙ Connect to your n8n</h3>
       <p class="settings-lede">Paste the <strong>Production</strong> webhook URL of the <em>Lab 8 – Interactive Avatar Brain</em> flow. Saved in this browser only.</p>
       <label class="lbl" for="webhookUrl">n8n webhook URL</label>
-      <input class="settings-input" id="webhookUrl" type="url" placeholder="http://localhost:5678/webhook/avatar-chat" spellcheck="false" />
+      <input class="settings-input" id="webhookUrl" type="url" placeholder="http://localhost:5678/webhook/avatar-chat" spellcheck="false" data-n8n-test="post" data-n8n-key="lab8_chat" />
       <div class="settings-actions">
         <button class="ghost" onclick="closeSettings()">Cancel</button>
         <button class="primary" onclick="saveSettings()">Save</button>
@@ -106,5 +106,6 @@
   <script src="js/face.js"></script>
   <script src="js/renderer.js"></script>
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>

@@ -1,7 +1,12 @@
-// Lab 5 (open-source) — free, local AI avatar news.
-// Website → n8n "os-generate" webhook → Ollama script → local render service
+// Lab 5 (open-source) — AI avatar news, rendered on your own machine.
+// Website → n8n "os-generate" webhook → OpenAI script → local render service
 // (macOS `say` + ffmpeg, or Wav2Lip if installed) → 1080p video URL. Synchronous.
-const GENERATE_URL = "https://n8n.tertiarytraining.com/webhook/os-generate";
+const WEBHOOK_KEY = "lab7os_base";
+// The base the learner saved in the settings box (see n8n-connect.js). The old
+// hardcoded localhost URL was wrong for anyone not running n8n on this machine.
+const webhookBase = () =>
+  (window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || "https://n8n.tertiarytraining.com/webhook";
+const GENERATE_URL = () => `${webhookBase()}/os-generate`;
 const RENDER_ESTIMATE_S = 25; // measured: ~17s for a 7s clip (TTS + Wav2Lip on Apple Silicon)
 
 const $ = (id) => document.getElementById(id);
@@ -51,13 +56,13 @@ function startProgress() {
   clearInterval(progressTimer);
   progressTimer = setInterval(() => {
     const elapsed = (Date.now() - startedAt) / 1000;
-    // Ollama first (~the first few seconds), then the local render.
+    // The script step first (~the first few seconds), then the local render.
     if (elapsed > 4) setStep(2);
     const frac = 1 - Math.exp(-elapsed / (RENDER_ESTIMATE_S / 2));
     const pct = frac * 95; // 0 → 95%, never beyond
     const label =
       elapsed <= 4
-        ? "Ollama is writing the anchor script…"
+        ? "OpenAI is writing the anchor script…"
         : `Rendering locally with TTS + Wav2Lip… ${Math.round(elapsed)}s elapsed`;
     setProgress(pct, label, "working");
   }, 500);
@@ -77,14 +82,14 @@ async function generate() {
   $("genBtn").disabled = true;
   $("player").style.display = "none";
   $("poster").style.display = "block";
-  $("scriptText").textContent = "Writing the anchor script with Ollama, then rendering locally…";
+  $("scriptText").textContent = "Writing the anchor script with OpenAI, then rendering locally…";
   setStatus("Generating…", "working");
-  $("hint").textContent = "Working: Ollama writes the script, then the local service renders the 1080p video (~10–30s).";
+  $("hint").textContent = "Working: OpenAI writes the script, then the local service renders the 1080p video (~10–30s).";
   showProgress();
   startProgress();
 
   try {
-    const res = await fetch(GENERATE_URL, {
+    const res = await fetch(GENERATE_URL(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic }),

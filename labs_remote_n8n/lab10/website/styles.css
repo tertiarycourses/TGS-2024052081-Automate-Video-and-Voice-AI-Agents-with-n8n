@@ -81,7 +81,7 @@ textarea:focus, select:focus, .settings-input:focus {
   background: #fef7e0; border: 1px solid #fde293; border-radius: 10px; padding: .6rem .8rem;
 }
 
-/* the prompt gemma4 wrote — the teaching moment */
+/* the prompt OpenAI wrote — the teaching moment */
 .prompt-box {
   margin-top: 1.2rem; padding: 1rem 1.1rem;
   background: var(--bg-alt); border: 1px solid var(--line); border-radius: var(--radius);

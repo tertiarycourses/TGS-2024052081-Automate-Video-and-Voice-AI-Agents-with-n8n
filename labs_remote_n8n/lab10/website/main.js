@@ -3,7 +3,7 @@
 //
 //   you type a TOPIC
 //     -> n8n webhook  /veo-generate
-//        -> gemma4 (local) turns the topic into a CINEMATIC SHOT description
+//        -> OpenAI (gpt-4.1-mini) turns the topic into a CINEMATIC SHOT description
 //        -> Veo 3.1 starts a long-running generation, returns an operation name
 //   -> the page polls /veo-status until Google says done
 //   -> the MP4 is streamed back through /veo-file, so the API key NEVER
@@ -44,7 +44,7 @@ function saveSettings() {
 // working is a lie.
 function showProgress() {
   $("progress").hidden = false;
-  setProgress(0, "gemma4 is writing the shot…");
+  setProgress(0, "OpenAI is writing the shot…");
   setStep(1);
 }
 function setProgress(pct, label, kind = "") {
@@ -111,7 +111,7 @@ async function generate() {
     return;
   }
 
-  // Show what gemma4 actually wrote — the topic you typed is NOT the prompt Veo saw.
+  // Show what OpenAI actually wrote — the topic you typed is NOT the prompt Veo saw.
   if (data.prompt) {
     $("promptText").textContent = data.prompt;
     $("promptBox").hidden = false;

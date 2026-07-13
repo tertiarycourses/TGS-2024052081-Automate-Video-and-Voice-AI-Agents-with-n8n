@@ -5,8 +5,13 @@
 //   2. Poll the n8n "heygen-status" webhook until the video is ready, then
 //      play it in the 16:9 (YouTube) player.
 // ---------------------------------------------------------------------------
-const GENERATE_URL = "http://localhost:5678/webhook/heygen-generate";
-const STATUS_URL = "http://localhost:5678/webhook/heygen-status";
+const WEBHOOK_KEY = "lab7_base";
+// The base the learner saved in the settings box (see n8n-connect.js). The old
+// hardcoded localhost URL was wrong for anyone not running n8n on this machine.
+const webhookBase = () =>
+  (window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || "http://localhost:5678/webhook";
+const GENERATE_URL = () => `${webhookBase()}/heygen-generate`;
+const STATUS_URL = () => `${webhookBase()}/heygen-status`;
 const POLL_MS = 5000;        // ask HeyGen every 5s so the bar tracks reality closely
 const RENDER_ESTIMATE_S = 120; // measured: a ~20s script renders in about two minutes
 
@@ -89,7 +94,7 @@ async function generate() {
 
   let data;
   try {
-    const res = await fetch(GENERATE_URL, {
+    const res = await fetch(GENERATE_URL(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic }),
@@ -129,7 +134,7 @@ function pollStatus(videoId) {
   const check = async () => {
     let s;
     try {
-      const res = await fetch(STATUS_URL, {
+      const res = await fetch(STATUS_URL(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ video_id: videoId }),

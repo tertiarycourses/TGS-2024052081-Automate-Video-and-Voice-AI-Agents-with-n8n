@@ -21,7 +21,7 @@
   <header class="topbar">
     <div class="brand"><span class="dot"></span> Aria <small>interactive avatar · rendered in your browser</small></div>
     <div class="head-actions">
-      <span class="badge" id="engineBadge">100% local · free</span>
+      <span class="badge" id="engineBadge">n8n + OpenAI</span>
       <button class="ghost" onclick="openSettings()">⚙ Settings</button>
     </div>
   </header>
@@ -53,7 +53,7 @@
     <section class="panel">
       <h1>Talk to Aria.<br /><span>She answers in your browser.</span></h1>
       <p class="lede">
-        Your voice → <strong>speech-to-text</strong> (browser) → <strong>n8n + gemma4</strong> writes the reply →
+        Your voice → <strong>speech-to-text</strong> (browser) → <strong>n8n + OpenAI</strong> writes the reply →
         <strong>text-to-speech</strong> (browser) → the mouth is <strong>rendered live</strong> on the photo.
         No cloud avatar, no credits, no render wait.
       </p>
@@ -94,7 +94,7 @@
       <h3>⚙ Connect to your n8n</h3>
       <p class="settings-lede">Paste the <strong>Production</strong> webhook URL of the <em>Lab 8 – Interactive Avatar Brain</em> flow. Saved in this browser only.</p>
       <label class="lbl" for="webhookUrl">n8n webhook URL</label>
-      <input class="settings-input" id="webhookUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook/avatar-chat" spellcheck="false" />
+      <input class="settings-input" id="webhookUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook/avatar-chat" spellcheck="false" data-n8n-test="post" data-n8n-key="lab8_chat" />
       <div class="settings-actions">
         <button class="ghost" onclick="closeSettings()">Cancel</button>
         <button class="primary" onclick="saveSettings()">Save</button>
@@ -106,5 +106,6 @@
   <script src="js/face.js"></script>
   <script src="js/renderer.js"></script>
   <script src="main.js?v=2"></script>
+  <script src="n8n-connect.js"></script>
 </body>
 </html>
