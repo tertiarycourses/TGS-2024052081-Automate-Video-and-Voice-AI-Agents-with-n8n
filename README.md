@@ -49,12 +49,27 @@ ngrok tunnel — because the hosted n8n is already reachable from ElevenLabs and
 | **3** | CX Agent with RAG | A customer-facing agent over a brochure knowledge base | Ollama / OpenAI |
 | **4** | Voice Booking Agent | Nina books into a real Google Calendar, by voice | **ElevenLabs** |
 | **5** | Grounded FAQ Voice Agent | Ava, a prescription-refill assistant that refuses medical advice | **Vapi** |
-| **6** | Lip-Sync Studio | Wav2Lip vs MuseTalk, rendered locally | *(local Python)* |
+| **6** | Lip-Sync Face-Off | Digital Human Studio: the same script and portrait through MuseTalk (local) and HeyGen (cloud) | *(local Python)* + **HeyGen** |
 | **7** | Avatar News Video | A script agent that drives an avatar presenter | **HeyGen** |
 | **7-os** | Avatar News Video, open-source | The same video, rendered on your own machine | *(local Python)* |
 | **8** | Interactive Avatar Brain | A low-latency talking avatar in the browser | Ollama / OpenAI |
 | **9** | Interactive Avatar Session | An embedded interactive avatar | **LiveAvatar** |
 | **10** | AI Video Generation | Idea → shot script → 8-second cinematic clip | **Gemini Veo 3** |
+
+## The lab web apps must be *served*, never opened off the disk
+
+Labs that ship a web front end (notably [Lab 6](labs_local_n8n/lab6/) and
+[Lab 7-os](labs_local_n8n/lab7-opensource/)) start with a double-clickable launcher:
+
+| macOS | Windows |
+|---|---|
+| **`start.command`** | **`start.bat`** |
+
+Each one starts the local server and opens your browser on the right port (Lab 6 → `http://localhost:8137`).
+
+> ⚠️ **Do not double-click `index.html`.** On a `file://` URL the page still paints — images even
+> load — but the browser blocks `fetch()`, so sample assets and renderers fail with misleading
+> errors (in Lab 6: *"Could not load that sample."*). Always go through the launcher.
 
 ## Quick start — local tree
 

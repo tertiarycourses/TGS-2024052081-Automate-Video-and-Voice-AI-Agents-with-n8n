@@ -13,27 +13,35 @@ for timing a script before you spend a cent.
 
 ## Install
 
-**macOS / Linux (or Git Bash on Windows):**
+**The easy way — just double-click it**, exactly like Lab 7:
+
+| macOS | Windows |
+|---|---|
+| **`start.command`** | **`start.bat`** |
+
+On the first run it builds the Python environment (a few minutes), then starts the app and
+**opens your browser** at **http://localhost:8137**. Every run after that starts straight away.
+Press `Ctrl+C` in the terminal window to stop it.
+
+> On macOS the first double-click may be blocked by Gatekeeper ("cannot be opened because it
+> is from an unidentified developer"). Right-click `start.command` → **Open** → **Open**, once.
+
+**From a terminal** (macOS / Linux), if you also want the MuseTalk weights:
 
 ```bash
 cd lab6
-./setup.sh                # app only  → browser preview + HeyGen
-./setup.sh --musetalk     # also download MuseTalk weights (~3.5 GB, once)
+./setup.sh --musetalk     # build the environment AND download MuseTalk (~3.5 GB, once)
+./start.command           # every run after that
 ```
 
-**Windows (PowerShell), by hand:**
+To use a different port, set `PORT` first: `PORT=9000 ./start.command`. If 8137 is already
+taken, `start.command` walks up to the next free port on its own.
 
-```powershell
-cd lab6
-git clone https://github.com/alfredang/lipsyncdemo.git
-cd lipsyncdemo
-python -m venv python\.venv
-python\.venv\Scripts\Activate.ps1
-pip install -e .
-python python\app.py          # → http://localhost:8137
-```
-
-Then open **http://localhost:8137**.
+> ⚠️ **Do not double-click `index.html`.** The app must be *served*. Opened straight off
+> the disk as a `file://` URL the page still paints — the sample thumbnails even appear,
+> because `<img>` tags work — but the browser blocks `fetch()` on `file://`, so clicking a
+> sample portrait fails with *"Could not load that sample."* and nothing renders. Always
+> go through **http://localhost:8137**.
 
 > **MuseTalk needs a GPU** — Apple Silicon (MPS) or NVIDIA. On a plain CPU it is not slow,
 > it is unusable (many minutes per clip), and the app will correctly disable the *Render

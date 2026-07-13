@@ -13,6 +13,16 @@
 (function () {
   'use strict';
 
+  /* This app has to be SERVED, not opened off the disk. Double-clicked as a
+   * file:// URL the page still paints — <img> tags load, so the sample
+   * thumbnails appear — but every fetch() is blocked by CORS, so the samples,
+   * the TTS proxy and the renderers all die at the first click. Detect it once
+   * and say so, instead of letting each feature fail with its own vague error. */
+  const SERVED_OVER_HTTP = location.protocol === 'http:' || location.protocol === 'https:';
+  const FILE_URL_HINT =
+    'Open the app at http://localhost:8137 — it cannot run from a file:// URL. ' +
+    'Start it with start.command (macOS) or start.bat (Windows).';
+
   const $ = (id) => document.getElementById(id);
 
   const el = {
@@ -931,8 +941,10 @@
       try {
         const blob = await (await fetch(`samples/${name}.jpg`)).blob();
         await loadAvatar(new File([blob], `${name}.jpg`, { type: 'image/jpeg' }));
-      } catch {
-        status('Could not load that sample.', 'err');
+      } catch (e) {
+        status(SERVED_OVER_HTTP
+          ? `Could not load that sample: ${e.message}`
+          : FILE_URL_HINT, 'err');
       }
     });
   });
@@ -1010,7 +1022,11 @@
       serverHasMuseTalk = false;
       el.btnPhotoreal.title = 'Needs the Python backend — run python/app.py.';
       refreshButtons();
-      status('No backend detected — browser TTS and the live preview still work.', 'err');
+      // On file:// the browser preview doesn't work either (fetch is blocked, so
+      // even the sample portraits fail) — keep the URL hint on screen instead.
+      status(SERVED_OVER_HTTP
+        ? 'No backend detected — browser TTS and the live preview still work.'
+        : FILE_URL_HINT, 'err');
       return;
     }
 
@@ -1101,4 +1117,6 @@
   }
 
   el.btnGetWeights.addEventListener('click', () => downloadWeights(el.btnGetWeights.dataset.engine));
+
+  if (!SERVED_OVER_HTTP) status(FILE_URL_HINT, 'err');
 

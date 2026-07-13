@@ -68,4 +68,20 @@ fi
 
 echo
 echo "==> Starting Digital Human Studio on http://localhost:$PORT   (Ctrl+C to stop)"
+echo "    Use this URL. Do NOT double-click index.html — on a file:// URL the"
+echo "    browser blocks fetch(), so the samples and the renderers will not load."
+
+# Open the browser once the server actually answers.
+(
+  for _ in $(seq 1 60); do
+    if curl -fs -o /dev/null "http://localhost:$PORT/"; then break; fi
+    sleep 0.5
+  done
+  if [ "$(uname -s)" = "Darwin" ]; then
+    open "http://localhost:$PORT"
+  else
+    xdg-open "http://localhost:$PORT" >/dev/null 2>&1 || true
+  fi
+) &
+
 PORT="$PORT" python python/app.py
