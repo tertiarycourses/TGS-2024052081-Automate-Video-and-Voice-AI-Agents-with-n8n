@@ -1,6 +1,6 @@
-# Lab 5 (Open-Source) — Free, Local AI Avatar News
+# Lab 7 (Open-Source) — Free, Local AI Avatar News
 
-The same idea as Lab 5, but with **zero cloud and zero credits**. Everything runs on your machine:
+The same idea as Lab 7, but with **zero cloud and zero credits**. Everything runs on your machine:
 
 ```
 Website → n8n webhook (os-generate)
@@ -13,7 +13,7 @@ Website → n8n webhook (os-generate)
 Website plays the finished video.
 ```
 
-**HeyGen vs this:** in `lab5/` the video is rendered by HeyGen (cloud, needs API credits). Here the *same n8n flow shape* points at a local render service instead — no account, no credits. Ollama still writes the script in both.
+**HeyGen vs this:** in `lab7/` the video is rendered by HeyGen (cloud, needs API credits). Here the *same n8n flow shape* points at a local render service instead — no account, no credits. Ollama still writes the script in both.
 
 ## What's inside
 
