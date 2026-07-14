@@ -51,12 +51,12 @@ Total taught content: 12 hours 00 minutes across 12 labs.
 | Time | Duration | Topic / Activity | Deck | Evidence produced |
 |---|---|---|---|---|
 | 9:30am - 10:30am | 60 min | Lab 6 - Lip-Sync Face-Off: MuseTalk vs HeyGen | Slide 73 | Two rendered clips of one script, a scored comparison, and a one-line recommendation per engine. |
-| 10:30am - 11:15am | 45 min | Lab 7 - Avatar News Video with HeyGen (GG News Studio) | Slide 80 | A generated avatar news video plus quality-review notes on the script and the render. |
+| 10:30am - 11:15am | 45 min | Lab 7 - Avatar News Video with HeyGen (GG News Studio) | Slide 80 | Your own news broadcast, played to the class, plus quality-review notes on the script and the render. |
 | 11:15am - 12:00pm | 45 min | Lab 7-os - Open-Source News Avatar - Free and Local | Slide 86 | A locally rendered news video and a written HeyGen-versus-local comparison. |
 | 12:00pm - 12:45pm | 45 min | Lab 8 - Interactive Avatar Brain (Aria, In-Browser) | Slide 92 | A conversation with Aria, the latency-panel screenshot, and one prompt improvement you made and re-tested. |
 | 12:45pm - 1:45pm | 60 min | **LUNCH** | - | - |
 | 1:45pm - 2:30pm | 45 min | Lab 9 - Interactive Avatar Session (Nova, HeyGen LiveAvatar) | Slide 98 | A working Nova session plus the two-column scorecard comparing her against the browser-rendered avatar. |
-| 2:30pm - 3:30pm | 60 min | Lab 10 - AI Video Generation with Gemini Veo 3 (Veo Studio) | Slide 104 | A rendered Veo clip, the shot prompt that produced it, and a note on what changed between two prompt versions. |
+| 2:30pm - 3:30pm | 60 min | Lab 10 - AI Video Generation with Gemini Veo 3 (Veo Studio) | Slide 104 | Your own Veo clip presented to the class, the shot prompt that produced it, and a note on what changed between two prompt versions. |
 | 3:30pm - 4:15pm | 45 min | Concept delivery, review and evidence check - the trainer teaches the concept, workflow and quality slides for the day's labs, then learners show their executions, transcripts and scorecards | - | Trainer sign-off on the day's evidence |
 | 4:15pm - 4:30pm | 15 min | Assessment briefing - instruments, timing, and what evidence is graded | - | Completed answer script submitted on the LMS |
 | 4:30pm - 5:30pm | 60 min | **Written Assessment (SAQ)** - 6 open-ended knowledge questions (K1-K6) | - | Completed answer script submitted on the LMS |

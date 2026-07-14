@@ -432,6 +432,8 @@ shape is worth learning because every long-running API works this way:
 - [ ] The script *sounds* spoken — no bullets, no URLs, no markdown. The avatar reads it aloud; a stray
       asterisk becomes an audible "asterisk".
 - [ ] The page polls and eventually plays the finished video.
+- [ ] **Your own broadcast:** write a news item of your own — your industry, your company, today's
+      headlines — generate it, and **play it to the class**. Note one piece of feedback you would act on.
 
 ---
 
@@ -529,6 +531,8 @@ the same instinct as Lab 4's signed URL and Lab 9's embed URL — you have now m
 
 - [ ] `gemma4` turns your idea into a *shot* prompt (camera, lighting, motion) — not a summary.
 - [ ] The clip plays in the page.
+- [ ] **Your own clip:** generate a video from your own one-sentence idea, refine the prompt once, and
+      **present your best clip to the class** — say what changed between the two prompt versions.
 - [ ] You can explain why the page never sees the Gemini key.
 
 ---

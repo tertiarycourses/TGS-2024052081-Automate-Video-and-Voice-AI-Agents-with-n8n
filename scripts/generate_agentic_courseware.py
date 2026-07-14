@@ -440,20 +440,21 @@ LABS = [
             "Import `lab7/heygen-news-avatar-flow.json` and set it Active.",
             "Add the `HeyGen API` credential, and confirm the `Ollama local` credential on the script node.",
             "Serve the site from `lab7/website` and open the GG News Studio.",
-            "Type the day's facts and generate - watch gemma4's spoken script appear in the teleprompter.",
-            "Watch the page poll `/heygen-status` until the video is completed, then play it.",
-            "Read the script aloud yourself: does it SOUND spoken? No bullets, no URLs, no stage directions.",
+            "Write YOUR OWN news item - a story from your industry, your company or today's headlines - and generate; watch gemma4's spoken script appear in the teleprompter.",
+            "Watch the page poll `/heygen-status` until the video is completed, then play it. Read the script aloud: does it SOUND spoken?",
+            "SHARE IT: play your broadcast to the class, and note one piece of feedback you would act on.",
         ],
         [
             "The script reads as speech - no bullets, URLs or markdown.",
             "The page polls and eventually plays the finished video.",
+            "YOUR OWN news broadcast is generated and played to the class.",
         ],
         [
             ("The request times out", "The flow tried to render inside a single HTTP request.", "Keep the split shape: generate returns the ID immediately; the page polls status."),
             ("The avatar says 'asterisk'", "Markdown leaked into the script.", "Tighten the system prompt: spoken copy only, no formatting characters."),
             ("Status never reaches completed", "Wrong video ID, or HeyGen credits ran out.", "Read the status execution in n8n and check the HeyGen account."),
         ],
-        "A generated avatar news video plus quality-review notes on the script and the render.",
+        "Your own news broadcast, played to the class, plus quality-review notes on the script and the render.",
     ),
     Lab(
         3,
@@ -569,13 +570,14 @@ LABS = [
             "Import `lab10/veo3-video-flow.json` and set it Active.",
             "Add the `Gemini API` credential, and confirm the `Ollama local` credential.",
             "Serve the `lab10` website and open the Veo Studio.",
-            "Type one idea sentence and generate - then read the shot prompt gemma4 actually wrote.",
-            "Wait for the poll to complete and play the clip IN the page, through the /veo-file proxy.",
-            "Refine the prompt once, regenerate, and write one note on what changed between the two versions.",
+            "Type YOUR OWN idea - one sentence, any subject you like - and generate; then read the shot prompt gemma4 actually wrote.",
+            "Wait for the poll to complete and play the clip IN the page, through the /veo-file proxy. Refine the prompt once and regenerate.",
+            "SHARE IT: present your best clip to the class, and say what changed between your two prompt versions.",
         ],
         [
             "The shot prompt names camera, lighting and motion - not a summary.",
             "The clip plays in the page.",
+            "YOUR OWN clip is presented to the class, with the before/after prompt note.",
             "You can explain why the page never sees the Gemini key.",
         ],
         [
@@ -583,7 +585,7 @@ LABS = [
             ("Generation fails immediately", "API quota, or a malformed prompt payload.", "Run a short test prompt and read the provider response in the execution."),
             ("The clip ignores the idea", "The shot prompt drifted from the subject.", "Tighten the subject, camera and lighting wording, then regenerate."),
         ],
-        "A rendered Veo clip, the shot prompt that produced it, and a note on what changed between two prompt versions.",
+        "Your own Veo clip presented to the class, the shot prompt that produced it, and a note on what changed between two prompt versions.",
     ),
 ]
 
@@ -2724,27 +2726,8 @@ def write_pptx(path: Path) -> dict[str, int]:
     text_box(s, "Score the evidence, explain one improvement, then rerun the test.", 1.58, 6.45, 10.2, 0.32, 16, VIOLET, True)
 
     # ── closing block ────────────────────────────────────────────────────────────
-    # Practice Exam -> Briefing -> Assessment -> Assessment Flow -> TRAQOM -> Thank You.
-    # The practice exam is something you sit BEFORE the day, so it cannot sit between the
-    # assessment flow and the closing attendance - that is also the order the house
-    # standard fixes for the closing block.
-    s = base("Practice Exam", "PREPARE BEFORE THE DAY")
-    text_box(s, "A practice exam for this course is available online. Sit it before the assessment day.",
-             0.75, 1.45, 11.9, 0.4, 18, GREY)
-    shape_box(s, 0.75, 2.1, 11.85, 2.5, PALE, True, LINE, 1)
-    text_box(s, "exams.tertiaryinfotech.com", 0.95, 2.6, 11.4, 0.7, 30, BLUE, True, PP_ALIGN.CENTER)
-    text_box(s, f"Search for: {COURSE_TITLE}  ({COURSE_CODE})",
-             0.95, 3.4, 11.4, 0.5, 17, GREY, False, PP_ALIGN.CENTER)
-    for i, (n, label, note, color) in enumerate([
-        ("1", "Sit the practice exam", "Same style of questions as the WA", BLUE),
-        ("2", "Review what you missed", "Every gap points at a lab you should re-run", TEAL),
-        ("3", "Re-run that lab", "Evidence beats revision - go and make the thing work", VIOLET),
-    ]):
-        y = 4.85 + i * 0.72
-        circle(s, n, 0.9, y, 0.5, color, WHITE, 12)
-        text_box(s, label, 1.65, y - 0.02, 3.6, 0.4, 15, INK, True, valign=MSO_ANCHOR.MIDDLE)
-        text_box(s, note, 5.3, y - 0.02, 7.3, 0.4, 14, GREY, False, valign=MSO_ANCHOR.MIDDLE)
-
+    # Briefing -> Assessment -> Assessment Flow -> TRAQOM -> Thank You.
+    # This course has NO practice exam - do not add a Practice Exam slide.
     s = base("Briefing for Assessment", "BEFORE YOU ARE ASSESSED")
     text_box(s, "Read this before the papers are handed out. You are entitled to know exactly how you will be judged.",
              0.75, 1.42, 11.9, 0.4, 17, GREY)

@@ -936,14 +936,15 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 1. Import `lab7/heygen-news-avatar-flow.json` and set it Active.
 2. Add the `HeyGen API` credential, and confirm the `Ollama local` credential on the script node.
 3. Serve the site from `lab7/website` and open the GG News Studio.
-4. Type the day's facts and generate - watch gemma4's spoken script appear in the teleprompter.
-5. Watch the page poll `/heygen-status` until the video is completed, then play it.
-6. Read the script aloud yourself: does it SOUND spoken? No bullets, no URLs, no stage directions.
+4. Write YOUR OWN news item - a story from your industry, your company or today's headlines - and generate; watch gemma4's spoken script appear in the teleprompter.
+5. Watch the page poll `/heygen-status` until the video is completed, then play it. Read the script aloud: does it SOUND spoken?
+6. SHARE IT: play your broadcast to the class, and note one piece of feedback you would act on.
 
 **Checkpoint**
 
 - The script reads as speech - no bullets, URLs or markdown.
 - The page polls and eventually plays the finished video.
+- YOUR OWN news broadcast is generated and played to the class.
 
 **Trainer facilitation notes**
 
@@ -960,7 +961,7 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 | The avatar says 'asterisk' | Markdown leaked into the script. | Tighten the system prompt: spoken copy only, no formatting characters. |
 | Status never reaches completed | Wrong video ID, or HeyGen credits ran out. | Read the status execution in n8n and check the HeyGen account. |
 
-**Deliverable:** A generated avatar news video plus quality-review notes on the script and the render.
+**Deliverable:** Your own news broadcast, played to the class, plus quality-review notes on the script and the render.
 
 ![Lab 7 - the GG News Studio: gemma4's script in the teleprompter and an honest render progress bar.](screenshots/lab7-heygen-site.png)
 
@@ -1145,14 +1146,15 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 1. Import `lab10/veo3-video-flow.json` and set it Active.
 2. Add the `Gemini API` credential, and confirm the `Ollama local` credential.
 3. Serve the `lab10` website and open the Veo Studio.
-4. Type one idea sentence and generate - then read the shot prompt gemma4 actually wrote.
-5. Wait for the poll to complete and play the clip IN the page, through the /veo-file proxy.
-6. Refine the prompt once, regenerate, and write one note on what changed between the two versions.
+4. Type YOUR OWN idea - one sentence, any subject you like - and generate; then read the shot prompt gemma4 actually wrote.
+5. Wait for the poll to complete and play the clip IN the page, through the /veo-file proxy. Refine the prompt once and regenerate.
+6. SHARE IT: present your best clip to the class, and say what changed between your two prompt versions.
 
 **Checkpoint**
 
 - The shot prompt names camera, lighting and motion - not a summary.
 - The clip plays in the page.
+- YOUR OWN clip is presented to the class, with the before/after prompt note.
 - You can explain why the page never sees the Gemini key.
 
 **Trainer facilitation notes**
@@ -1170,7 +1172,7 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 | Generation fails immediately | API quota, or a malformed prompt payload. | Run a short test prompt and read the provider response in the execution. |
 | The clip ignores the idea | The shot prompt drifted from the subject. | Tighten the subject, camera and lighting wording, then regenerate. |
 
-**Deliverable:** A rendered Veo clip, the shot prompt that produced it, and a note on what changed between two prompt versions.
+**Deliverable:** Your own Veo clip presented to the class, the shot prompt that produced it, and a note on what changed between two prompt versions.
 
 ![Lab 10 - the Veo studio: one prompt in, gemma4 writes the shot script, Veo 3.1 renders the clip.](screenshots/lab10-veo-site.png)
 
