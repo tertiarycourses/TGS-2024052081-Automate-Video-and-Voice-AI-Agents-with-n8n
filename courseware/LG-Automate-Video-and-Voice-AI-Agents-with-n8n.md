@@ -800,7 +800,7 @@ Lip-sync, avatars and text-to-video: from a script, to a mouth that moves, to a 
 - **Lip-Sync Face-Off: MuseTalk vs HeyGen:** The same gemma4 script and the same portrait rendered by MuseTalk (local) and HeyGen (cloud), judged side by side with your own eyes.
 - **Avatar News Video with HeyGen (GG News Studio):** Facts in, broadcast out: gemma4 writes spoken copy, HeyGen renders a presenter reading it, and the page polls until the video plays.
 - **Open-Source News Avatar - Free and Local:** The same news video with zero cloud and zero credits: TTS, Wav2Lip and ffmpeg on your own machine, driven by n8n.
-- **Interactive Avatar Brain (Aria, In-Browser):** A talking avatar you can interrupt: speech in, a gemma4 reply in about two seconds, and the mouth drawn live in the browser.
+- **Interactive Avatar Brain (Aria, In-Browser):** A talking avatar you can interrupt: speech in, an AI Agent reply from local gemma4, and the mouth drawn live in the browser.
 - **Interactive Avatar Session (Nova, HeyGen LiveAvatar):** A cloud interactive avatar embedded in the page through a short-lived session URL minted by n8n - the API key never reaches the browser.
 - **AI Video Generation with Gemini Veo 3 (Veo Studio):** One sentence in, an 8-second cinematic clip with sound out: gemma4 writes the shot prompt, Veo 3.1 renders it, n8n proxies the file.
 
@@ -1022,7 +1022,7 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 **Time:** 45 minutes
 
-**Goal:** A talking avatar you can interrupt: speech in, a gemma4 reply in about two seconds, and the mouth drawn live in the browser.
+**Goal:** A talking avatar you can interrupt: speech in, an AI Agent reply from local gemma4, and the mouth drawn live in the browser.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1030,23 +1030,23 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Concept | In one line |
 |---|---|
-| Latency is the feature | The AI Agent node's ReAct loop took ~14 s per reply; the same model over raw HTTP answers in ~2 s. A receptionist needs none of that overhead. |
-| think: false | gemma4 is a thinking model - left alone it spends its whole token budget reasoning privately and returns an EMPTY reply. |
-| keep_alive: 30m | Keeps the 9.6 GB model resident in memory, so the next reply is not a cold load. |
-| Spoken sentences | One or two spoken sentences, no markdown, no URLs - this is a voice, not a document. |
+| AI Agent + Ollama | The same two nodes as Lab 1 - AI Agent plus local gemma4 - now behind a webhook instead of a chat window. |
+| Stateless by design | The browser sends the transcript with every turn, so the flow needs no memory node - the system prompt carries the conversation. |
+| Spoken register | One or two spoken sentences, no markdown, no URLs - Aria's prompt enforces it, and a cleanup node strips anything that slips through. |
+| Latency is the feature | An interactive avatar lives or dies on response time. The page prints the measured reply time - watch it, do not guess it. |
 
 **Step-by-step**
 
-1. Import `lab8/avatar-chat-flow.json` and set it Active. Note what is missing: there is NO AI Agent node, deliberately.
-2. Open the HTTP node that calls Ollama and find `think: false` and `keep_alive: '30m'` - be able to say what each prevents.
-3. Serve the `lab8` website and talk to Aria.
-4. Watch the timing breakdown the page prints after each reply.
-5. Screenshot the latency panel - that screenshot is your evidence.
-6. Interrupt her mid-reply and watch the conversation recover.
+1. Import `lab8/avatar-chat-flow.json` and set it Active. The shape: Webhook -> Build Prompt -> AI Agent (Ollama gemma4) -> Make It Speakable -> Respond.
+2. Open the AI Agent node and read Aria's system prompt: the voice rules, the conversation rules, and the facts she may state.
+3. Open Make It Speakable and see what it strips before the avatar speaks: markdown, URLs, and a thinking model's private reasoning.
+4. Serve the `lab8` website and talk to Aria.
+5. Watch the timing panel the page prints after each reply, and screenshot it - that is your evidence.
+6. Tighten one prompt rule (for example: always end with one short follow-up question), re-test, and note what changed.
 
 **Checkpoint**
 
-- Aria replies in roughly two seconds.
+- Aria answers helpfully by voice - never 'I did not catch that' when the message arrived.
 - Replies are one or two spoken sentences - no markdown, no URLs.
 - The latency-panel screenshot is captured.
 
@@ -1061,11 +1061,11 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Aria says 'sorry, I didn't catch that' | The model spent its whole budget thinking and returned an empty reply. | Set think: false in the request body. |
-| The first reply takes forever | The model is cold-loading. | keep_alive: '30m' keeps it resident after the first call - the second reply is fast. |
-| Replies read like essays | The prompt does not constrain the register. | Instruct: one or two spoken sentences, no markdown, no URLs. |
+| Aria gives an empty or 'hiccup' reply | The model returned nothing - often a thinking model spending its budget on private reasoning. | Open the execution and read the AI Agent output; the cleanup node's think-stripping must stay in place. |
+| The first reply takes forever | The local model is cold-loading into memory. | Expected once per session - later replies are much faster. Close heavy apps if it persists. |
+| Replies read like essays | The system prompt's voice rules were weakened. | Restore the rules: one or two spoken sentences, no markdown, no URLs. |
 
-**Deliverable:** A conversation with Aria plus the latency-panel screenshot proving ~2 s replies.
+**Deliverable:** A conversation with Aria, the latency-panel screenshot, and one prompt improvement you made and re-tested.
 
 ![Lab 8 - Aria, rendered in the browser: speech in, gemma4 reply, and the mouth drawn live. The latency is printed, not claimed.](screenshots/lab8-interactive-avatar.png)
 

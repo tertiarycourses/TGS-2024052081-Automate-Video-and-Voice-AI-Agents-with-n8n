@@ -150,3 +150,12 @@ img, video { max-width: 100%; display: block; }
 }
 .progress-steps .step.is-active { color: #fff; font-weight: 600; }
 .progress-steps .step.is-done { color: #4ade80; }
+
+/* The webhook URL is long - give the paste box the full row and readable type. */
+.n8n-settings input.n8n-url-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+  padding: 0.7rem 0.8rem;
+  min-height: 2.9rem;
+}

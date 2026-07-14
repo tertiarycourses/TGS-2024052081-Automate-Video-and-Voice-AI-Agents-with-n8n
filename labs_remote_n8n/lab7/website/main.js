@@ -5,13 +5,19 @@
 //   2. Poll the n8n "heygen-status" webhook until the video is ready, then
 //      play it in the 16:9 (YouTube) player.
 // ---------------------------------------------------------------------------
-const WEBHOOK_KEY = "lab7_base";
-// The base the learner saved in the settings box (see n8n-connect.js). The old
-// hardcoded localhost URL was wrong for anyone not running n8n on this machine.
-const webhookBase = () =>
-  (window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || "https://n8n.tertiarytraining.com/webhook";
-const GENERATE_URL = () => `${webhookBase()}/heygen-generate`;
-const STATUS_URL = () => `${webhookBase()}/heygen-status`;
+const WEBHOOK_KEY = "lab7_generate_url";
+// The learner pastes the FULL Production URL of the heygen-generate webhook
+// (see n8n-connect.js). The status URL is derived from it, so there is only
+// ONE thing to paste. A pasted base ending in /webhook is forgiven.
+const DEFAULT_GENERATE_URL = "https://n8n.tertiarytraining.com/webhook/heygen-generate";
+const generateUrl = () => {
+  let u = ((window.N8nConnect ? window.N8nConnect.load(WEBHOOK_KEY) : "") || DEFAULT_GENERATE_URL)
+    .trim().replace(/\/+$/, "");
+  if (/\/webhook$/.test(u)) u += "/heygen-generate";
+  return u;
+};
+const GENERATE_URL = () => generateUrl();
+const STATUS_URL = () => generateUrl().replace(/heygen-generate$/, "heygen-status");
 const POLL_MS = 5000;        // ask HeyGen every 5s so the bar tracks reality closely
 const RENDER_ESTIMATE_S = 120; // measured: a ~20s script renders in about two minutes
 

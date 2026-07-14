@@ -1,5 +1,4 @@
 {
-  "id": "LabEightAvatarChat",
   "name": "Lab 8 - Interactive Avatar Brain",
   "nodes": [
     {
@@ -23,7 +22,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// WHY NOT THE AI AGENT NODE?\n// Measured on this machine: the LangChain Agent node took ~14s per reply, while the\n// SAME model with the SAME prompt answers in ~2s when called directly. The agent runs\n// a ReAct loop (several LLM round-trips, a scratchpad, tool-choice reasoning) \u2014 none of\n// which this lab needs. For a conversation you must not keep waiting for, that overhead\n// is the whole difference between \"interactive\" and \"awkward\".\n//\n// So we build the chat payload ourselves and call Ollama once.\n//\n// History comes from the BROWSER (it already has the transcript), which also keeps this\n// flow stateless \u2014 no memory node, no session store.\n\nconst body = $input.first().json.body || {};\nconst message = (body.message || '').toString().trim();\nconst history = Array.isArray(body.history) ? body.history.slice(-6) : [];\n\nconst SYSTEM = `You are Aria, a friendly AI receptionist for Tertiary Infotech Academy.\n\nYou are SPOKEN ALOUD by a talking avatar, so:\n- Reply in ONE short sentence. Two at the very most.\n- Plain spoken English. No markdown, no bullets, no emoji, no URLs.\n- Say numbers in words: \"two days\", \"nine thirty in the morning\".\n- If you do not know, say so briefly and offer a colleague follow-up. Never invent a price, a date or a policy.\n\nWHAT YOU KNOW\n- The academy runs WSQ short courses in AI, automation and data.\n- Classes run 9:30am to 6:30pm on weekdays at our training centre.\n- Course fees vary; funding is available for eligible Singaporeans.\n- To enrol, a learner registers on the website.`;\n\nconst messages = [\n  { role: 'system', content: SYSTEM },\n  ...history.map((h) => ({ role: h.role === 'you' ? 'user' : 'assistant', content: h.text })),\n  { role: 'user', content: message || 'Hello' },\n];\n\nreturn [{ json: {\n  ollama: {\n    model: 'gemma4:latest',\n    stream: false,\n    // gemma4 is a THINKING model: left alone it spends its whole token budget on an\n    // internal monologue and returns message.content EMPTY (done_reason: 'length').\n    // The avatar then says \"Sorry, I did not catch that\" while the model is busy\n    // reasoning beautifully in private. Turn thinking off \u2014 this is a receptionist,\n    // not a maths olympiad.\n    think: false,\n    keep_alive: '30m',          // keep the 9.6 GB model resident \u2014 a cold load costs seconds\n    messages,\n    options: {\n      num_predict: 120,         // enough for two spoken sentences, not enough to ramble\n      temperature: 0.6,\n    },\n  },\n  warm: !!body.warm,\n} }];"
+        "jsCode": "// Shape the webhook body for the AI Agent node.\n//\n// History comes from the BROWSER (it already has the transcript), which keeps this\n// flow stateless - no memory node, no session store. We fold the last few turns\n// into the system message so the agent still follows the conversation.\n\nconst body = $input.first().json.body || {};\nconst message = (body.message || '').toString().trim();\nconst history = Array.isArray(body.history) ? body.history.slice(-6) : [];\n\nconst SYSTEM = \"You are Aria, the friendly AI receptionist for Tertiary Infotech Academy, speaking to a visitor through a talking avatar.\\n\\nVOICE RULES - you are SPOKEN ALOUD:\\n- One short sentence; two at the very most.\\n- Plain spoken English. No markdown, no bullets, no emoji, no URLs, no code.\\n- Say numbers in words: \\\"two days\\\", \\\"nine thirty in the morning\\\".\\n\\nCONVERSATION RULES:\\n- ALWAYS give a helpful answer. If the question is unclear, give your best answer AND ask one short follow-up question.\\n- Never say you did not hear or did not catch the message - the message always reaches you perfectly.\\n- If you truly do not know a fact, say so briefly and offer to have a colleague follow up. Never invent a price, a date or a policy.\\n- Greet a plain hello warmly and offer help with courses, schedules or enrolment.\\n\\nWHAT YOU KNOW:\\n- Tertiary Infotech Academy is a Singapore training provider for working adults.\\n- It runs WSQ short courses in AI, automation and data - including building AI chatbots, voice agents and avatar videos with n8n, plus data analytics and programming.\\n- Courses are hands-on, usually one to three days, from nine thirty in the morning to six thirty in the evening, at the Woods Square training centre in Woodlands.\\n- SkillsFuture credit and WSQ funding can offset the fees for eligible Singaporeans and PRs.\\n- To enrol or see the full course list, a learner visits the Tertiary Courses website or speaks to our staff.\";\n\nconst transcript = history\n  .map((h) => `${h.role === 'you' ? 'Visitor' : 'Aria'}: ${h.text}`)\n  .join('\\n');\n\nreturn [{ json: {\n  chatInput: message || 'Hello',\n  system: transcript ? `${SYSTEM}\\n\\nCONVERSATION SO FAR\\n${transcript}` : SYSTEM,\n  warm: !!body.warm,\n  started_at: Date.now(),  // the agent reports no timings, so we measure wall-clock ourselves\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -32,41 +31,53 @@
         0
       ],
       "id": "e0000003-0000-4000-8000-000000000003",
-      "name": "Build Chat Request"
+      "name": "Build Prompt"
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "http://host.docker.internal:11434/api/chat",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.ollama) }}",
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
         "options": {
-          "timeout": 60000,
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
+          "systemMessage": "={{ $json.system }}"
         }
       },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
       "position": [
         200,
         0
       ],
       "id": "e0000004-0000-4000-8000-000000000004",
-      "name": "Ollama: Chat"
+      "name": "AI Agent",
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "// The avatar SPEAKS this, so strip anything that does not read aloud: a stray asterisk\n// becomes an audible \"asterisk\" in the browser's voice.\nconst res = $input.first().json;\n// If a thinking model ever slips through with an empty content field, we would\n// rather say something true from its reasoning than 'I did not catch that'.\nlet reply = (res.message?.content || '').toString();\nconst starved = !reply && res.done_reason === 'length';\n\nreply = reply\n  .replace(/[*_`#>]/g, '')\n  .replace(/^\\s*[-\u2022]\\s*/gm, '')\n  .replace(/https?:\\/\\/\\S+/g, 'the link on our website')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nif (!reply) {\n  reply = res.error\n    ? 'My brain is not answering. Check that Ollama is running.'\n    : starved\n      ? 'Sorry, I ran out of words. Ask me that again?'\n      : 'Sorry, I did not catch that. Could you say it again?';\n}\n\n// Report where the time went, so the lab can SHOW the latency rather than claim it.\nconst ms = (n) => Math.round((n || 0) / 1e6);\n\nreturn [{ json: {\n  reply,\n  timing: {\n    total_ms: ms(res.total_duration),\n    model_load_ms: ms(res.load_duration),\n    prompt_ms: ms(res.prompt_eval_duration),\n    generate_ms: ms(res.eval_duration),\n    tokens: res.eval_count || 0,\n  },\n} }];"
+        "model": "gemma4:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        200,
+        208
+      ],
+      "id": "e0000007-0000-4000-8000-000000000007",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "name": "Ollama local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// The avatar SPEAKS this, so strip anything that does not read aloud: a stray\n// asterisk becomes an audible \"asterisk\", and a thinking model's private\n// reasoning must never reach the voice.\nconst res = $input.first().json;\nconst started = $('Build Prompt').first().json.started_at;\n\nlet reply = (res.output ?? res.text ?? res.response ?? '').toString();\n\nreply = reply\n  .replace(/<think>[\\s\\S]*?<\\/think>/gi, '')   // a thinking model's inner monologue\n  .replace(/[*_`#>]/g, '')\n  .replace(/^\\s*[-\\u2022]\\s*/gm, '')\n  .replace(/https?:\\/\\/\\S+/g, 'the link on our website')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// Never blame the visitor's microphone - the message arrived fine. If the model\n// gave us nothing, own the hiccup and keep the conversation alive.\nif (!reply) {\n  const asked = ($('Build Prompt').first().json.chatInput || '').trim().toLowerCase();\n  reply = (!asked || asked === 'hello')\n    ? 'Hi, I am Aria. Ask me about our courses, the schedule, or how to enrol.'\n    : 'Give me one second, my brain hiccuped there - please ask me that once more.';\n}\n\nreturn [{ json: {\n  reply,\n  timing: {\n    total_ms: started ? Date.now() - started : null,\n    model_load_ms: null,\n    prompt_ms: null,\n    generate_ms: null,\n    tokens: 0,\n    prompt_tokens: 0,\n  },\n  // Trainer-facing breadcrumb (the page ignores it): why a fallback fired.\n  debug: res.error ? String(res.error).slice(0, 200) : undefined,\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        440,
+        520,
         0
       ],
       "id": "e0000005-0000-4000-8000-000000000005",
@@ -79,7 +90,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        660,
+        740,
         0
       ],
       "id": "e0000006-0000-4000-8000-000000000006",
@@ -91,25 +102,36 @@
       "main": [
         [
           {
-            "node": "Build Chat Request",
+            "node": "Build Prompt",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Build Chat Request": {
+    "Build Prompt": {
       "main": [
         [
           {
-            "node": "Ollama: Chat",
+            "node": "AI Agent",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Ollama: Chat": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
       "main": [
         [
           {
@@ -134,6 +156,5 @@
   },
   "settings": {
     "executionOrder": "v1"
-  },
-  "pinData": {}
+  }
 }

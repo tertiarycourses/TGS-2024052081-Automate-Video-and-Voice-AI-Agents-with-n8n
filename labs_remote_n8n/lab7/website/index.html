@@ -66,10 +66,10 @@
       <p class="desk-sub">OpenAI writes the script, HeyGen turns your news anchor photo into a talking video.</p>
     <!-- The learner's own n8n. Nothing is hardcoded; Test proves it before you generate. -->
     <div class="n8n-settings">
-      <label for="baseUrl">n8n webhook base</label>
-      <p class="n8n-settings__hint">The <strong>Production</strong> webhook base of the <em>HeyGen News Avatar</em> flow. Saved in this browser only.</p>
-      <input id="baseUrl" type="url" placeholder="https://n8n.tertiarytraining.com/webhook" spellcheck="false"
-             data-n8n-test="safe" data-n8n-key="lab7_base" data-n8n-path="heygen-generate" />
+      <label for="baseUrl">n8n webhook URL</label>
+      <p class="n8n-settings__hint">The full <strong>Production</strong> URL of the <code>heygen-generate</code> webhook — copy it from the Webhook node in n8n. Saved in this browser only.</p>
+      <input id="baseUrl" class="n8n-url-input" type="url" placeholder="https://n8n.tertiarytraining.com/webhook/heygen-generate" spellcheck="false"
+             data-n8n-test="safe" data-n8n-key="lab7_generate_url" />
     </div>
 
 

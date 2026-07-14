@@ -466,26 +466,32 @@ needed — the exact opposite of Lab 4's tools.
 
 **Goal:** a talking avatar you can **interrupt** — latency is the feature.
 **Flow:** `lab8/avatar-chat-flow.json`
-**Webhook:** `POST /avatar-chat` · **Model:** `gemma4` called over **raw HTTP**
+**Webhook:** `POST /avatar-chat` · **Model:** AI Agent + `gemma4` (`Ollama local`)
 
-This flow deliberately does **not** use the AI Agent node. Measured on a lab machine: the Agent node
-took **~14 s** per reply; the *same model* with the *same prompt* answers in **~2 s** called directly.
-The Agent runs a ReAct loop — several round-trips, a scratchpad, tool-choice reasoning — none of which
-a receptionist conversation needs. For a chat you must not wait for, that overhead is the whole
-difference between *interactive* and *awkward*.
+The flow is the same pair you met in Lab 1 — **AI Agent + Ollama Chat Model** — now behind a
+webhook instead of a chat window, so it is one credential to attach and nothing else to configure:
 
-Two more details in the code worth reading:
+```text
+Webhook → Build Prompt → AI Agent (gemma4) → Make It Speakable → Respond
+```
 
-- **`think: false`** — `gemma4` is a thinking model. Left alone it spends its whole token budget on an
-  internal monologue and returns an **empty** reply. Aria then says "sorry, I didn't catch that" while
-  the model reasons beautifully in private.
-- **`keep_alive: '30m'`** — keeps the 9.6 GB model resident, so the *next* reply is not a cold load.
+Three details worth reading in the flow:
+
+- **The system prompt** (in the AI Agent node) carries Aria's voice rules — one or two spoken
+  sentences, no markdown, say numbers in words — plus the facts she is allowed to state. It also
+  tells her to *always answer helpfully* and never claim she "didn't catch" a message: the text
+  always arrives perfectly; only a model hiccup can fail.
+- **Stateless by design** — the browser sends the recent transcript with every turn, folded into
+  the system message. No memory node, no session store.
+- **Make It Speakable** strips whatever must never be spoken aloud: markdown (a stray asterisk
+  becomes an audible "asterisk"), URLs, and a thinking model's private `<think>` reasoning.
 
 ### Verify
 
-- [ ] Aria replies in roughly two seconds.
+- [ ] Aria answers helpfully by voice — never "I did not catch that" when the message arrived.
 - [ ] The reply is one or two spoken sentences — no markdown, no URLs.
 - [ ] The page shows the timing breakdown. **Screenshot it** — that is your latency evidence.
+- [ ] Tighten one prompt rule, re-test, and note what changed.
 
 ---
 
