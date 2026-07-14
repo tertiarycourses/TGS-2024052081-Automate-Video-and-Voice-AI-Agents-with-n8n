@@ -14,7 +14,7 @@
 // 2026). LiveAvatar replaces it, and it needs its OWN key: a HeyGen API key is
 // rejected with "Invalid API key".
 // ---------------------------------------------------------------------------
-const STORE_BASE = "lab9_n8n_base";
+const STORE_BASE = "lab9_n8n_base_local";
 const DEFAULT_BASE = "http://localhost:5678/webhook";
 
 const $ = (id) => document.getElementById(id);

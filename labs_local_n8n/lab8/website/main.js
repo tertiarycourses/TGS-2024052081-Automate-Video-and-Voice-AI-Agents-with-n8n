@@ -15,7 +15,7 @@
 // drive the mouth from a waveform. Instead the viseme timeline runs on a synthetic
 // clock and is re-synced on every word `boundary` event.
 // ---------------------------------------------------------------------------
-const STORE_URL = "lab8_n8n_webhook";
+const STORE_URL = "lab8_n8n_webhook_local";
 const DEFAULT_URL = "http://localhost:5678/webhook/avatar-chat";
 
 const $ = (id) => document.getElementById(id);

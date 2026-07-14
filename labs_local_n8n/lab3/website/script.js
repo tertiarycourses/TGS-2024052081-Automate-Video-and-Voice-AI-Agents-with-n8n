@@ -11,7 +11,7 @@
 
 const CONFIG = {
   // Where the learner's webhook URL is remembered in this browser.
-  STORAGE_KEY: "cb_n8n_webhook_url",
+  STORAGE_KEY: "cb_n8n_webhook_url_local",
   // Shown as the input placeholder — an example only, never used as a default.
   URL_EXAMPLE: "http://localhost:5678/webhook/cx-agent",
   // Works out of the box against the lab flow; ⚙ still overrides it.

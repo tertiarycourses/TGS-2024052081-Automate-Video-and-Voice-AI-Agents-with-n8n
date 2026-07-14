@@ -5,7 +5,7 @@
 //   2. Poll the n8n "heygen-status" webhook until the video is ready, then
 //      play it in the 16:9 (YouTube) player.
 // ---------------------------------------------------------------------------
-const WEBHOOK_KEY = "lab7_base";
+const WEBHOOK_KEY = "lab7_base_local";
 // The base the learner saved in the settings box (see n8n-connect.js). The old
 // hardcoded localhost URL was wrong for anyone not running n8n on this machine.
 const webhookBase = () =>

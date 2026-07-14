@@ -75,7 +75,7 @@
       <div class="ml-10">
         <div class="flex gap-2">
           <input type="url" id="webhookUrl" placeholder="http://localhost:5678/webhook/rag-upload"
-            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-sm font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" data-n8n-test="post" data-n8n-key="lab2_upload" />
+            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-3 text-sm font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" data-n8n-test="post" data-n8n-key="lab2_upload_local" />
           <button onclick="testWebhook()" id="btnTest"
             class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition flex items-center gap-1.5 cursor-pointer shrink-0">
             <i data-lucide="activity" class="w-4 h-4"></i><span>Test</span>
@@ -145,7 +145,7 @@
         <!-- Chat webhook URL -->
         <div class="flex gap-2 mb-4">
           <input type="url" id="chatWebhookUrl" placeholder="http://localhost:5678/webhook/rag-chat"
-            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" data-n8n-test="post" data-n8n-key="lab2_chat" />
+            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs font-mono text-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition" data-n8n-test="post" data-n8n-key="lab2_chat_local" />
         </div>
 
         <!-- Chat window -->
@@ -199,8 +199,8 @@
       if (!v || v.includes("n8n.tertiarytraining.com")) { localStorage.setItem(key, fallback); return fallback; }
       return v;
     }
-    let webhookUrl = savedUrl("rag_webhook_url", DEFAULT_UPLOAD_URL);
-    let chatUrl = savedUrl("rag_chat_url", DEFAULT_CHAT_URL);
+    let webhookUrl = savedUrl("rag_webhook_url_local", DEFAULT_UPLOAD_URL);
+    let chatUrl = savedUrl("rag_chat_url_local", DEFAULT_CHAT_URL);
     const sessionId = sessionStorage.getItem("rag_session") || (() => {
       const id = "web-" + Math.random().toString(36).slice(2, 10);
       sessionStorage.setItem("rag_session", id);
@@ -218,14 +218,14 @@
       if (webhookUrl) urlInput.value = webhookUrl;
       urlInput.addEventListener("input", () => {
         webhookUrl = urlInput.value.trim();
-        localStorage.setItem("rag_webhook_url", webhookUrl);
+        localStorage.setItem("rag_webhook_url_local", webhookUrl);
       });
 
       const chatUrlInput = document.getElementById("chatWebhookUrl");
       chatUrlInput.value = chatUrl;
       chatUrlInput.addEventListener("input", () => {
         chatUrl = chatUrlInput.value.trim();
-        localStorage.setItem("rag_chat_url", chatUrl);
+        localStorage.setItem("rag_chat_url_local", chatUrl);
       });
       document.getElementById("chatInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }

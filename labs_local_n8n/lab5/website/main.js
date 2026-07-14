@@ -11,8 +11,8 @@
 // the ⚙ Settings panel, saved in this browser only (localStorage).
 // ---------------------------------------------------------------------------
 const STORE = {
-  key: "medirefill_vapi_public_key",
-  assistant: "medirefill_vapi_assistant_id",
+  key: "medirefill_vapi_public_key_local",
+  assistant: "medirefill_vapi_assistant_id_local",
 };
 
 const getKey = () => (localStorage.getItem(STORE.key) || "").trim();

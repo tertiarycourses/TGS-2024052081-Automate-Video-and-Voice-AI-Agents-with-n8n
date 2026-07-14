@@ -1,7 +1,7 @@
 // Lab 5 (open-source) — free, local AI avatar news.
 // Website → n8n "os-generate" webhook → Ollama script → local render service
 // (macOS `say` + ffmpeg, or Wav2Lip if installed) → 1080p video URL. Synchronous.
-const WEBHOOK_KEY = "lab7os_base";
+const WEBHOOK_KEY = "lab7os_base_local";
 // The base the learner saved in the settings box (see n8n-connect.js). The old
 // hardcoded localhost URL was wrong for anyone not running n8n on this machine.
 const webhookBase = () =>

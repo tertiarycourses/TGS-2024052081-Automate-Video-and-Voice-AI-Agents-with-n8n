@@ -10,8 +10,8 @@
 // the optional agent ID.
 // ---------------------------------------------------------------------------
 const STORE = {
-  url: "gg_n8n_web_call_url",   // n8n "ElevenLabs Web Call Trigger" production webhook URL
-  agent: "gg_elevenlabs_agent_id",  // optional: your own ElevenLabs agent ID
+  url: "gg_n8n_web_call_url_local",   // n8n "ElevenLabs Web Call Trigger" production webhook URL
+  agent: "gg_elevenlabs_agent_id_local",  // optional: your own ElevenLabs agent ID
 };
 
 // Matches the `path` of the Webhook node in elevenlabs-web-call-flow.json. The browser
@@ -196,3 +196,11 @@ async function endVoiceCall() {
   if (conversation) await conversation.endSession();
   onCallEnded();
 }
+
+// This file is loaded as a module, so nothing here is global. The page's inline
+// onclick handlers can only see window.* — expose exactly what they call.
+window.startVoiceCall = startVoiceCall;
+window.endVoiceCall = endVoiceCall;
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.saveSettings = saveSettings;

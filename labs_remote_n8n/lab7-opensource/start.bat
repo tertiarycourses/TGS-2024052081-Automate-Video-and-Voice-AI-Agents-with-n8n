@@ -1,6 +1,11 @@
 @echo off
 REM Lab 5 open-source (Windows) - starts the render service + website, opens browser.
 cd /d "%~dp0"
+
+REM Files extracted from a downloaded ZIP carry Windows' "blocked" flag
+REM (Mark-of-the-Web), and blocked scripts/tools silently refuse to run.
+REM Clear the flag for this lab's files before doing anything else.
+powershell -NoProfile -Command "Get-ChildItem -LiteralPath '.' -Recurse -File -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue" >nul 2>&1
 echo Starting render service on :8099 ...
 start "render-service" cmd /c "cd service && python render_service.py"
 timeout /t 3 >nul

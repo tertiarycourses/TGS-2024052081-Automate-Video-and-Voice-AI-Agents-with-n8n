@@ -47,6 +47,18 @@ Learners lose more time to this than to anything else in the course. Before you 
 **Goal:** Docker + n8n + Postgres + Ollama, all running and talking to each other.
 **Folder:** [`labs_local_n8n/lab0/`](labs_local_n8n/lab0/)
 
+## Get the labs
+
+Download the repository from GitHub:
+`https://github.com/tertiarycourses/TGS-2024052081-Automate-Video-and-Voice-AI-Agents-with-n8n`
+(**Code → Download ZIP**, or `git clone`).
+
+> 🪟 **Windows: unblock the ZIP before extracting.** Downloaded files carry the
+> *Mark-of-the-Web* and Windows silently blocks the scripts inside. Right-click the ZIP →
+> **Properties** → tick **Unblock** → OK, *then* extract. If you already extracted and
+> SmartScreen warns on a `start.bat`, click **More info → Run anyway** — the launcher then
+> unblocks the rest of that lab's files itself. `git clone` avoids all of this.
+
 ## Install
 
 | Tool | macOS | Windows (PowerShell) |

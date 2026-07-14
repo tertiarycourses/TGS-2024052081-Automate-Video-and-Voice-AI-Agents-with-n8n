@@ -11,7 +11,7 @@
 //
 // Nothing is hardcoded: the learner points this page at their own n8n in ⚙ Settings.
 // ---------------------------------------------------------------------------
-const STORE = "veo_n8n_base";
+const STORE = "veo_n8n_base_local";
 const DEFAULT_BASE = "http://localhost:5678/webhook";
 const POLL_MS = 5000;
 const ESTIMATE_S = 75; // measured: a Veo 3.1 Fast 8-second clip lands in about a minute

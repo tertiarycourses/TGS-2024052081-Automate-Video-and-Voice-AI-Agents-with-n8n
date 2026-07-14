@@ -9,6 +9,11 @@ REM so the sample portraits and the renderers all fail ("Could not load that
 REM sample."). The app has to be served over http://.
 cd /d "%~dp0"
 
+REM Files extracted from a downloaded ZIP carry Windows' "blocked" flag
+REM (Mark-of-the-Web), and blocked scripts/tools silently refuse to run.
+REM Clear the flag for this lab's files before doing anything else.
+powershell -NoProfile -Command "Get-ChildItem -LiteralPath '.' -Recurse -File -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue" >nul 2>&1
+
 if not defined PORT set PORT=8137
 set PY=python\.venv\Scripts\python.exe
 

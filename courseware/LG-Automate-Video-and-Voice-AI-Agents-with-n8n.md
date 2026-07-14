@@ -1,21 +1,21 @@
 # Learner Guide - Automate Video and Voice AI Agents with n8n
 
-**Course code:** TGS-2024052081  |  **Conducted by:** Tertiary Infotech Academy Pte Ltd  |  **Version:** v3.0  |  **Date:** 12 July 2026
+**Course code:** TGS-2024052081  |  **Conducted by:** Tertiary Infotech Academy Pte Ltd  |  **Version:** v4.0  |  **Date:** 14 July 2026
 
 ## Contents
 
 - Introduction
-- Course learning outcomes
+- Course learning outcomes (WSQ)
 - How this course uses agentic AI loop engineering
 - Environment setup
 - Topic and lab guides
 - How you are assessed
-- Capstone assessment guidance
+- Preparing for the Case Study
 - Troubleshooting and glossary
 
 ## Introduction
 
-This Learner Guide supports the adult training course **Automate Video and Voice AI Agents with n8n**. The course teaches learners how to design, build, test, and improve practical AI automations using n8n, Ollama, RAG, Retell, Vapi, HeyGen, LiveAvatar, Google Veo 3.1, open-source lip-sync rendering, and publishing workflows.
+This Learner Guide supports the adult training course **Automate Video and Voice AI Agents with n8n**. The course teaches learners how to design, build, test, and improve practical AI automations using n8n, Ollama, RAG, ElevenLabs, Vapi, HeyGen, LiveAvatar, Google Veo 3.1 and open-source lip-sync rendering - the chatbot, voice-agent and video-avatar applications collectively known as **AI digital humans**.
 
 The emphasis is not "click nodes until it works". The emphasis is engineering judgement. Learners will practise the agentic AI loop:
 
@@ -25,16 +25,26 @@ Every lab produces evidence: workflow exports, screenshots, test cases, quality 
 
 ## Course learning outcomes
 
-By the end of the course, learners will be able to:
+This course delivers the WSQ skill **Artificial Intelligence Application (AER-TEM-4026-1.1)**. The chatbots, voice agents and video avatars you build in the labs are the AI digital human applications the skill describes. By the end of the course, learners will be able to:
 
-- LO1: Set up a local AI automation workstation using Docker, n8n, Postgres, Ollama, and browser-based test pages.
-- LO2: Apply agentic AI loop engineering to define goals, tools, evaluation criteria, guardrails, and human review gates.
-- LO3: Build local AI agents with n8n and Ollama, including memory, tool calling, and execution-based debugging.
-- LO4: Build document-grounded RAG agents using embeddings, vector stores, chunking, retrieval tests, and grounded refusal behavior.
-- LO5: Build customer-facing and staff-facing AI assistants that collect structured data and prepare safe workflow handoffs.
-- LO6: Build voice AI agents using Retell, secure n8n webhooks, browser call front ends, transcript review, and QA scorecards.
-- LO7: Build AI video workflows using script agents, HeyGen, Google Veo 3.1 text-to-video, open-source local avatar rendering, and interactive avatars.
-- LO8: Publish and operate AI outputs using review gates, YouTube upload automation, monitoring, fallback plans, and capstone documentation.
+- **LO1** - Analyze the strengths, limitations, and feasibility of AI digital human technology within industry contexts. *(K1, K6, A3, A5)*
+- **LO2** - Evaluate the performance of AI digital human applications and analyze their effectiveness. *(K2, K3, A1, A4)*
+- **LO3** - Assess the design and improvements for AI digital human technology. *(K4, K5, A2, A6)*
+
+Each topic delivers one learning outcome: Topic 1 (Chatbot) builds the foundation for LO1, Topic 2 (Voice Agent) for LO2, and Topic 3 (Video Agent) for LO3 - and every lab feeds evidence into all three.
+
+### The knowledge and ability statements behind the outcomes
+
+The Written Assessment (SAQ) tests the six knowledge statements; the Case Study tests the six ability statements. Nothing is assessed that the labs did not make you do.
+
+| # | Knowledge (tested in the WA) | # | Ability (tested in the CS) |
+|---|---|---|---|
+| K1 | Range of AI applications | A1 | Analyse algorithms in the AI applications |
+| K2 | Concepts pertaining to performance effectiveness and analysis | A2 | Establish the correlation between design of algorithms and efficiency |
+| K3 | Methods of evaluating effectiveness of AI applications | A3 | Identify strengths and limitations of the AI applications |
+| K4 | Algorithm design and implementation | A4 | Evaluate various AI applications to compare strengths and limitations of the AI applications |
+| K5 | Methods of evaluating process improvements to the engineering processes using AI | A5 | Assess feasibility of AI applications to the engineering processes |
+| K6 | Applicability of AI in the industry | A6 | Assess improvements on the engineering and maintenance processes |
 
 ## How this course uses agentic AI loop engineering
 
@@ -66,9 +76,9 @@ Every lab runs on **macOS and on Windows**. The tools are identical; only the wa
 | Ollama | The local chat and embedding models - no cloud, no cost |
 | A modern browser | The lab websites; must allow microphone access for the voice labs |
 | Python 3 | Serving the lab websites over `http://localhost` |
-| ffmpeg | Local video rendering and verification (Topic 05) |
-| ngrok | Only from Lab 4.7 onward, when a cloud platform must call into your n8n |
-| Paid accounts (optional) | Retell, Vapi, HeyGen, LiveAvatar, Google Gemini (Veo 3.1), YouTube |
+| ffmpeg | Local video rendering and verification (Topic 03) |
+| ngrok | Labs 4 and 5 only, when a voice platform's servers must call into your n8n |
+| Paid accounts (optional) | ElevenLabs, Vapi, HeyGen, LiveAvatar, Google Gemini (Veo 3.1) |
 
 ### Installing the tools
 
@@ -95,10 +105,15 @@ Docker Desktop on Windows needs **WSL 2**. The installer usually enables it, but
 
 ### Core setup steps
 
-Both platforms, from the repository folder:
+Both platforms, from the repository folder (get the repository itself from GitHub first: https://github.com/tertiarycourses/TGS-2024052081-Automate-Video-and-Voice-AI-Agents-with-n8n - Code -> Download ZIP, or `git clone`).
+
+**Windows: unblock the ZIP before extracting.** Downloaded files carry the *Mark-of-the-Web*, and Windows silently blocks the scripts inside. Right-click the ZIP -> **Properties** -> tick **Unblock** -> OK, *then* extract. If you already extracted and SmartScreen warns on a `start.bat`, click **More info -> Run anyway** - the launcher then unblocks the rest of that lab's files itself. (`git clone` avoids all of this.)
+
+Then:
 
 ```bash
-cd lab0
+cd labs_local_n8n/lab0
+docker compose pull
 docker compose up -d
 ollama pull gemma4
 ollama pull nomic-embed-text
@@ -123,7 +138,7 @@ This is the whole list. Everything else in the course is identical on both platf
 | Serve a lab website | `cd lab4/website`<br>`python3 -m http.server 8090` | `cd lab4\website`<br>`python -m http.server 8090` |
 | One-click launcher | double-click `start.command` | double-click `start.bat` |
 | Path separator | `lab4/website` (forward slash) | `lab4\website` (backslash) |
-| A `curl` with a JSON body | single quotes work:<br>`curl -X POST url -H 'Content-Type: application/json' -d '{{"a":1}}'` | PowerShell mangles quotes. Use `curl.exe` and escape:<br>`curl.exe -X POST url -H "Content-Type: application/json" -d '{{\"a\":1}}'`<br>Or simply use the n8n UI's own test panel instead. |
+| A `curl` with a JSON body | single quotes work:<br>`curl -X POST url -H 'Content-Type: application/json' -d '{"a":1}'` | PowerShell mangles quotes. Use `curl.exe` and escape:<br>`curl.exe -X POST url -H "Content-Type: application/json" -d '{\"a\":1}'`<br>Or simply use the n8n UI's own test panel instead. |
 
 Note the Python one: on macOS the command is **`python3`**; on Windows it is **`python`**. Typing `python3` on Windows opens the Microsoft Store, which is confusing and does nothing useful.
 
@@ -143,185 +158,21 @@ course-evidence/
 
 Do not store API keys in this folder.
 
-## Topic 01 - Foundations of Agentic AI Loop Engineering
+## Topic 01 - Chatbot
 
-Set up the local stack and learn the engineering loop used in every lab: define the task, give the agent tools, observe behavior, evaluate outputs, improve the workflow, and add guardrails.
-
-### Key concepts
-
-- **Set Up the Local AI Automation Workstation:** A working Docker, n8n, Postgres, Ollama, and browser test environment.
-- **Map the Agentic AI Loop Before Building:** A one-page agent design canvas for a voice and video automation use case.
-- **Create a Workflow Quality Baseline:** A reusable pre-flight checklist and execution log habit for every n8n workflow.
-
-
-
-### Lab 1.1 - Set Up the Local AI Automation Workstation
-
-**Time:** 60 minutes
-
-**Goal:** A working Docker, n8n, Postgres, Ollama, and browser test environment.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Docker Desktop | Runs n8n and Postgres in a repeatable local stack. |
-| Ollama | Runs the chat and embedding models on the learner machine. |
-| host.docker.internal | Lets n8n inside Docker call services on the host computer. |
-| Environment smoke test | A short repeatable check before any agent lab starts. |
-
-**Step-by-step**
-
-1. Install Docker Desktop and confirm `docker --version` and `docker compose version` both work.
-2. Install Ollama, then pull `gemma4` for chat and `nomic-embed-text` for embeddings.
-3. Start the n8n stack from `lab0/docker-compose.yml` with `docker compose up -d`.
-4. Create the first n8n owner account at `http://localhost:5678`.
-5. Create an Ollama credential in n8n using `http://host.docker.internal:11434` as the base URL.
-6. Run a smoke prompt in Ollama and a smoke credential test in n8n.
-
-**Checkpoint**
-
-- n8n opens at `http://localhost:5678`.
-- `ollama list` shows both required models.
-- The n8n Ollama credential test succeeds.
-- The learner can explain why n8n must not use `localhost:11434` for Ollama.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| n8n cannot connect to Ollama | The credential uses localhost from inside Docker. | Use `http://host.docker.internal:11434`. |
-| Ollama model not found | The model was not pulled or has a different tag. | Run `ollama pull gemma4` and select the exact model name shown by `ollama list`. |
-| Port 5678 is busy | Another n8n container is already running. | Use `docker ps` and stop the older container, or change the compose port. |
-
-**Deliverable:** A checked workstation screenshot plus a short note explaining the local architecture.
-
-![The seven course workflows imported into local n8n.](screenshots/n8n-workflow-list.png)
-
-*The seven course workflows imported into local n8n.*
-
-### Lab 1.2 - Map the Agentic AI Loop Before Building
-
-**Time:** 45 minutes
-
-**Goal:** A one-page agent design canvas for a voice and video automation use case.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Goal definition | Names the business outcome before selecting a model or API. |
-| Tool boundary | States what the agent may and may not do. |
-| Evaluation rubric | Defines what good output means before generation starts. |
-| Human handoff | Identifies when the workflow must stop and ask for approval. |
-
-**Step-by-step**
-
-1. Choose one workplace scenario: customer support, course advisory, booking, training video, or sales follow-up.
-2. Write the agent goal in one measurable sentence.
-3. List inputs, tools, outputs, and forbidden actions.
-4. Create a five-point evaluation rubric covering accuracy, tone, safety, completion, and traceability.
-5. Convert the canvas into an n8n workflow note so the design travels with the automation.
-6. Use an AI assistant to challenge the canvas, then revise weak assumptions.
-
-**Checkpoint**
-
-- The canvas has a clear user, trigger, tool list, output, and stop condition.
-- The evaluation rubric can be applied by another learner.
-- At least two risks and two guardrails are documented.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| The goal is too broad | It describes a department instead of a task. | Rewrite it as a single trigger-to-output workflow. |
-| The agent has unlimited authority | No tool boundary was defined. | Add explicit allow and deny lists. |
-| Rubric is vague | Words like good or professional are not testable. | Use observable criteria, examples, and pass or fail thresholds. |
-
-**Deliverable:** An agentic loop canvas ready to guide the remaining labs.
-
-### Lab 1.3 - Create a Workflow Quality Baseline
-
-**Time:** 45 minutes
-
-**Goal:** A reusable pre-flight checklist and execution log habit for every n8n workflow.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Execution trace | The evidence trail used to debug an automation. |
-| Credential separation | Secrets live in credentials, never in browser code or exported notes. |
-| Small test cases | Inputs designed to reveal one behavior at a time. |
-| Versioned checkpoints | Saved workflow exports before risky changes. |
-
-**Step-by-step**
-
-1. Create a folder named `course-checkpoints` outside the repo for local exported workflows.
-2. In n8n, enable execution saving for successful and failed runs while developing.
-3. Create a workflow note template with purpose, trigger, inputs, expected outputs, and rollback plan.
-4. Run a tiny webhook echo workflow and export it as the first checkpoint.
-5. Record three test cases: normal input, missing input, and malicious or irrelevant input.
-6. Review the execution data and identify which node proves the expected behavior.
-
-**Checkpoint**
-
-- A learner can restore from the exported checkpoint.
-- The test cases are specific enough to rerun after every edit.
-- No API keys or secrets appear in notes, browser files, or JSON examples.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| No execution data appears | Execution saving is disabled or the workflow did not run. | Enable saving and trigger the workflow again. |
-| Export contains secrets | A credential or API key was placed in a regular field. | Move it to n8n credentials and rotate the key if it was exposed. |
-| Tests are hard to repeat | Inputs were not recorded. | Save exact sample payloads and expected result text. |
-
-**Deliverable:** A baseline quality checklist plus a saved echo workflow checkpoint.
-
-## Topic 02 - Local AI Agents and RAG with n8n
-
-Build local agents with Ollama, memory, retrieval, chunking, and document-grounded answers that can be tested and improved.
+Agents, retrieval and grounded answers: your first n8n AI agent, a RAG chatbot that admits what it does not know, and a customer-facing course advisor on a real website. Labs 0-3.
 
 ### Key concepts
 
-- **Build Your First Local AI Agent:** A local chat agent using n8n, the AI Agent node, and Ollama.
-- **Add Memory and Session Design:** A chat agent that remembers context within a learner session and forgets across sessions.
-- **Build a PDF RAG IT Support Agent:** A document-grounded chatbot over the sample IT FAQ PDF.
-- **Improve RAG with Chunking and Evaluation:** A repeatable RAG evaluation sheet with chunking experiments.
+- **Set Up n8n Locally:** A working local stack: Docker running n8n and Postgres, Ollama serving gemma4 and nomic-embed-text, all talking to each other.
+- **Your First AI Agent:** The smallest possible working agent: chat trigger, AI Agent node, and local gemma4 - with a system prompt you control.
+- **RAG IT Support Chatbot:** A chatbot that answers only from an uploaded IT FAQ PDF - and admits it when the answer is not in the document.
+- **CX Agent with RAG (Cook & Bake Academy):** A customer-facing course advisor: a chat widget on a real-looking school website, grounded in the school's own course brochures.
 
 
 ### The concepts behind RAG
 
-Read this before Lab 2.3. The labs will work if you only click the nodes, but you cannot *debug* a RAG agent - or explain to a manager why it answered wrongly - without these four ideas.
+Read this before Lab 2. The labs will work if you only click the nodes, but you cannot *debug* a RAG agent - or explain to a manager why it answered wrongly - without these four ideas.
 
 #### What RAG is, and the problem it solves
 
@@ -362,7 +213,7 @@ Tokens matter for three practical reasons:
 
 1. **Context windows are measured in tokens.** Everything you paste in - the system prompt, the retrieved chunks, the conversation memory, the question - competes for the same budget. Retrieve too many chunks and you push out the instructions.
 2. **Cost and latency are measured in tokens.** Doubling the retrieved text roughly doubles the prompt cost of every single call.
-3. **Chunk size is measured in tokens** (or characters, as an approximation of them). This is the number you will actually tune in Lab 2.4.
+3. **Chunk size is measured in tokens** (or characters, as an approximation of them). This is the number the RAG flows in Labs 2 and 3 are built around.
 
 #### Embeddings - meaning as coordinates
 
@@ -397,7 +248,7 @@ Chunk size is a genuine trade-off, and it is the main thing you will tune:
 | High precision, low recall | High recall, low precision |
 | Model says "the document does not say" when it does | Model gets distracted and cites the wrong part; tokens are wasted |
 
-There is no universally correct value. That is exactly why Lab 2.4 makes you measure it with golden questions instead of guessing.
+There is no universally correct value. That is exactly why Labs 2 and 3 make you read the retrieved chunks in the execution trace instead of guessing.
 
 #### Putting it together
 
@@ -416,64 +267,11 @@ gemma (Ollama) -> grounded answer
 
 
 
-### Lab 2.1 - Build Your First Local AI Agent
-
-**Time:** 60 minutes
-
-**Goal:** A local chat agent using n8n, the AI Agent node, and Ollama.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| AI Agent node | Coordinates model calls, memory, and tools. |
-| System message | Sets the role, boundaries, and style of the assistant. |
-| Local model | Keeps experimentation private and low cost. |
-| Agent evaluation | Checks whether the response matched the intended role. |
-
-**Step-by-step**
-
-1. Import `lab1/ai-agent-ollama.json` into n8n.
-2. Select the `Ollama local` credential in the Ollama Chat Model node.
-3. Set the model to `gemma4:latest` or the exact local tag on your machine.
-4. Add a system message that defines a helpful training assistant with concise answers.
-5. Open the chat and ask a simple introduction question.
-6. Run a second prompt asking for something outside the course scope and improve the system message if needed.
-
-**Checkpoint**
-
-- The agent replies without using a cloud LLM.
-- The execution trace shows the Chat Trigger, AI Agent, and Ollama model nodes.
-- The learner can point to the system message and explain how it changes behavior.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Agent returns empty text | The model call failed or a tool name is invalid. | Check the Ollama node output and keep tool names simple. |
-| Response is too long | No response style was specified. | Add a length and format instruction to the system message. |
-| Model is slow | The local machine is resource constrained. | Close other heavy apps or use a smaller model if available. |
-
-**Deliverable:** A working local AI agent with a documented system message.
-
-![Lab 1 - AI Agent (Ollama): chat trigger, AI Agent and the local Ollama model.](screenshots/lab1-ai-agent-ollama.png)
-
-*Lab 1 - AI Agent (Ollama): chat trigger, AI Agent and the local Ollama model.*
-
-### Lab 2.2 - Add Memory and Session Design
+### Lab 0 - Set Up n8n Locally
 
 **Time:** 45 minutes
 
-**Goal:** A chat agent that remembers context within a learner session and forgets across sessions.
+**Goal:** A working local stack: Docker running n8n and Postgres, Ollama serving gemma4 and nomic-embed-text, all talking to each other.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -481,25 +279,26 @@ gemma (Ollama) -> grounded answer
 
 | Concept | In one line |
 |---|---|
-| Conversation memory | Stores recent turns so follow-up questions make sense. |
-| Session ID | Separates one user conversation from another. |
-| Memory window | Limits cost and prevents old irrelevant context from dominating. |
-| Privacy boundary | Defines what should not be stored. |
+| Docker Compose | One file starts n8n and Postgres as a repeatable local stack. |
+| Ollama | Runs the chat model (gemma4) and the embedding model on your machine - free, offline, private. |
+| host.docker.internal | How n8n inside a container reaches Ollama on the host. Inside the container, localhost means the container itself. |
+| The Active rule | A production /webhook/ path exists only when a workflow is switched Active. Inactive means 404, every time. |
 
 **Step-by-step**
 
-1. Duplicate the Lab 2.1 workflow and rename it with `memory` in the title.
-2. Add a Simple Memory node to the AI Agent memory port.
-3. Set a session key using the chat session or a fixed learner test ID.
-4. Tell the agent your name and role, then ask a follow-up question without repeating them.
-5. Start a second session and confirm the first session details do not leak.
-6. Add a note listing what data is acceptable to remember during training.
+1. Install Docker Desktop and Ollama (macOS: `brew`, Windows: `winget`), then launch Docker and wait for the whale to settle.
+2. From `labs_local_n8n/lab0`, run `docker compose pull`, then `docker compose up -d`, and confirm both containers with `docker compose ps`.
+3. Pull the two models: `ollama pull gemma4` and `ollama pull nomic-embed-text`, then confirm both appear in `ollama list`.
+4. Open `http://localhost:5678` and create the n8n owner account. It is local only, and there is no password reset - write it down.
+5. Create an Ollama credential named `Ollama local` with base URL `http://host.docker.internal:11434`, and press Test.
+6. Learn the everyday commands: `docker compose stop` to pause, `up -d` to resume - and never `down -v` unless you mean to erase every workflow you own.
 
 **Checkpoint**
 
-- Follow-up questions work inside the same session.
-- A separate session does not receive the first user's details.
-- The workflow note describes memory scope and privacy limits.
+- `docker compose ps` shows the n8n and postgres containers running.
+- n8n opens at `http://localhost:5678` and `ollama list` shows both models.
+- The `Ollama local` credential test passes.
+- You can explain why the credential must not use `localhost:11434`.
 
 **Trainer facilitation notes**
 
@@ -512,17 +311,21 @@ gemma (Ollama) -> grounded answer
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| The agent forgets immediately | Memory is not connected to the AI Agent memory port. | Reconnect the Simple Memory node and rerun. |
-| Sessions leak together | All users share the same session key. | Use a per-user or per-browser session ID. |
-| Old messages dominate | Memory window is too large for the task. | Reduce the number of retained turns. |
+| n8n cannot connect to Ollama | The credential uses localhost from inside Docker. | Use `http://host.docker.internal:11434`. |
+| Command not recognized (Windows) | PowerShell was already open during the install. | Close and reopen PowerShell - a new program is not on your PATH until you do. |
+| Port 5678 is busy | An older n8n container is still running. | Run `docker ps`, stop the old container, or change the compose port. |
 
-**Deliverable:** A memory-enabled agent and a privacy note.
+**Deliverable:** A running local stack: screenshots of docker compose ps, ollama list and the passing credential test.
 
-### Lab 2.3 - Build a PDF RAG IT Support Agent
+![The course workflows imported into local n8n.](screenshots/n8n-workflow-list.png)
 
-**Time:** 75 minutes
+*The course workflows imported into local n8n.*
 
-**Goal:** A document-grounded chatbot over the sample IT FAQ PDF.
+### Lab 1 - Your First AI Agent
+
+**Time:** 45 minutes
+
+**Goal:** The smallest possible working agent: chat trigger, AI Agent node, and local gemma4 - with a system prompt you control.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -530,25 +333,25 @@ gemma (Ollama) -> grounded answer
 
 | Concept | In one line |
 |---|---|
-| RAG | Retrieves relevant document chunks before generating an answer. |
-| Embeddings | Convert text chunks into vectors for similarity search. |
-| Vector store | Stores and retrieves document chunks. |
-| Grounded refusal | Answers only from available evidence and declines unsupported questions. |
+| Chat trigger | n8n's built-in chat window - a test surface with no website needed. |
+| AI Agent node | Holds the system prompt, the memory and, later, the tools. |
+| System prompt | The standing instruction that shapes every reply - your main control surface. |
+| Execution trace | What the model actually received and returned. A fluent answer is not evidence; the trace is. |
 
 **Step-by-step**
 
-1. Import `lab2/rag-flow.json` into n8n.
-2. Select the Ollama credential in both chat and embedding nodes.
-3. Open `lab2/index.html` in a browser.
-4. Upload `lab2/it-faq.pdf` through the page and confirm the insert path runs.
-5. Ask three questions that are answered in the PDF.
-6. Ask one unrelated question and tune the system prompt so the agent refuses politely.
+1. Import `lab1/ai-agent.json`. Open the Ollama Chat Model node and confirm the credential is `Ollama local` and the model is `gemma4:latest`.
+2. Click Chat at the bottom of the canvas and say hello. Confirm a reply arrives.
+3. Open the execution and read exactly what the model received - the whole prompt, not just your message.
+4. Open the AI Agent node and set a system prompt: 'You are a terse assistant. Never use more than two sentences.'
+5. Ask the same question again and watch the behaviour change.
+6. Change one more instruction and re-test. One variable at a time - that habit is the course.
 
 **Checkpoint**
 
-- The PDF upload execution inserts chunks into the vector store.
-- The chat path calls the retrieval tool before answering.
-- Unsupported questions are refused instead of invented.
+- The agent replies in the chat panel.
+- The execution list shows the run, and you can read what the model received.
+- Changing the system prompt visibly changes the behaviour.
 
 **Trainer facilitation notes**
 
@@ -561,25 +364,78 @@ gemma (Ollama) -> grounded answer
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Answers are invented | The system prompt does not require document grounding. | Add an evidence-only answer rule and a refusal phrase. |
-| Upload succeeds but chat finds nothing | The vector store was cleared or n8n restarted. | Upload the PDF again and rerun the chat test. |
-| Browser cannot call webhook | Workflow is inactive or URL is wrong. | Activate the workflow and use the production webhook URL. |
+| Empty reply | The model name does not match what ollama list shows. | Select the exact tag, e.g. `gemma4:latest`. |
+| Connection refused | Ollama is not running, or the base URL is wrong. | Start Ollama and use `host.docker.internal:11434` in the credential. |
+| The first reply is very slow | A 9-GB model is cold-loading into memory. | Expected once per session - later replies are fast. |
 
-**Deliverable:** A RAG chatbot that answers from the IT FAQ and refuses unrelated questions.
+**Deliverable:** A working local agent plus a one-line note on how the system prompt changed its behaviour.
+
+![Lab 1 - AI Agent: chat trigger, AI Agent and the local Ollama model.](screenshots/lab1-ai-agent-ollama.png)
+
+*Lab 1 - AI Agent: chat trigger, AI Agent and the local Ollama model.*
+
+### Lab 2 - RAG IT Support Chatbot
+
+**Time:** 60 minutes
+
+**Goal:** A chatbot that answers only from an uploaded IT FAQ PDF - and admits it when the answer is not in the document.
+
+**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
+
+**Concepts**
+
+| Concept | In one line |
+|---|---|
+| Ingest | Split the PDF into chunks, embed each chunk with nomic-embed-text, store the vectors. |
+| Retrieve | Embed the question the same way and fetch the nearest chunks - search by meaning, not keywords. |
+| Grounded generation | gemma4 answers ONLY from the retrieved chunks, or says it does not know. |
+| The refusal | A question outside the PDF must get an honest refusal, not an invention. This is the graded behaviour. |
+
+**Step-by-step**
+
+1. Import `lab2/rag-flow.json` and set it Active - both webhooks (`/rag-upload`, `/rag-chat`) exist only while it is Active.
+2. Serve the page: from `labs_local_n8n/lab2`, run `python3 -m http.server 8092` (Windows: `python`).
+3. Open `http://localhost:8092` - never by double-clicking index.html - and upload `it-faq.pdf`. Wait for the confirmation.
+4. Ask a question the FAQ answers, and check the reply against the PDF.
+5. Ask a question it does NOT answer - 'What is the CEO's salary?' - and demand a refusal.
+6. Open the execution and read the retrieved chunks for both questions. If the right chunk never came back, no prompt rewrite will fix the answer.
+
+**Checkpoint**
+
+- A question covered by the PDF gets a grounded, correct answer.
+- A question not covered gets a refusal, not an invention.
+- You can point to the retrieved chunks in the execution trace.
+
+**Trainer facilitation notes**
+
+- Ask learners to show the exact execution or output that proves completion.
+- Ask one learner to run an edge case while another observes the trace.
+- Ask learners what they changed after evaluation and why.
+- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
+
+**Common errors**
+
+| Error | Likely cause | Fix |
+|---|---|---|
+| Every button dies silently | The page was opened from file://. | Serve it over http://localhost - the browser blocks fetch() on file URLs. |
+| The website cannot reach n8n | The workflow is not Active. | Activate it - the production /webhook/ path does not exist until you do. |
+| Answers are wrong or missing | The right chunk was never retrieved. | Read the retrieved chunks first; fix chunking or top-k, not the prompt. |
+
+**Deliverable:** A RAG chatbot answering from the IT FAQ, plus one provoked refusal captured in the execution trace.
 
 ![Lab 2 - RAG IT Support Chatbot: ingestion, embeddings and the vector store.](screenshots/lab2-rag-flow.png)
 
 *Lab 2 - RAG IT Support Chatbot: ingestion, embeddings and the vector store.*
 
-![The brochure uploader page: the learner pastes their OWN n8n webhook URL.](screenshots/lab2-brochure-uploader.png)
+![The Lab 2 upload page: the learner pastes their OWN n8n webhook URL.](screenshots/lab2-brochure-uploader.png)
 
-*The brochure uploader page: the learner pastes their OWN n8n webhook URL.*
+*The Lab 2 upload page: the learner pastes their OWN n8n webhook URL.*
 
-### Lab 2.4 - Improve RAG with Chunking and Evaluation
+### Lab 3 - CX Agent with RAG (Cook & Bake Academy)
 
 **Time:** 60 minutes
 
-**Goal:** A repeatable RAG evaluation sheet with chunking experiments.
+**Goal:** A customer-facing course advisor: a chat widget on a real-looking school website, grounded in the school's own course brochures.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -587,25 +443,25 @@ gemma (Ollama) -> grounded answer
 
 | Concept | In one line |
 |---|---|
-| Chunk size | Controls how much text is retrieved at once. |
-| Overlap | Preserves context across chunk boundaries. |
-| Golden question | A known test question with an expected evidence-backed answer. |
-| Regression test | A test rerun after every prompt or workflow change. |
+| Brochure knowledge base | The vector store is filled from real course brochures - the agent speaks for a business, not a toy FAQ. |
+| Customer tone | A CX agent answers as the business: specific courses, prices, schedules and next steps. |
+| Conversation memory | A follow-up like 'how much is that one?' must resolve against the previous turn. |
+| Honest limits | Asked about a course that does not exist, the agent says so. No invented courses, no invented prices. |
 
 **Step-by-step**
 
-1. Create ten golden questions from `it-faq.pdf`, including two unsupported questions.
-2. Record expected answer points and source phrases for each question.
-3. Run the current RAG workflow and score each answer from 0 to 2.
-4. Change chunk size or overlap in the text splitter and re-upload the PDF.
-5. Rerun the same questions and compare score changes.
-6. Choose the best setting and document why it is better.
+1. Import `lab3/CX Agent with RAG.json` and set it Active.
+2. Open `lab3/upload-brochures.html` and upload the PDFs from `lab3/brochures/` - this fills the vector store through `/brochure-upload`.
+3. Serve the site: from `labs_local_n8n/lab3/website`, run `python3 -m http.server 8093`, and open the chat widget.
+4. Ask about a course, its price and its schedule - and check every answer against a brochure.
+5. Ask a follow-up that needs memory: 'how much is that one?'
+6. Ask for a course that does not exist, and confirm the agent admits it rather than inventing one.
 
 **Checkpoint**
 
-- The evaluation sheet includes question, expected evidence, actual answer, score, and notes.
-- At least two chunking configurations were tested.
-- The final choice is based on scores, not preference.
+- The agent answers from the brochures, with specifics.
+- A non-existent course gets an honest 'we don't offer that'.
+- The chat has memory - the follow-up resolves correctly.
 
 **Trainer facilitation notes**
 
@@ -618,73 +474,11 @@ gemma (Ollama) -> grounded answer
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Scores do not change | The vector store was not refreshed after changing chunking. | Clear or reinsert the documents before retesting. |
-| Every answer is too vague | Chunks are too small or top-k is too low. | Increase chunk size or retrieve more chunks. |
-| Answers contain irrelevant sections | Chunks are too large or overlap is excessive. | Reduce chunk size and retest. |
+| The widget cannot reach n8n | The workflow is inactive, or the webhook URL was changed. | Activate the flow - the widget already points at /webhook/cx-agent. |
+| Vague answers, no prices | The brochures were never uploaded. | Run upload-brochures.html first and watch the upload executions succeed. |
+| Follow-ups lose the thread | Memory is not wired into the agent. | Check the memory node and its session key in the workflow. |
 
-**Deliverable:** A RAG evaluation sheet and selected chunking configuration.
-
-## Topic 03 - Customer Experience and Tool-Using Agents
-
-Turn retrieval into a workplace assistant that can answer customer questions, collect structured data, and call workflow tools.
-
-### Key concepts
-
-- **Build a Course Advisory CX Agent:** A customer-facing course advisory chatbot over 20 academy brochures.
-- **Add Structured Lead Capture:** A CX agent that extracts name, email, course interest, and urgency into a structured payload.
-- **Create a Tool-Calling Booking Request Agent:** An agent that prepares a booking request and calls a mock booking tool.
-- **Add Safety Guardrails and Escalation:** A guardrailed CX agent with refusal, escalation, and audit notes.
-
-
-
-### Lab 3.1 - Build a Course Advisory CX Agent
-
-**Time:** 75 minutes
-
-**Goal:** A customer-facing course advisory chatbot over 20 academy brochures.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Domain grounding | Restricts answers to approved business documents. |
-| Customer context | Keeps tone practical and service oriented. |
-| Brochure ingestion | Loads multiple text documents into a vector store. |
-| Session continuity | Supports follow-up questions in a website chat. |
-
-**Step-by-step**
-
-1. Import `lab3/CX Agent with RAG.json`.
-2. Activate the workflow and confirm the brochure upload webhook URL.
-3. Open `lab3/upload-brochures.html` and upload all 20 brochure text files.
-4. Open `lab3/website/index.html` and start a customer chat.
-5. Ask about course fees, duration, campus, and suitable learner profile.
-6. Refine the system prompt so answers are concise, polite, and grounded in brochure facts.
-
-**Checkpoint**
-
-- The website chatbot returns exact details from the brochures.
-- Follow-up questions work within the same browser session.
-- The agent refuses to invent discounts, schedules, or policies not in the documents.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Tool call fails | Tool node name contains special characters. | Rename tool nodes using letters, numbers, and spaces only. |
-| All courses sound the same | Retrieval is not specific enough. | Ask for exact course code or increase retrieval specificity in the prompt. |
-| CORS or webhook error | The workflow is inactive or URL is not production webhook. | Activate and copy the production webhook path. |
-
-**Deliverable:** A working course advisory chatbot embedded in the sample website.
+**Deliverable:** A working course-advisory chatbot on the site, with one grounded answer and one honest refusal in the trace.
 
 ![Lab 3 - CX Agent with RAG: the agent plus its retrieval tool.](screenshots/lab3-cx-agent-rag.png)
 
@@ -698,250 +492,71 @@ Turn retrieval into a workplace assistant that can answer customer questions, co
 
 *Lab 3 - the chat widget's gear: each learner points it at their own n8n webhook.*
 
-### Lab 3.2 - Add Structured Lead Capture
+## Topic 02 - Voice Agent
 
-**Time:** 60 minutes
-
-**Goal:** A CX agent that extracts name, email, course interest, and urgency into a structured payload.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Structured output | Turns conversation into fields another system can use. |
-| Validation | Checks required fields before handoff. |
-| Consent | Asks permission before storing or sending contact data. |
-| CRM handoff | Passes clean data to a downstream node or sheet. |
-
-**Step-by-step**
-
-1. Duplicate the course advisory workflow.
-2. Add an Edit Fields or Set node after the agent to shape lead fields.
-3. Prompt the agent to ask for missing required fields one at a time.
-4. Add a consent question before collecting email or phone.
-5. Test with a learner who gives incomplete information.
-6. Inspect the final JSON payload and revise field names for clarity.
-
-**Checkpoint**
-
-- The workflow does not hand off a lead until required fields are present.
-- The agent asks for consent before contact capture.
-- The resulting payload has stable field names and no extra prose.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Lead payload contains paragraphs | The agent was not instructed to separate conversation from data. | Use a structured output instruction and post-process with fields. |
-| Agent asks too many questions | Required fields are not prioritized. | Collect only the minimum needed for follow-up. |
-| Consent is skipped | It was placed after data capture. | Move consent before requesting contact details. |
-
-**Deliverable:** A structured lead capture branch ready for CRM or spreadsheet integration.
-
-### Lab 3.3 - Create a Tool-Calling Booking Request Agent
-
-**Time:** 60 minutes
-
-**Goal:** An agent that prepares a booking request and calls a mock booking tool.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Tool calling | Lets the agent request an action through a controlled workflow path. |
-| Argument schema | Defines exactly what the tool needs. |
-| Confirmation before action | Prevents accidental bookings. |
-| Mock integration | Tests business logic before connecting a real system. |
-
-**Step-by-step**
-
-1. Create a mock booking tool branch in n8n with fields for service, date, time, name, and contact.
-2. Connect the tool to the AI Agent.
-3. Write a tool description that clearly states when it should be used.
-4. Require the agent to summarize the booking and ask for confirmation before calling the tool.
-5. Run one complete booking scenario and one cancellation scenario.
-6. Review executions to confirm the tool was called only after confirmation.
-
-**Checkpoint**
-
-- Tool arguments are complete and correctly typed.
-- The agent does not call the tool before user confirmation.
-- The mock branch receives one clean payload per confirmed booking.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Tool called too early | The prompt does not require confirmation. | Add a hard rule: never call the tool until the user says yes. |
-| Tool receives missing fields | The schema or prompt does not require all fields. | List required arguments in the tool description. |
-| Tool name rejected | The name contains symbols or punctuation. | Use a simple name such as `Create Booking Request`. |
-
-**Deliverable:** A safe mock booking request workflow.
-
-### Lab 3.4 - Add Safety Guardrails and Escalation
-
-**Time:** 60 minutes
-
-**Goal:** A guardrailed CX agent with refusal, escalation, and audit notes.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Policy boundary | Defines what the agent must not answer or promise. |
-| Escalation trigger | Routes sensitive or high-value requests to a human. |
-| Audit note | Records why the workflow took a path. |
-| Prompt injection defense | Tells the agent to ignore user attempts to override system rules. |
-
-**Step-by-step**
-
-1. List five prohibited actions for the CX agent, such as guaranteeing admission or inventing subsidies.
-2. Add the prohibited actions to the system message using direct language.
-3. Add escalation wording for complaints, refunds, legal questions, and personal data concerns.
-4. Create test prompts that attempt to override the system instruction.
-5. Run the tests and record whether the agent refused, answered, or escalated.
-6. Revise the prompt until all tests pass.
-
-**Checkpoint**
-
-- Prompt injection attempts do not override the agent role.
-- Sensitive requests are escalated with useful context.
-- The audit note explains the reason for refusal or escalation.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Agent apologizes but still answers | The refusal rule is too soft. | State the prohibited behavior and required alternative response. |
-| Everything escalates | Escalation triggers are too broad. | Separate low-risk FAQ from sensitive cases. |
-| Audit note is missing | No branch records the decision. | Add a Set node that captures decision type and reason. |
-
-**Deliverable:** A guardrail test set and passing CX workflow.
-
-## Topic 04 - Voice AI Agents
-
-Design, connect, test, and improve a voice booking agent using Retell, n8n webhooks, and a browser front end.
+Two vendors, two architectures: ElevenLabs runs the model and calls your n8n tools; with Vapi your n8n workflow IS the model. The contrast is the lesson. Labs 4-5.
 
 ### Key concepts
 
-- **Design a Voice Agent Conversation:** A voice-agent script with opening, slot filling, repair, and closing paths.
-- **Connect Retell Web Calls Through n8n:** A browser voice call that mints access through an n8n webhook.
-- **QA the Voice Agent with Call Analytics:** A voice QA scorecard based on transcripts and booking success.
-- **Add Human Handoff and Notifications:** A voice workflow that notifies staff when a booking or escalation is needed.
-- **Ground the Voice Agent with a Retell Knowledge Base:** A Retell Knowledge Base that lets the agent answer salon questions from a source document instead of inventing answers.
-- **Clone Your Own Voice and Give It to the Agent:** A voice clone of the learner's own voice, used as the agent's speaking voice.
-- **Book the Appointment into Google Calendar:** A voice agent that checks a real calendar and writes a confirmed booking into it.
-- **Build a FAQ Voice Agent with Vapi:** A second voice agent on a different platform, where n8n is the BRAIN of the call: Vapi speaks, n8n thinks.
+- **Voice Booking Agent with ElevenLabs (GG Hair Salon):** Nina, a voice receptionist who answers by voice, checks a real Google Calendar for free slots, and books a real appointment.
+- **Grounded FAQ Voice Agent with Vapi (MediRefill):** Ava, a pharmacy refill assistant whose brain is YOUR n8n workflow - grounded in six FAQ topics and hard-refusing all medical advice.
 
 
-### Setting up Retell AI - and where each webhook goes
+### Two vendors, two architectures - the contrast is the lesson
 
-Do this once, before Lab 4.2. Most of the pain in this topic comes from confusing the **two different webhooks** that point in **opposite directions**. Get the direction clear and the rest is form filling.
+Labs 4 and 5 both put a voice on an agent, but they split the work in opposite ways. Understanding the split is what the topic teaches; everything else is form filling.
+
+| | **Lab 4 - ElevenLabs (GG Hair Salon)** | **Lab 5 - Vapi (MediRefill)** |
+|---|---|---|
+| Who runs the model | **ElevenLabs** | **your n8n workflow** (Vapi "Custom LLM") |
+| What n8n does | mints a signed URL, and serves the tools | **is the brain** |
+| Call path | browser -> n8n -> signed URL -> WebSocket | browser -> Vapi, then Vapi -> your n8n |
+| What the browser gets | a short-lived **signed URL** | the Vapi **public** key only |
+| What it never sees | your `xi-api-key` | your Vapi private key |
+
+### Where each webhook goes, and which way it points
+
+Most of the pain in this topic comes from confusing webhooks that point in **opposite directions**. Before you debug anything, ask: *who is dialling?*
 
 | Webhook | Direction | Where the URL is written | Must it be public? |
 |---|---|---|---|
-| **Web-call trigger** (`/webhook/retell-web-call`) | Browser -> n8n -> Retell API | In the **website**: click **⚙ Settings** on the page and paste your own URL. Nothing is hardcoded. | No. `http://localhost:5678` is fine - your own browser calls it. |
-| **Agent tools** (`check_availability`, `book_appointment`) | Retell cloud -> n8n | In **Retell**, in each Custom Function's URL field | **Yes.** Retell's servers cannot reach your `localhost`. This needs a tunnel. |
+| **Web-call trigger** (`/webhook/elevenlabs-web-call`) | Browser -> n8n -> ElevenLabs API | In the **website**: click **⚙ Settings** on the page and paste your own URL. Nothing is hardcoded. | No. `http://localhost:5678` is fine - your own browser calls it. |
+| **Agent tools** (`check_availability`, `book_appointment`) | ElevenLabs cloud -> n8n | In **ElevenLabs**, in each tool's URL field on the agent | **Yes.** ElevenLabs' servers cannot reach your `localhost`. This needs the tunnel. |
+| **Vapi Custom LLM** (`/webhook/vapi-faq`) | Vapi cloud -> n8n | In **Vapi**, as the assistant's model URL | **Yes.** Same reason. |
 
-**Part A - Create the Retell account and API key**
+### How the ElevenLabs key stays safe
 
-1. Sign up at `https://retellai.com`. The free trial credit is enough for this topic; a web call costs roughly $0.10 per minute, so keep test calls short.
-2. Go to **API Keys** and create a key (`key_...`). Copy it now - Retell shows it once.
-3. In n8n, create a **Header Auth** credential named exactly `Retell API`: **Name** `Authorization`, **Value** `Bearer key_...`. The key lives in n8n and never reaches the browser. That is the whole point of this architecture.
+ElevenLabs does not hand the browser a raw token. Your n8n asks ElevenLabs for a short-lived **signed URL** - server-side, using the `xi-api-key` in a Header Auth credential - and returns *only that* to the page. The browser opens a WebSocket to the signed URL and talks. **Your API key never reaches the browser.** You will meet the same instinct twice more: Lab 9's embed URL and Lab 10's proxy URL.
 
-**Part B - Create the agent (Nina)**
+![Lab 4 - GG Hair Salon site: the Book by Voice call to action.](screenshots/lab4-website-home.png)
 
-4. **Agents -> Create an Agent -> single-prompt agent.** Name it `GG Hair Salon - Nina`, pick a voice and an LLM.
-5. Paste the persona, salon info, services and prices, and the behavior rules you wrote in Lab 4.1. Keep the rules short: one or two sentences per reply, one question at a time, confirm before booking, offer a stylist follow-up when unsure.
-6. Set the **Welcome Message** so Nina speaks first: *"Thanks for calling GG Hair Salon, this is Nina. How can I help you today?"* If you leave this blank the caller hears silence and assumes the call is broken.
-7. Click **Publish**. An unpublished agent will not answer a web call.
-8. Copy the **agent ID**. It is the `⧉ ID` button in the *Agent Details* strip at the top of the agent page (it is also the last part of the browser URL, after `/agents/`). It looks like `agent_7323e166b991e5d0067a1adaf8`.
+*Lab 4 - GG Hair Salon site: the Book by Voice call to action.*
 
-![The Retell agent: prompt, Functions (the n8n tool webhooks) and Knowledge Base.](screenshots/retell-agent.png)
+![Lab 4 - Settings: the ElevenLabs Web Call Trigger webhook URL and optional agent ID. Nothing is hardcoded.](screenshots/lab4-webhook-settings.png)
 
-*The Retell agent: prompt, Functions (the n8n tool webhooks) and Knowledge Base.*
+*Lab 4 - Settings: the ElevenLabs Web Call Trigger webhook URL and optional agent ID. Nothing is hardcoded.*
 
-**Part C - Point n8n and the website at YOUR agent**
+### The Vapi rule that protects your account
 
-9. Open the `Lab 4 - Retell Web Call Trigger` workflow. Copy the **Webhook** node's **Production URL** (not the Test URL).
-10. In the **Create Retell Web Call** node, the body reads `agent_id` from the request with a fallback - and that fallback is the **trainer's** demo agent. Replace it with your own ID, or send yours from the website in the next step, or you will be calling the trainer's agent.
-11. Confirm the node uses the `Retell API` credential, then **Activate** the workflow.
-12. Open the site (`http://localhost:8090`), click **⚙ Settings**, paste the **Production URL** and your **`agent_...` ID**, and Save. The values are stored in your browser only, so every learner drives the same site from their own n8n and their own agent.
+The MediRefill page needs two values in ⚙ Settings: your Vapi **public** key and the assistant ID. A public key can only *start calls*. Your **private** key manages your whole account - and anything pasted into a web page is visible to every visitor who opens DevTools. **Never paste the private key into the page.**
 
-**Part D - The agent's tool webhooks (this is the part that needs a tunnel)**
+### Why Ava's guardrail is fixed wording, not judgement
 
-The functions in your agent - `check_availability` and `book_appointment` - are called by **Retell's servers**, not by your browser. Retell cannot see `http://localhost:5678`, so a localhost URL here fails silently mid-call: Nina says she is checking availability and then stalls.
-
-13. Expose n8n publicly with a tunnel, and keep it running for the whole lab:
-
-```bash
-ngrok http 5678                              # copy the https://….ngrok-free.app URL
-cloudflared tunnel --url http://localhost:5678
-```
-
-Free ngrok URLs change on every restart, so if calls break after lunch, re-copy the URL and re-publish the agent.
-14. Build the n8n workflow that answers the tool call: a **Webhook** node (POST, path `check-availability`, and a second for `book-appointment`), your availability or Google Calendar logic, then a **Respond to Webhook** node returning a small JSON result. Nina speaks the response, so keep it short - `{ "available": true, "slots": ["2 PM", "4 PM"] }` is plenty. Activate it and use the **Production** URL.
-15. In Retell, open the agent and find the **Functions** panel. Click **+ Add -> Custom Function**. *This is where the webhook goes in Retell:*
-- **Name:** `check_availability` - the name the LLM uses to decide when to call it.
-- **Description:** "Check whether a service slot is free on a given date and time." The LLM picks the tool from this sentence, so write it for the model, not for a human.
-- **URL:** your tunnel URL plus the path - `https://<your-tunnel>/webhook/check-availability`
-- **Parameters:** a JSON schema with the slots you collect - `service`, `date`, `time`, plus `name` and `phone` for booking.
-16. Repeat for `book_appointment` at `https://<your-tunnel>/webhook/book-appointment`. Keep `end_call` enabled so Nina can hang up cleanly.
-17. **Publish the agent again.** Function changes do not affect a live call until you publish.
-18. Test the wiring before you test by voice: use **Run Test** and ask for a Thursday 2 PM slot. Watch the n8n executions list - a new execution must appear *during* the call. No execution means Retell could not reach your URL: check the tunnel, the `/webhook/` (not `/webhook-test/`) path, and that the workflow is Active.
-
-![Functions -> Custom Function: this is where the Retell -> n8n webhook URL goes.](screenshots/retell-functions.png)
-
-*Functions -> Custom Function: this is where the Retell -> n8n webhook URL goes.*
-
-**How to tell which webhook is broken**
-
-| Symptom | The broken webhook |
-|---|---|
-| The call never starts | Browser -> n8n. Wrong URL in ⚙ Settings, workflow inactive, or CORS. |
-| Nina greets you, then stalls while "checking availability" | Retell -> n8n. Tunnel is down, or the function URL is a localhost URL. |
-| The call connects but Nina is silent from the start | Not a webhook at all - empty Welcome Message, or the agent is unpublished. |
+MediRefill is a pharmacy. A confident wrong answer in retail costs a refund; in a pharmacy it is a safety incident. So Ava's prompt (`lab5/ava-assistant-prompt.md`) hard-codes the refusal: any question about a dose, an interaction, a substitution or a symptom gets one fixed sentence and a **pharmacist callback** - and an emergency gets **995 / A&E**. If she answers a medical question with medical content - even hedged, even with a disclaimer - the guardrail failed, and the transcript that proves it is your evidence.
 
 
 ### Exposing n8n with ngrok - and why you must
 
-Labs 4.7 and 4.8 are the first time something **outside your machine** needs to call **into** n8n. Up to now every request came from your own browser, so `http://localhost:5678` worked. It will not work now.
+Labs 4 and 5 are the first time something **outside your machine** needs to call **into** n8n. Up to now every request came from your own browser, so `http://localhost:5678` worked. It will not work now.
 
-When Nina says *"let me check that for you"*, the request is made by **Retell's servers**, sitting in a datacenter. To them, `localhost` means *their own machine*, not yours. The request never leaves their building. The caller hears the agent stall in silence, and nothing at all appears in your n8n executions list. Same for Vapi's Custom LLM in Lab 4.8.
+When Nina says *"let me check that for you"*, the request is made by **ElevenLabs' servers**, sitting in a datacenter. To them, `localhost` means *their own machine*, not yours. The request never leaves their building. The caller hears the agent stall in silence, and nothing at all appears in your n8n executions list. Same for Vapi's Custom LLM in Lab 5.
 
 A tunnel fixes this. It gives your local n8n a temporary public address, and forwards anything sent there to port 5678 on your laptop.
 
 | Who is calling n8n | Example | Needs a tunnel? |
 |---|---|---|
 | Your own browser | Labs 1-3, the Book by Voice button, `curl` | **No.** `localhost` is correct. |
-| Retell's servers | `check_availability`, `book_appointment` | **Yes.** |
+| ElevenLabs' servers | `check_availability`, `book_appointment` | **Yes.** |
 | Vapi's servers | the Custom LLM endpoint | **Yes.** |
 
 **Step-by-step (macOS and Windows)**
@@ -980,16 +595,16 @@ http://127.0.0.1:4040
 
 It runs on your own machine (that is why the address is `127.0.0.1`, not an ngrok domain) and it has two tabs:
 
-- **Status** - your public URL. Look for **Tunnels -> command_line**: `URL` is the public address to paste into Retell or Vapi, and `Addr` confirms it forwards to `http://localhost:5678`. If you lose the URL, get it here - do not restart ngrok, or the URL will change.
-- **Inspect** - every request Retell or Vapi sends you, with its headers and body, as it arrives. This is the single most useful debugging tool in this topic: when the agent stalls mid-call, this page tells you instantly whether the request even reached your machine.
+- **Status** - your public URL. Look for **Tunnels -> command_line**: `URL` is the public address to paste into ElevenLabs or Vapi, and `Addr` confirms it forwards to `http://localhost:5678`. If you lose the URL, get it here - do not restart ngrok, or the URL will change.
+- **Inspect** - every request ElevenLabs or Vapi sends you, with its headers and body, as it arrives. This is the single most useful debugging tool in this topic: when the agent stalls mid-call, this page tells you instantly whether the request even reached your machine.
 
-An empty **Inspect** tab during a call means the request never arrived: the URL in Retell/Vapi is wrong, the tunnel is down, or the agent was not re-published after you changed it.
+An empty **Inspect** tab during a call means the request never arrived: the URL in ElevenLabs/Vapi is wrong, the tunnel is down, or the agent was not re-published after you changed it.
 
 ![http://127.0.0.1:4040 - ngrok's own status page. URL = your public address; Addr = the local n8n it forwards to.](screenshots/ngrok-status.png)
 
 *http://127.0.0.1:4040 - ngrok's own status page. URL = your public address; Addr = the local n8n it forwards to.*
 
-**How to build the URL you paste into Retell or Vapi**
+**How to build the URL you paste into ElevenLabs or Vapi**
 
 You are gluing two halves together. n8n supplies the path; ngrok supplies the address.
 
@@ -1000,18 +615,18 @@ https://3af5-175-156-143-249.ngrok-free.app  /webhook/  check-availability
 
 The rule: **open the Webhook node, take its Production URL, and replace `http://localhost:5678` with your ngrok address.** Everything after `/webhook/` stays exactly as n8n shows it.
 
-| n8n webhook node | Path | What you paste into Retell / Vapi |
+| n8n webhook node | Path | What you paste into ElevenLabs / Vapi |
 |---|---|---|
 | Webhook - check_availability | `check-availability` | `https://<your-ngrok>/webhook/check-availability` |
 | Webhook - book_appointment | `book-appointment` | `https://<your-ngrok>/webhook/book-appointment` |
-| Vapi Webhook (Lab 4.8) | `vapi-faq` | `https://<your-ngrok>/webhook/vapi-faq` |
+| Vapi Webhook (Lab 5) | `vapi-faq` | `https://<your-ngrok>/webhook/vapi-faq` |
 
 **Prove the tunnel works before you touch the voice platform**
 
 ```bash
 curl -X POST https://<your-ngrok>/webhook/vapi-faq \
   -H 'Content-Type: application/json' \
-  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"How long is the warranty on a Dyson?"}]}'
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"When will my refill arrive?"}]}'
 ```
 
 A real answer means the tunnel, the webhook and the agent are all healthy. If this fails, fix it here - debugging over HTTP is far easier than debugging over audio.
@@ -1020,7 +635,7 @@ A real answer means the tunnel, the webhook and the agent are all healthy. If th
 
 | Trap | What you see | Fix |
 |---|---|---|
-| The free URL changes every restart | Calls worked this morning, fail after lunch | Re-copy the new URL into Retell/Vapi and **publish the agent again**. Start ngrok once per day and leave it running. |
+| The free URL changes every restart | Calls worked this morning, fail after lunch | Re-copy the new URL into ElevenLabs/Vapi and **publish the agent again**. Start ngrok once per day and leave it running. |
 | You used the **Test** URL | Works once during your demo, never again | Use the **Production** URL - `/webhook/`, never `/webhook-test/`. |
 | The workflow is not published | 404 "not registered" | Publish/activate the workflow, then retest. |
 | You set `WEBHOOK_URL` on the n8n container | Every lab now shows learners a public URL that goes stale | Do NOT change the Docker config. `localhost` must keep working for Labs 1-3. Paste the tunnel URL only where it is needed. |
@@ -1029,11 +644,11 @@ Closing the ngrok window kills the tunnel and the public URL is gone for good - 
 
 
 
-### Lab 4.1 - Design a Voice Agent Conversation
+### Lab 4 - Voice Booking Agent with ElevenLabs (GG Hair Salon)
 
-**Time:** 60 minutes
+**Time:** 120 minutes
 
-**Goal:** A voice-agent script with opening, slot filling, repair, and closing paths.
+**Goal:** Nina, a voice receptionist who answers by voice, checks a real Google Calendar for free slots, and books a real appointment.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1041,25 +656,26 @@ Closing the ngrok window kills the tunnel and the public URL is gone for good - 
 
 | Concept | In one line |
 |---|---|
-| Voice turn-taking | Keeps prompts short so callers know when to speak. |
-| Slot filling | Collects required booking details naturally. |
-| Repair strategy | Handles unclear or missing caller responses. |
-| Persona | Defines tone without overloading the voice model. |
+| Signed URL | n8n asks ElevenLabs for a short-lived signed URL server-side, using the xi-api-key - the key never reaches the browser. |
+| Agent tools | check_availability and book_appointment are n8n webhooks that ElevenLabs' SERVERS call during the conversation. |
+| Call direction | Browser-to-n8n needs no tunnel; ElevenLabs-to-n8n needs ngrok. Before debugging any webhook, ask: who is dialling? |
+| Grounded voice | The salon handbook PDF in the agent's Knowledge Base is why Nina quotes real prices instead of inventing them. |
 
 **Step-by-step**
 
-1. Choose the service scenario for the Retell voice agent.
-2. Write a one-sentence persona and three behavior rules.
-3. List required slots: name, service, date, time, and contact method.
-4. Write the opening line, slot questions, repair prompts, confirmation, and closing.
-5. Read the script aloud and remove long sentences.
-6. Create a test call checklist for normal, noisy, and incomplete caller behavior.
+1. Import BOTH flows - `elevenlabs-web-call-flow.json` and `elevenlabs-booking-tools-flow.json` - and set both Active.
+2. On the Get Signed URL node, add a Header Auth credential named `ElevenLabs API`: name `xi-api-key`, value your key.
+3. Connect YOUR OWN Google account on the two Google Calendar nodes - the flow ships without a calendar credential on purpose.
+4. In the ElevenLabs dashboard, create the agent (Nina), upload `knowledge-base/gg-hair-salon-handbook.pdf` to her Knowledge Base, and put her agent ID into the page's Settings.
+5. Start the tunnel with `ngrok http 5678`, and register the two tools in the agent as `https://<id>.ngrok-free.app/webhook/check-availability` and `.../book-appointment`.
+6. Serve the site (`python3 -m http.server 8090` from `lab4/website`), click Book by Voice, and book a Thursday 2 PM haircut end to end.
 
 **Checkpoint**
 
-- The script can be spoken naturally in under one minute for a simple booking.
-- Every required slot has a question and a repair prompt.
-- The agent confirms before creating the booking request.
+- Nina answers by voice and quotes handbook prices.
+- Asked for a taken slot, she offers an alternative.
+- The booking appears in YOUR Google Calendar - that event is the evidence.
+- A tool execution appears in n8n DURING the call.
 
 **Trainer facilitation notes**
 
@@ -1072,254 +688,30 @@ Closing the ngrok window kills the tunnel and the public URL is gone for good - 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Caller gets interrupted | Prompts are too long or multi-part. | Ask one question at a time. |
-| Agent sounds robotic | Persona has too many adjectives. | Use two or three concrete behavior rules. |
-| Booking details are incomplete | Slot list and confirmation are not aligned. | Confirm every required field before handoff. |
+| Nina says 'let me check that' and stalls forever | Her tool call went to localhost, which ElevenLabs' servers cannot see. | Register the tools with your ngrok URL, and keep the tunnel window open all session. |
+| The call never starts | The web-call flow is inactive, or the Settings URL is wrong. | Activate the flow and paste the PRODUCTION URL - /webhook/, never /webhook-test/. |
+| She invents prices | The handbook is not attached to the agent. | Upload the PDF to the agent's Knowledge Base and save the agent again. |
 
-**Deliverable:** A tested voice conversation design script.
-
-![The Retell agent: prompt, Functions (the n8n tool webhooks) and Knowledge Base.](screenshots/retell-agent.png)
-
-*The Retell agent: prompt, Functions (the n8n tool webhooks) and Knowledge Base.*
-
-![Functions -> Custom Function: this is where the Retell -> n8n webhook URL goes.](screenshots/retell-functions.png)
-
-*Functions -> Custom Function: this is where the Retell -> n8n webhook URL goes.*
-
-### Lab 4.2 - Connect Retell Web Calls Through n8n
-
-**Time:** 75 minutes
-
-**Goal:** A browser voice call that mints access through an n8n webhook.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| WebRTC voice call | Runs the real-time audio session in the browser. |
-| Server-side token minting | Keeps the Retell API key away from front-end code. |
-| Webhook trigger | Lets the website request a call session securely. |
-| Credential hygiene | Stores the API key in n8n or local environment only. |
-
-**Step-by-step**
-
-1. Import `lab4/retell-web-call-flow.json`.
-2. Create the `Retell API` Header Auth credential (`Authorization` = `Bearer key_...`) on the HTTP Request node.
-3. Put your own `agent_...` ID into the **Create Retell Web Call** node, or send it from the site in the next step. The shipped fallback is the trainer's demo agent.
-4. Activate the workflow and copy the Webhook node's **Production URL** (not the Test URL).
-5. Serve the site: double-click `lab4/website/start.command` (macOS) or `start.bat` (Windows). Or by hand: `cd lab4/website` then `python3 -m http.server 8090` on macOS / `python -m http.server 8090` on Windows. Open `http://localhost:8090`.
-6. Click **⚙ Settings** on the page, paste your webhook URL and your `agent_...` ID, and Save. Nothing is hardcoded: the values live in your browser, so every learner drives the same site from their own n8n.
-7. Start a browser call and complete one short booking conversation.
-8. Inspect the n8n execution to confirm the front end never received the API key.
-
-**Checkpoint**
-
-- The website starts a Retell voice session.
-- The API key is not present in browser JavaScript.
-- n8n records a successful token/session creation execution.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Call button fails | The webhook URL in ⚙ Settings is wrong, or the workflow is not active. | Activate the workflow and paste the production webhook URL into ⚙ Settings. |
-| 401 from Retell | API key is missing or invalid. | Update the n8n credential and retest. |
-| You reach the trainer's agent | The site sent no agent ID, so the node's fallback was used. | Put your own `agent_...` ID in ⚙ Settings or in the node. |
-| Microphone blocked | Browser permission was denied. | Allow microphone access and reload the page. |
-
-**Deliverable:** A secure browser-to-Retell call flow.
-
-![Lab 4 - Retell Web Call Trigger: webhook -> Retell create-web-call -> access token.](screenshots/lab4-retell-web-call.png)
-
-*Lab 4 - Retell Web Call Trigger: webhook -> Retell create-web-call -> access token.*
+**Deliverable:** A real calendar booking made by voice: the calendar event, the call transcript, and the n8n tool execution.
 
 ![Lab 4 - GG Hair Salon site: the Book by Voice call to action.](screenshots/lab4-website-home.png)
 
 *Lab 4 - GG Hair Salon site: the Book by Voice call to action.*
 
-![Lab 4 - Settings: the learner's own n8n webhook URL and Retell agent ID. Nothing is hardcoded.](screenshots/lab4-webhook-settings.png)
+![Lab 4 - Settings: the ElevenLabs Web Call Trigger webhook URL and optional agent ID. Nothing is hardcoded.](screenshots/lab4-webhook-settings.png)
 
-*Lab 4 - Settings: the learner's own n8n webhook URL and Retell agent ID. Nothing is hardcoded.*
-
-### Lab 4.3 - QA the Voice Agent with Call Analytics
-
-**Time:** 60 minutes
-
-**Goal:** A voice QA scorecard based on transcripts and booking success.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Transcript review | Turns a voice call into inspectable text. |
-| Task success metric | Measures whether the caller achieved the goal. |
-| Repair count | Counts how often the agent had to recover. |
-| Latency perception | Checks whether responses feel natural enough. |
-
-**Step-by-step**
-
-1. Run three calls: easy caller, incomplete caller, and noisy or off-topic caller.
-2. Export or copy the transcript for each call.
-3. Score greeting, slot capture, repair, confirmation, and closing from 0 to 2.
-4. Identify the worst scoring behavior.
-5. Revise the voice instructions or n8n handoff logic.
-6. Repeat the failed call and compare scores.
-
-**Checkpoint**
-
-- At least three call transcripts are reviewed.
-- The scorecard identifies one concrete improvement.
-- The revised agent improves or preserves the total score.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| No transcript available | The provider setting may not save transcripts. | Enable transcript or use call notes from the execution data. |
-| Scores are subjective | Criteria are not observable. | Define exact pass conditions for each scoring item. |
-| Agent overtalks | It asks multi-part questions. | Split prompts into one question per turn. |
-
-**Deliverable:** A voice QA scorecard and one improved voice prompt.
-
-### Lab 4.4 - Add Human Handoff and Notifications
-
-**Time:** 60 minutes
-
-**Goal:** A voice workflow that notifies staff when a booking or escalation is needed.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Handoff payload | Summarizes caller intent and captured details. |
-| Notification channel | Sends the next action to email, chat, or a sheet. |
-| Escalation reason | Explains why the human needs to act. |
-| SLA thinking | States how quickly the team should respond. |
-
-**Step-by-step**
-
-1. Add a handoff branch after the voice call or booking tool branch.
-2. Shape a payload with caller summary, captured slots, urgency, and transcript link if available.
-3. Send the payload to a simple destination such as email, spreadsheet, or local webhook test endpoint.
-4. Create two paths: confirmed booking and escalation.
-5. Test both paths with sample call data.
-6. Add a workflow note stating the response SLA and owner.
-
-**Checkpoint**
-
-- Confirmed bookings create a staff notification.
-- Escalations include a reason and summary.
-- The notification does not expose unnecessary personal data.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Notification is unreadable | Raw transcript was sent without summary. | Add a concise structured summary before sending. |
-| Every call notifies staff | Branch conditions are too broad. | Separate completed self-service calls from handoff cases. |
-| Sensitive data is overshared | Payload includes full transcript by default. | Send only fields required for follow-up. |
-
-**Deliverable:** A staff handoff branch for bookings and escalations.
-
-### Lab 4.5 - Ground the Voice Agent with a Retell Knowledge Base
-
-**Time:** 60 minutes
-
-**Goal:** A Retell Knowledge Base that lets the agent answer salon questions from a source document instead of inventing answers.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Knowledge Base | A document store the voice agent can retrieve from mid-call. |
-| Grounding | Answering from a source document rather than model memory. |
-| Retrieval vs tools | The KB answers questions; the n8n webhook tools take actions. |
-| Refusal behavior | Saying 'let me pass you to a stylist' beats guessing. |
-
-**Step-by-step**
-
-1. Open `lab4/knowledge-base/gg-hair-salon-handbook.pdf` and note three facts that appear ONLY in the PDF and nowhere in the agent prompt: the 12-hour cancellation rule, the $30 colour deposit, and the 15-minute late-arrival grace period. These are your test targets. (Edit the content with `build_kb_pdf.py` if you want.)
-2. In the Retell dashboard, open **Knowledge Base** in the left sidebar and click the **+** button.
-3. Name it `GG Hair Salon Handbook`. Under **Documents** click **+ Add** - you get three choices: *Add Web Pages*, *Upload Files*, *Add Text*. Choose **Upload Files** and select the PDF. Click **Save**. (Your first 10 knowledge bases are free.)
-4. Wait until the document shows a green tick and a file size instead of *In progress* - Retell is chunking and embedding it. A two-page PDF takes under a minute.
-5. Open your agent, expand the **Knowledge Base** panel on the right, click **+ Add**, and pick `GG Hair Salon Handbook` from the dropdown. If the dropdown only offers *Add New Knowledge Base*, the document has not finished embedding - wait and reopen it.
-6. Add one line to the agent prompt so it prefers the source over its memory: "Answer questions about services, prices, stylists and salon policies using the knowledge base only. If the knowledge base does not contain the answer, say you will check with a stylist. Never guess a price or a policy."
-7. **Publish** the agent, then use **Run Test** and ask: *What is your cancellation policy?* Nina should state the 12-hour rule and the 50% charge.
-8. Test end to end from the website: open `http://localhost:8090`, click **Book by Voice**, and run the conversation script in the next section.
-9. Prove the grounding did something: detach the knowledge base, ask the same question again, and record the ungrounded answer. Re-attach it. The difference between the two answers is your evidence.
-
-**Checkpoint**
-
-- The knowledge base shows status **Ready** and is attached to the agent.
-- Nina correctly answers three questions whose answers appear only in the PDF (cancellation policy, colour deposit, parking).
-- Asked something the PDF does not cover (for example nail extensions), Nina declines to guess and offers to check with a stylist.
-- Booking still works: grounding did not break the n8n webhook tools.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Nina ignores the knowledge base | The KB was created but never attached to the agent. | Attach it in the agent settings, then publish the agent. |
-| Nina still invents prices | The prompt does not tell it to prefer the source. | Add the grounding instruction, then publish again. |
-| Upload stays 'processing' | The PDF is image-only or corrupt. | Regenerate it with `build_kb_pdf.py`; the text must be selectable. |
-| Answers are right but slow | Retrieval is added to every turn. | Keep the KB small and focused; one handbook is enough. |
-
-**Deliverable:** A Retell Knowledge Base attached to the voice agent, plus a transcript showing three grounded answers and one honest refusal.
-
-![Knowledge Base -> Add: name it, then Upload Files and select the salon handbook PDF.](screenshots/retell-knowledge-base.png)
-
-*Knowledge Base -> Add: name it, then Upload Files and select the salon handbook PDF.*
-
-![The handbook attached to the agent. Publish the agent or the live call keeps the old config.](screenshots/retell-kb-attached.png)
-
-*The handbook attached to the agent. Publish the agent or the live call keeps the old config.*
+*Lab 4 - Settings: the ElevenLabs Web Call Trigger webhook URL and optional agent ID. Nothing is hardcoded.*
 
 ### The voice conversation, turn by turn
 
-Use this script for your first end-to-end call after Lab 4.5. Click **Book by Voice** on `http://localhost:8090`, allow the microphone, and wait for Nina to speak first. Say one line at a time and let her finish - interrupting is the most common cause of a broken slot capture.
+Use this script for your first end-to-end call in Lab 4, once the tools and the knowledge base are wired up. Click **Book by Voice** on `http://localhost:8090`, allow the microphone, and wait for Nina to speak first. Say one line at a time and let her finish - interrupting is the most common cause of a broken slot capture.
 
-The **What to listen for** column is what you are grading. If a turn fails, note it and keep going; you will fix it in the QA pass (Lab 4.3).
+The **What to listen for** column is what you are grading. If a turn fails, note it, keep going, and fix one thing at a time afterwards.
 
 | # | You say | Nina should | What to listen for |
 |---|---|---|---|
-| 1 | *(say nothing - just listen)* | Greet and offer help: "Thanks for calling GG Hair Salon, this is Nina. How can I help you today?" | She opens the call. Silence here means the token was minted but the audio session never started. |
-| 2 | "Hi Nina, I'd like to book a haircut." | Ask a single question - which service, or which day. | **One** question, not three. A multi-part question is a Lab 4.1 script defect. |
+| 1 | *(say nothing - just listen)* | Greet and offer help: "Thanks for calling GG Hair Salon, this is Nina. How can I help you today?" | She opens the call. Silence here means the signed URL was minted but the audio session never started. |
+| 2 | "Hi Nina, I'd like to book a haircut." | Ask a single question - which service, or which day. | **One** question, not three. A multi-part question is a prompt defect. |
 | 3 | "How much is a women's cut?" | Answer **$65**, a 1-hour slot. | The price comes from the handbook. A vague or wrong price means the KB is not attached. |
 | 4 | "And what's your cancellation policy?" | State the **12-hour** rule and the **50%** charge for a late cancellation or no-show. | This fact exists only in the PDF. This is the grounding proof. |
 | 5 | "Do I need to pay a deposit for colour?" | Say **$30**, applied to the final bill. | Second grounded fact. She should not hedge. |
@@ -1329,19 +721,19 @@ The **What to listen for** column is what you are grading. If a turn fails, note
 | 9 | "It's Alex, and my number is 9123 4567." | Read the details back for confirmation. | Every slot repeated: name, service, date, time, contact. |
 | 10 | "Yes, that's correct." | Confirm the booking and close the call. | The booking is created only **after** you confirm - never before. |
 
-**Two more calls you must run** - they are what the Lab 4.3 QA scorecard is built from:
+**Two more calls you must run** - they are what your QA notes are built from:
 
 - **The incomplete caller.** At turn 8 say only *"sometime Thursday"*. Nina must ask a repair question for the time. An agent that silently invents 9:00 AM has failed.
 - **The changed-mind caller.** At turn 10 say *"actually, make it Friday instead"*. She must update the slot and re-confirm, not book Thursday anyway.
 
-Save all three transcripts from **Call History** in the Retell dashboard. They are the evidence for Lab 4.3 and for the capstone.
+Save all three transcripts from the conversation history in the ElevenLabs dashboard. They are the evidence for Lab 4 and for the Case Study.
 
 
-### Lab 4.6 - Clone Your Own Voice and Give It to the Agent
+### Lab 5 - Grounded FAQ Voice Agent with Vapi (MediRefill)
 
-**Time:** 60 minutes
+**Time:** 90 minutes
 
-**Goal:** A voice clone of the learner's own voice, used as the agent's speaking voice.
+**Goal:** Ava, a pharmacy refill assistant whose brain is YOUR n8n workflow - grounded in six FAQ topics and hard-refusing all medical advice.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1349,30 +741,26 @@ Save all three transcripts from **Call History** in the Retell dashboard. They a
 
 | Concept | In one line |
 |---|---|
-| Voice cloning | Builds a synthetic voice from a short recording of a real person. |
-| Consent | You may only clone a voice you own or have written permission to use. |
-| Reference audio quality | Clean, quiet, natural speech produces a usable clone. |
-| Voice vs persona | The voice is how the agent sounds; the prompt is what it says. |
+| Custom LLM | Vapi does speech-to-text and the voice, then calls your n8n webhook as its model. Here, n8n IS the brain. |
+| Public vs private key | The page gets the Vapi PUBLIC key only - it can merely start calls. The private key manages your account and never leaves the dashboard. |
+| Grounding | Ava answers only from the six FAQ topics in her prompt - delivery, refills, collection, payment. |
+| The safety boundary | Dose, interaction, substitution, symptom: one fixed refusal sentence and a pharmacist callback. Fixed wording in the prompt - never the model's judgement. |
 
 **Step-by-step**
 
-1. Record 30-90 seconds of your own speech in a quiet room: read a neutral paragraph at your normal pace, in the language the agent will speak. Do not whisper, shout, or play background music. Your phone's voice recorder is fine.
-2. Save it as a clean audio file (WAV, MP3 or M4A) **under 10 MB** - that is Retell's upload limit for a voice clone. Play it back first: no echo, no keyboard noise, no second voice. The clone copies every flaw it hears.
-3. There is **no Voices page in the sidebar**. Voice cloning lives inside the agent: open your agent and click the **voice selector** in the Agent Details strip (it shows the current voice, e.g. `Cimo`).
-4. In the **Select Voice** dialog, click **+ Add voice clone** at the top left.
-5. In **Add Voice Clone**: type a **Voice Name** (for example `Nina - <your name>`), drag your audio file into **Upload audio clip**, and tick the consent box - *"I hereby confirm that I have all necessary rights or consents to upload and clone these voice samples..."*. Retell will not let you save without it. Click **Save**.
-6. Your clone now appears in the voice list. Select it, then click **Save** in the Select Voice dialog.
-7. Click **Publish** on the agent. A voice change does NOT affect a call that is already running, and an unpublished draft keeps the old voice.
-8. Call the site (`http://localhost:8090` -> **Book by Voice**) and run a short booking. Listen to how it says names, prices and dates - clones break on numbers first.
-9. Tune **Speech Settings** (speed, pause before speaking) and re-run the SAME call script so you are comparing like with like.
-10. Write two sentences on where a cloned voice is and is not appropriate for a real business, and what disclosure a caller deserves.
+1. Import `lab5/vapi-faq-flow.json` and set it Active. Read `ava-assistant-prompt.md` - the guardrail lives in its wording.
+2. Start the tunnel: `ngrok http 5678`. Vapi's servers must reach your n8n; localhost is invisible to them.
+3. Prove the webhook with curl BEFORE any audio: POST an OpenAI-shaped body to `https://<id>.ngrok-free.app/webhook/vapi-faq` and read a real answer back.
+4. In Vapi, create an assistant whose model is that Custom LLM URL.
+5. Serve the site (`python3 -m http.server 8091` from `lab5/website`) and paste your Vapi PUBLIC key and assistant ID into Settings.
+6. Run the graded calls: 'When will my refill arrive?', then 'Can I take two instead of one?', then 'I'm having chest pains.'
 
 **Checkpoint**
 
-- The cloned voice appears in the Voices list and previews correctly.
-- The agent speaks the whole call in the cloned voice.
-- Prices, dates and the caller's name are pronounced correctly, or the prompt was adjusted until they were.
-- The learner can state the consent and disclosure rules for using a cloned voice with real customers.
+- A refill question gets the grounded answer: two to three working days, free above sixty dollars.
+- A medical question gets the refusal plus pharmacist callback - no medical content, not even hedged.
+- An emergency gets the escalation: 995 / A&E.
+- The transcript shows the refusals - capture it; that transcript is your assessment evidence.
 
 **Trainer facilitation notes**
 
@@ -1385,165 +773,36 @@ Save all three transcripts from **Call History** in the Retell dashboard. They a
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Cannot find where to clone a voice | There is no Voices page in the sidebar. | Open the AGENT, click the voice selector, then '+ Add voice clone' in the Select Voice dialog. |
-| Clone sounds robotic or muffled | The reference recording was noisy, echoey, or too short. | Re-record 60+ seconds of clean, natural speech in a quiet room. |
-| Save button stays greyed out | The consent checkbox was not ticked, or the file is over 10 MB. | Tick the rights/consent box and upload a file under 10 MB. |
-| Numbers are mispronounced | The model reads digits literally. | Ask for spoken forms in the prompt, e.g. 'sixty-five dollars' instead of '$65'. |
-| Voice change has no effect on the call | The agent was not published after the voice was changed. | Publish the agent, then start a NEW call - a live call keeps its old voice. |
+| Ava is silent mid-call | Vapi cannot reach the Custom LLM URL. | Open ngrok's Inspect tab (127.0.0.1:4040) - if nothing arrived, fix the URL or the tunnel. |
+| She gives medical content on a bold row | The guardrail is advisory rather than fixed wording. | Put the exact refusal sentence in the prompt and re-run every graded call. |
+| The page rejects the key | The PRIVATE key was pasted into Settings. | Use the PUBLIC key in the page - anything in a web page is visible to every visitor. |
 
-**Deliverable:** A cloned voice used by the working voice agent, plus a short written note on consent and disclosure.
+**Deliverable:** A live Vapi call transcript showing grounded answers, a hard medical refusal, and the emergency escalation.
 
-![Select Voice: cloning lives HERE, in the agent's voice selector - not in the sidebar.](screenshots/retell-voice-picker.png)
+![Lab 5 - the Vapi custom-LLM flow: webhook -> AI Agent (Ollama) -> OpenAI-shaped response.](screenshots/lab5-vapi-flow.png)
 
-*Select Voice: cloning lives HERE, in the agent's voice selector - not in the sidebar.*
+*Lab 5 - the Vapi custom-LLM flow: webhook -> AI Agent (Ollama) -> OpenAI-shaped response.*
 
-![Add Voice Clone: name, upload an audio clip under 10 MB, and tick the consent box.](screenshots/retell-voice-clone.png)
+![Lab 5 - MediRefill: Ava, the prescription-refill voice assistant, built on the Vapi Web SDK.](screenshots/lab5-vapi-site.png)
 
-*Add Voice Clone: name, upload an audio clip under 10 MB, and tick the consent box.*
+*Lab 5 - MediRefill: Ava, the prescription-refill voice assistant, built on the Vapi Web SDK.*
 
-### Lab 4.7 - Book the Appointment into Google Calendar
+![Lab 5 - Settings: the learner's own Vapi PUBLIC key and assistant ID. The private key never touches the browser.](screenshots/lab5-vapi-settings.png)
 
-**Time:** 75 minutes
+*Lab 5 - Settings: the learner's own Vapi PUBLIC key and assistant ID. The private key never touches the browser.*
 
-**Goal:** A voice agent that checks a real calendar and writes a confirmed booking into it.
+## Topic 03 - Video Agent
 
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Tool call | The agent asks n8n a question mid-call and waits for the answer. |
-| Free/busy check | Reads the calendar before promising a slot. |
-| Write action | Creating an event is irreversible - it needs confirmation first. |
-| Spoken response | The `speak` field is what the caller hears, so keep it one sentence. |
-
-**Step-by-step**
-
-1. In n8n, create a **Google Calendar OAuth2** credential (Google Cloud console -> enable the Calendar API -> OAuth client -> paste the redirect URL n8n shows you). The course n8n has Gmail/Drive/Sheets credentials but NOT Calendar - you must add it.
-2. Import `lab4/retell-booking-tools-flow.json`. It has two webhook paths: `check-availability` and `book-appointment`.
-3. Open both Google Calendar nodes and select your new credential. Leave the calendar as `primary` or pick a dedicated test calendar.
-4. Read the **Parse Slot** Code node. It converts the caller's words into a 1-hour slot, rejects Sundays and out-of-hours times, and returns a `speak` sentence when it cannot understand the date or time.
-5. Activate the workflow, then test `check-availability` BEFORE involving any voice - HTTP is far easier to debug than audio. macOS: `curl -X POST <url> -H 'Content-Type: application/json' -d '{"args":{"service":"Cut","date":"2026-07-16","time":"14:00"}}'`. Windows: PowerShell mangles quotes, so use `curl.exe` and escape the inner quotes with `\"`, or simply click **Execute workflow** in n8n and paste the JSON into the webhook's test panel. You should get `available: true` and a `speak` sentence.
-6. Put a real event in your calendar at that time and run the same curl again. It must now answer `available: false`. If it does not, the Calendar node is reading a different calendar.
-7. Start a tunnel (`ngrok http 5678`) - Retell's servers cannot reach localhost.
-8. In the Retell agent, edit the `check_availability` and `book_appointment` Custom Functions to point at `https://<tunnel>/webhook/check-availability` and `https://<tunnel>/webhook/book-appointment`. Give each a parameter schema: `service`, `date` (YYYY-MM-DD), `time` (HH:MM 24h), plus `name` and `phone` for booking.
-9. Add one line to the agent prompt so the model produces machine-readable slots: "When calling a tool, always convert the caller's words into date as YYYY-MM-DD and time as 24-hour HH:MM. Today's date is <insert>." Publish the agent.
-10. Call the site and book Thursday at 2 PM. Watch the n8n executions list - one execution for the availability check, one for the booking - then refresh Google Calendar and see the event.
-11. Try to break it: ask for Sunday, ask for 11 PM, and change your mind after confirming. The agent must never create an event you did not confirm.
-
-**Checkpoint**
-
-- A real event appears in Google Calendar with the service, customer name and phone in it.
-- The availability check answers truthfully when the slot is already taken.
-- Sunday and out-of-hours requests are refused politely, without a calendar write.
-- No event is created before the caller confirms.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Nina stalls at 'let me check' | Retell cannot reach your n8n. | Start the tunnel and use the https tunnel URL, not localhost, in the Custom Function. |
-| Event lands at the wrong time | The date had no timezone, so it was read as UTC. | Keep the `+08:00` offset built into the Code node. |
-| Calendar always says free | The node is reading a different calendar, or timeMin/timeMax are empty. | Select the same calendar you are looking at and re-run the curl test. |
-| Double bookings | The agent booked without checking first. | Instruct it to call `check_availability` before `book_appointment`. |
-| Event created before confirmation | The prompt lets the model act eagerly. | Require an explicit 'yes' before the booking tool is allowed. |
-
-**Deliverable:** A voice booking that produces a real, correctly-timed Google Calendar event.
-
-![Lab 4.7 - the booking tools: check-availability and book-appointment, both wired to Google Calendar.](screenshots/lab4-booking-tools.png)
-
-*Lab 4.7 - the booking tools: check-availability and book-appointment, both wired to Google Calendar.*
-
-### Lab 4.8 - Build a FAQ Voice Agent with Vapi
-
-**Time:** 75 minutes
-
-**Goal:** A second voice agent on a different platform, where n8n is the BRAIN of the call: Vapi speaks, n8n thinks.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Custom LLM | Vapi delegates every turn to your own endpoint instead of its built-in model. |
-| OpenAI-shaped response | n8n must reply in chat-completion format or the agent goes silent. |
-| Public vs private key | A public key can only start calls, so it is safe in the browser. |
-| Refusal testing | The question the FAQ cannot answer is the most important test. |
-
-**Step-by-step**
-
-1. Understand the difference before you build. **Retell (Lab 4.2)**: Retell owns the model; n8n only mints the call token and answers tool calls. **Vapi (this lab)**: Vapi owns the ears and the voice, but every turn of thinking is handed to *your* n8n workflow through its **Custom LLM** setting. n8n is the brain.
-2. Import `lab5/vapi-faq-flow.json`. Read it left to right: **Vapi Webhook** receives an OpenAI-shaped chat request -> **Prepare Prompt** pulls out the caller's latest turn and the transcript -> **FAQ Agent** (Ollama) answers from the HomeMart FAQ in its system message -> **Build OpenAI Response** wraps the answer as a `chat.completion` object -> **Respond to Vapi**.
-3. That last step is the one that breaks silently: Vapi expects a valid OpenAI chat-completion object. Return anything else and the assistant just stops talking mid-call, with no error in the browser.
-4. Select the `Ollama local` credential in the model node, then **Publish/Activate** the workflow and copy the Webhook's **Production URL** (`.../webhook/vapi-faq`).
-5. Test the brain BEFORE any voice - HTTP is far easier to debug than audio: `curl -X POST <url> -H 'Content-Type: application/json' -d '{"model":"gpt-4o","messages":[{"role":"user","content":"How long is the warranty on a Dyson?"}]}'`. You must get back a `chat.completion` object whose content says **two years** - not one.
-6. Run the refusal test the same way: ask *"Do you sell nail polish?"*. The reply must offer a colleague follow-up, NOT invent a product. If it invents one, tighten the grounding rule in the agent's system message and re-run.
-7. Start a tunnel (`ngrok http 5678`) - Vapi's servers cannot reach localhost.
-8. In Vapi, create an assistant named `Ava - HomeMart FAQ`. Set **Model -> Custom LLM** and paste `https://<tunnel>/webhook/vapi-faq` as the URL. Set the **First Message** so Ava speaks first (see `lab5/ava-assistant-prompt.md`). Save, then copy the **assistant ID**.
-9. In **API Keys** you will see a **public** and a **private** key. You need the PUBLIC one - it can only start calls. The private key must never appear in front-end code.
-10. Serve the site: double-click `lab5/website/start.command` (macOS) or `start.bat` (Windows) - or `cd lab5/website` then `python3 -m http.server 8096` (macOS) / `python -m http.server 8096` (Windows). Open `http://localhost:8096`, click **⚙ Settings** and paste your public key and assistant ID. Nothing is hardcoded: the values live in your browser, so every learner drives the same page with their own assistant.
-11. Click **Ask Ava**, allow the microphone, and work through the six-question test set in `ava-assistant-prompt.md` while watching the n8n executions list - one execution per conversational turn. That list IS the agent thinking.
-12. Write three sentences comparing Vapi and Retell: where the model runs, where the secret lives, and which you would choose for a client - and why.
-
-**Checkpoint**
-
-- A curl to the webhook returns a valid `chat.completion` object, and the Dyson answer says two years.
-- The site starts a Vapi call and the live transcript appears.
-- Ava answers the *exception* correctly (opened personal-care items cannot be returned).
-- She REFUSES the nail-polish question instead of inventing a product.
-- One n8n execution appears per conversational turn, and the private key appears nowhere in the browser.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Ava connects then goes silent | n8n did not return a valid OpenAI chat-completion object. | Check the Build OpenAI Response node; the reply must have object, choices[0].message.content. |
-| No n8n execution during the call | Vapi cannot reach your n8n. | Start the tunnel and use the https URL in Custom LLM - not localhost. |
-| Call fails immediately | The private key was pasted instead of the public key. | Use the PUBLIC key from Vapi -> API Keys. |
-| Ava invents a product | The grounding rule is missing or too soft. | State the exact refusal sentence in the agent's system message, then re-test. |
-| Model errors with 401 | The OpenAI credential is expired. | Use the Ollama local credential - this course runs the model locally. |
-
-**Deliverable:** A working Vapi FAQ voice agent whose brain is an n8n workflow, proven by a curl test, a live call and one honest refusal.
-
-![Lab 4.8 - the Vapi custom-LLM flow: webhook -> AI Agent (Ollama) -> OpenAI-shaped response.](screenshots/lab5-vapi-flow.png)
-
-*Lab 4.8 - the Vapi custom-LLM flow: webhook -> AI Agent (Ollama) -> OpenAI-shaped response.*
-
-![Lab 4.8 - HomeMart: the FAQ voice agent front end, built on the Vapi Web SDK.](screenshots/lab5-vapi-site.png)
-
-*Lab 4.8 - HomeMart: the FAQ voice agent front end, built on the Vapi Web SDK.*
-
-![Lab 4.8 - Settings: the learner's own Vapi PUBLIC key and assistant ID. The private key never touches the browser.](screenshots/lab5-vapi-settings.png)
-
-*Lab 4.8 - Settings: the learner's own Vapi PUBLIC key and assistant ID. The private key never touches the browser.*
-
-## Topic 05 - AI Video and Avatar Automation
-
-Generate scripts, avatar videos, text-to-video clips with Veo 3.1, and open-source talking-head video pipelines that run entirely on the learner's own machine.
+Lip-sync, avatars and text-to-video: from a script, to a mouth that moves, to a face that talks back, to video from nothing but a sentence. Labs 6-10.
 
 ### Key concepts
 
-- **Lip-Sync Face-Off: Wav2Lip vs MuseTalk vs HeyGen:** A side-by-side judgement of a local and a cloud lip-sync engine, using one script written by gemma4.
-- **Build a Video Script Agent:** An n8n workflow that turns a topic into a timed presenter video script.
-- **Generate an Avatar News Video with HeyGen:** A HeyGen avatar video created from an AI-generated script.
-- **Generate a Cinematic Video with Veo 3.1 and Gemini:** A one-page studio where a single idea becomes a shot script written by gemma4 and an 8-second Veo 3.1 clip with sound.
-- **Build the Free Local Avatar Video Pipeline:** A local avatar video path using Ollama, generated speech, Wav2Lip-style rendering, and ffmpeg.
+- **Lip-Sync Face-Off: MuseTalk vs HeyGen:** The same gemma4 script and the same portrait rendered by MuseTalk (local) and HeyGen (cloud), judged side by side with your own eyes.
+- **Avatar News Video with HeyGen (GG News Studio):** Facts in, broadcast out: gemma4 writes spoken copy, HeyGen renders a presenter reading it, and the page polls until the video plays.
+- **Open-Source News Avatar - Free and Local:** The same news video with zero cloud and zero credits: TTS, Wav2Lip and ffmpeg on your own machine, driven by n8n.
+- **Interactive Avatar Brain (Aria, In-Browser):** A talking avatar you can interrupt: speech in, a gemma4 reply in about two seconds, and the mouth drawn live in the browser.
+- **Interactive Avatar Session (Nova, HeyGen LiveAvatar):** A cloud interactive avatar embedded in the page through a short-lived session URL minted by n8n - the API key never reaches the browser.
+- **AI Video Generation with Gemini Veo 3 (Veo Studio):** One sentence in, an 8-second cinematic clip with sound out: gemma4 writes the shot prompt, Veo 3.1 renders it, n8n proxies the file.
 
 
 ### How the avatar video pipeline works
@@ -1573,14 +832,14 @@ type a TOPIC  --POST-->  Webhook
 
 | Lab | Shape | Why |
 |---|---|---|
-| Lab 5.3 (HeyGen) | n8n returns a `video_id` at once; the **page polls** `heygen-status` | Cloud renders take 1-3 minutes. Holding an HTTP request open that long is fragile. |
-| Lab 5.5 (local) | n8n returns the finished `video_url` in **one** response | A local render takes ~16 s, so the caller can simply wait. |
+| Lab 7 (HeyGen) | n8n returns a `video_id` at once; the **page polls** `heygen-status` | Cloud renders take 1-3 minutes. Holding an HTTP request open that long is fragile. |
+| Lab 7-os (local) | n8n returns the finished `video_url` in **one** response | A local render takes ~16 s, so the caller can simply wait. |
 
 Both pages show a progress bar. Note what it does NOT do: HeyGen reports only *processing* or *completed* - there is **no percentage to read**. So the bar is an honest elapsed-time estimate that eases toward 95% and stops there, reaching 100% only when the renderer actually reports done. A bar that sits at 100% while still spinning is a lie, and learners notice.
 
 ### The three lip-sync engines
 
-All three animate a still portrait to speech. They are not interchangeable, and Lab 5.1 makes you prove it on the same photo and the same script.
+All three animate a still portrait to speech. They are not interchangeable, and the labs make you prove it: Lab 6 pits MuseTalk against HeyGen on the same photo and script, and Lab 7-os puts Wav2Lip to work in the free local pipeline.
 
 | | Wav2Lip | MuseTalk | HeyGen |
 |---|---|---|---|
@@ -1599,75 +858,11 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 
 
-### Lab 5.1 - Lip-Sync Face-Off: Wav2Lip vs MuseTalk vs HeyGen
-
-**Time:** 75 minutes
-
-**Goal:** A side-by-side judgement of a local and a cloud lip-sync engine, using one script written by gemma4.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Lip sync | Matching mouth shapes to the phonemes actually being spoken. |
-| Local vs cloud | Free and private, against fast and paid - the real trade-off. |
-| Same-input testing | Only one variable may change, or the comparison proves nothing. |
-| Fit for purpose | The better engine is the one that fits the job, not the one with more features. |
-
-**Step-by-step**
-
-1. Start the studio. The app lives in `lab6/` - nothing to clone. macOS/Linux: `cd lab6` then `./setup.sh` (add `--musetalk` to also pull the ~3.5 GB weights). Windows: follow the PowerShell block in `lab6/README.md`. Open `http://localhost:8137`.
-2. **MuseTalk needs a GPU** (Apple Silicon or NVIDIA). On a CPU-only machine it is unusable, not merely slow, and the app correctly disables the button rather than offering you a failure. If that is your machine, compare the free **browser preview** against HeyGen instead - the lesson survives.
-3. Get your HeyGen API key: sign in at `https://app.heygen.com` -> click your avatar (top right) -> **Settings** -> the **API** tab -> **Copy** the API token. HeyGen shows it once.
-4. Paste it into `lab6/lipsyncdemo/.env` as `HEYGEN_API_KEY=...` and **restart the app** - the key is only read at startup. The HeyGen renderer stops being greyed out.
-5. Write the script with your LOCAL model, not by hand: `ollama run gemma4 "Write a 3-sentence TV news bulletin about Singapore's MRT expansion. Spoken style, no headings, no markdown, under 60 words."` Keep it short - every second of audio costs render time and HeyGen credits.
-6. Upload a portrait, paste the script, choose a voice, and click **Speak**. Use the instant in-browser preview to check the timing BEFORE you render anything: it is free, immediate, and honest about being geometry rather than a face.
-7. Render the SAME script and the SAME portrait through all three: **⚡ Render Wav2Lip** (local, ~16 s), **✨ Render photoreal** = MuseTalk (local, ~75 s), and **HeyGen** (cloud, ~40 s, costs credits). One variable only - change the script between runs and you have proved nothing.
-8. Watch both back and score each 0-2 on: lip accuracy (do the consonants land?), mouth realism (teeth and shadow, or a smear?), head motion (alive, or a mannequin?), and artefacts (flicker at the jaw, colour mismatch at the crop edge).
-9. Note the structural difference, not just the quality: MuseTalk animates the mouth only - **the head is frozen**. HeyGen also moves the head and blinks. That is not a bug in MuseTalk; it is what the model does.
-10. Write the decision down: which would you ship to a client, and why? A frozen head that is free and keeps the customer's face on your own machine, or a moving head that costs credits and uploads that face to a vendor? There is no single right answer - there is a defensible one.
-
-**Checkpoint**
-
-- The same script and the same portrait were rendered by all three engines.
-- The learner can state which engine moves the head, which is fastest, and which keeps the photo on their own machine.
-- A completed scorecard exists, with the four criteria scored for each engine.
-- A written recommendation names the trade-off (cost and privacy against head motion), not just 'HeyGen looks better'.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Render photoreal is greyed out | MuseTalk needs a GPU and its weights; without them the app reports musetalk:false. | Run ./setup.sh --musetalk on a GPU machine, or compare the browser preview against HeyGen. |
-| HeyGen renderer stays greyed out | The key was added but the app was not restarted. | The .env is read at startup - restart the app and reload the page. |
-| HeyGen rejects the avatar | The v3 API renders only avatars you OWN; stock avatars are refused. | Upload your own portrait as a photo avatar first. |
-| The comparison proves nothing | The script or the portrait changed between the two renders. | Same script, same photo, same voice. Change ONE thing at a time. |
-| Everything is slow and expensive | The script is too long. | Two or three sentences. Time it in the free browser preview first. |
-
-**Deliverable:** A side-by-side MuseTalk/HeyGen render of one gemma4 script, a scored comparison, and a written recommendation.
-
-![Lab 5.1 - Digital Human Studio (http://localhost:8137): face detected, script loaded, and the avatar speaking in the live preview.](screenshots/lab6-lipsync-studio.png)
-
-*Lab 5.1 - Digital Human Studio (http://localhost:8137): face detected, script loaded, and the avatar speaking in the live preview.*
-
-![Lab 5.1 - the controls that matter: Draft with Ollama (gemma4), the voice engine, and the LIP SYNC renderer picker.](screenshots/lab6-lipsync-engines.png)
-
-*Lab 5.1 - the controls that matter: Draft with Ollama (gemma4), the voice engine, and the LIP SYNC renderer picker.*
-
-### Lab 5.2 - Build a Video Script Agent
+### Lab 6 - Lip-Sync Face-Off: MuseTalk vs HeyGen
 
 **Time:** 60 minutes
 
-**Goal:** An n8n workflow that turns a topic into a timed presenter video script.
+**Goal:** The same gemma4 script and the same portrait rendered by MuseTalk (local) and HeyGen (cloud), judged side by side with your own eyes.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1675,25 +870,24 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Concept | In one line |
 |---|---|
-| Creative brief | Defines audience, goal, length, tone, and call to action. |
-| Timed script | Allocates seconds to scenes and narration. |
-| Shot list | Converts words into visual direction. |
-| Brand constraints | Keeps voice, claims, and style consistent. |
+| Lip-sync rendering | An engine animates a still portrait to match speech audio - the mouth is generated, the photo is real. |
+| Local vs cloud | MuseTalk: free, private, ~75 s, mouth only. HeyGen: credits, face uploaded, ~40 s, the head moves and blinks. |
+| Served, never file:// | The studio runs at http://localhost:8137 via start.command / start.bat. Double-click index.html and fetch() silently dies. |
+| Judging with evidence | The deliverable is a scored comparison of what you watched - not the vendor's marketing page. |
 
 **Step-by-step**
 
-1. Create or duplicate a workflow for script generation.
-2. Add fields for target audience, duration, message, tone, and required facts.
-3. Prompt the local model to output scene number, time range, voiceover, on-screen text, and visual direction.
-4. Generate a 60-second script for a course announcement or news update.
-5. Review for unsupported claims and timing overrun.
-6. Revise the prompt so every scene has a visual purpose and every claim has a source.
+1. From `labs_local_n8n/lab6`, run `./setup.sh` (app + HeyGen), or `./setup.sh --musetalk` to also download the ~3.5 GB MuseTalk weights - once.
+2. Launch with `start.command` (macOS) or `start.bat` (Windows) - it serves the Digital Human Studio at `http://localhost:8137`.
+3. Let gemma4 draft the news script in the studio - Draft with Ollama.
+4. Render the script and portrait through MuseTalk, and time it.
+5. Render the SAME script and portrait through HeyGen (API key + credits), and time it.
+6. Score both clips: mouth realism, head movement, speed, privacy, cost - and write one sentence on when you would choose each.
 
 **Checkpoint**
 
-- The script totals the requested duration.
-- Every scene has narration and visual direction.
-- The script avoids unverifiable promises.
+- Both clips render from the identical script and portrait.
+- You can state, in one sentence each, when you would choose each engine - backed by what you saw.
 
 **Trainer facilitation notes**
 
@@ -1706,17 +900,25 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Script is too long | The model was not constrained by time per scene. | Specify words per minute and scene duration. |
-| Visuals are generic | The prompt asks only for narration. | Require camera, subject, motion, and background per scene. |
-| Claims are risky | No evidence rule was provided. | Add a source and approved-claims constraint. |
+| 'Could not load that sample' | The studio was opened from file://. | Always launch via start.command / start.bat - the browser blocks fetch() on file URLs. |
+| MuseTalk render fails | Weights not downloaded, or no GPU/MPS available. | Re-run ./setup.sh --musetalk and read the service log. |
+| HeyGen render rejected | Missing API key or exhausted credits. | Add the key in the studio settings and check the credit balance. |
 
-**Deliverable:** A timed script and shot list ready for video generation.
+**Deliverable:** Two rendered clips of one script, a scored comparison, and a one-line recommendation per engine.
 
-### Lab 5.3 - Generate an Avatar News Video with HeyGen
+![Lab 6 - Digital Human Studio (http://localhost:8137): face detected, script loaded, and the avatar speaking in the live preview.](screenshots/lab6-lipsync-studio.png)
 
-**Time:** 75 minutes
+*Lab 6 - Digital Human Studio (http://localhost:8137): face detected, script loaded, and the avatar speaking in the live preview.*
 
-**Goal:** A HeyGen avatar video created from an AI-generated script.
+![Lab 6 - the controls that matter: Draft with Ollama (gemma4), the voice engine, and the LIP SYNC renderer picker.](screenshots/lab6-lipsync-engines.png)
+
+*Lab 6 - the controls that matter: Draft with Ollama (gemma4), the voice engine, and the LIP SYNC renderer picker.*
+
+### Lab 7 - Avatar News Video with HeyGen (GG News Studio)
+
+**Time:** 45 minutes
+
+**Goal:** Facts in, broadcast out: gemma4 writes spoken copy, HeyGen renders a presenter reading it, and the page polls until the video plays.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1724,25 +926,24 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Concept | In one line |
 |---|---|
-| Avatar video | Combines script, voice, presenter identity, and scene direction. |
-| API credential | Lets n8n call HeyGen without exposing the key in browser code. |
-| Generation status | Polls or waits until the video is ready. |
-| Result handoff | Stores the generated video URL for review or publishing. |
+| Two texts | You type FACTS; gemma4 writes SPOKEN COPY. The renderer speaks every character it is given - feed it raw facts and the avatar reads out a list. |
+| Generate + poll | Rendering is far too slow for one HTTP request: /heygen-generate returns a video ID at once, and the page polls /heygen-status. |
+| Spoken-copy rules | No bullets, no URLs, no markdown - a stray asterisk becomes an audible 'asterisk'. |
+| Honest progress | HeyGen reports only processing or completed, so the bar estimates elapsed time and only reaches 100% when the render truly finishes. |
 
 **Step-by-step**
 
-1. Import `lab7/heygen-news-avatar-flow.json`.
-2. Create the HeyGen credential or API key variable required by the workflow.
-3. Review the script generation node and video generation node.
-4. Run the workflow with a short news topic.
-5. Wait for the video result and open it for review.
-6. Record quality notes: pronunciation, timing, visual relevance, and brand fit.
+1. Import `lab7/heygen-news-avatar-flow.json` and set it Active.
+2. Add the `HeyGen API` credential, and confirm the `Ollama local` credential on the script node.
+3. Serve the site from `lab7/website` and open the GG News Studio.
+4. Type the day's facts and generate - watch gemma4's spoken script appear in the teleprompter.
+5. Watch the page poll `/heygen-status` until the video is completed, then play it.
+6. Read the script aloud yourself: does it SOUND spoken? No bullets, no URLs, no stage directions.
 
 **Checkpoint**
 
-- The workflow produces a playable HeyGen video URL or file.
-- Credentials remain server-side in n8n.
-- Quality notes identify at least one prompt improvement.
+- The script reads as speech - no bullets, URLs or markdown.
+- The page polls and eventually plays the finished video.
 
 **Trainer facilitation notes**
 
@@ -1755,21 +956,21 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Video generation fails | API key, quota, or payload fields are invalid. | Check credential status and run a shorter test script. |
-| Avatar mispronounces names | No pronunciation guidance was supplied. | Add phonetic spelling or choose a more suitable voice. |
-| Video is off-brand | Prompt lacks style and brand constraints. | Add tone, audience, and visual rules from the creative brief. |
+| The request times out | The flow tried to render inside a single HTTP request. | Keep the split shape: generate returns the ID immediately; the page polls status. |
+| The avatar says 'asterisk' | Markdown leaked into the script. | Tighten the system prompt: spoken copy only, no formatting characters. |
+| Status never reaches completed | Wrong video ID, or HeyGen credits ran out. | Read the status execution in n8n and check the HeyGen account. |
 
-**Deliverable:** A generated avatar news video and quality review notes.
+**Deliverable:** A generated avatar news video plus quality-review notes on the script and the render.
 
-![Lab 5.3 - the HeyGen news studio: gemma4's script in the teleprompter and an honest render progress bar.](screenshots/lab7-heygen-site.png)
+![Lab 7 - the GG News Studio: gemma4's script in the teleprompter and an honest render progress bar.](screenshots/lab7-heygen-site.png)
 
-*Lab 5.3 - the HeyGen news studio: gemma4's script in the teleprompter and an honest render progress bar.*
+*Lab 7 - the GG News Studio: gemma4's script in the teleprompter and an honest render progress bar.*
 
-### Lab 5.4 - Generate a Cinematic Video with Veo 3.1 and Gemini
+### Lab 7-os - Open-Source News Avatar - Free and Local
 
-**Time:** 75 minutes
+**Time:** 45 minutes
 
-**Goal:** A one-page studio where a single idea becomes a shot script written by gemma4 and an 8-second Veo 3.1 clip with sound.
+**Goal:** The same news video with zero cloud and zero credits: TTS, Wav2Lip and ffmpeg on your own machine, driven by n8n.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1777,26 +978,24 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Concept | In one line |
 |---|---|
-| Text to video | Veo 3.1 renders a real video with audio from a written prompt - no camera, no avatar photo. |
-| Prompt as a shot list | A local model turns a plain idea into a cinematic prompt: subject, action, camera, lighting, mood. |
-| Long-running operations | The render does not finish inside one HTTP call, so the flow starts a job and polls until it is done. |
-| The key stays in n8n | The browser receives the video through the flow, never the Gemini API key. |
+| Local render service | start.command / start.bat runs the pipeline - TTS to speech.wav, Wav2Lip lip-sync, ffmpeg to 1920x1080 - at localhost:8099/render. |
+| n8n calls OUT | n8n reaches your machine at host.docker.internal - the opposite direction from Lab 4's tools, so no tunnel is needed. |
+| One-response shape | A ~16 s local render is fast enough to answer in a single response - no video ID, no polling. |
+| The trade | Wav2Lip's mouth is generated at 96x96 and soft at 1080p - but the render is free, private and fast. |
 
 **Step-by-step**
 
-1. Import `lab10/veo3-video-flow.json` and publish it.
-2. Create the Gemini API credential in n8n and select it on the Veo nodes.
-3. Start the website with `lab10/website/start.command` (Mac) or `start.bat` (Windows), then open `http://localhost:8098`.
-4. Open the gear and paste the Production webhook URL of the Lab 5.4 flow.
-5. Type a plain idea, for example `a barista making latte art in a quiet morning cafe`, and generate.
-6. Read the script gemma4 produced, then watch the clip Veo returned and note the render time.
-7. Change one element of the prompt - the camera move, or the lighting - and compare the two clips.
+1. Start the render service FIRST: `start.command` (macOS) or `start.bat` (Windows), and leave the window open.
+2. Import `lab7-opensource/os-news-avatar-flow.json` and set it Active.
+3. Open the lab website and submit the same facts you used in Lab 7.
+4. Watch the execution: n8n calls the render service at `host.docker.internal:8099/render` and waits for the finished file.
+5. Play the finished MP4 in the page - produced entirely on your machine.
+6. Compare it against the HeyGen clip from Lab 7: quality, speed, privacy, cost.
 
 **Checkpoint**
 
-- The flow returns a playable MP4 with audio.
-- The learner can point to the shot script gemma4 wrote and say which words changed the picture.
-- The learner can explain why the video is proxied through n8n instead of given to the browser as a Google URL.
+- A finished MP4 plays in the page, rendered locally.
+- You can name one quality difference versus HeyGen, and one reason you would still pick this.
 
 **Trainer facilitation notes**
 
@@ -1809,21 +1008,21 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| The video never arrives | Veo renders asynchronously; the flow must poll the operation until `done` is true. | Open the polling node and confirm it loops on the operation name rather than reading the first response. |
-| The play button does nothing | The n8n binary response does not support byte ranges, and the video element needs them to seek. | Fetch the MP4 into a blob first, then set the blob URL as the source. |
-| Gemini returns 403 | The API key has no access to the Veo model, or billing is not enabled on the project. | Check the model name and enable the Generative Language API on the key's project. |
+| n8n cannot reach the render service | It called localhost instead of the host machine. | Use host.docker.internal:8099 - n8n runs inside Docker. |
+| Nothing renders | The render service was never started. | Run start.command / start.bat first and keep that window open. |
+| Audio and mouth drift apart | ffmpeg is missing or the source portrait is unusual. | Install ffmpeg and start from the provided portrait. |
 
-**Deliverable:** A generated Veo clip, the gemma4 shot script that produced it, and a note on what changed between two prompt versions.
+**Deliverable:** A locally rendered news video and a written HeyGen-versus-local comparison.
 
-![Lab 5.4 - the Veo studio: one prompt in, gemma4 writes the shot script, Veo 3.1 renders the clip.](screenshots/lab10-veo-site.png)
+![Lab 7-os - the open-source News Studio: 100% free and local - n8n + Ollama + TTS + ffmpeg, no cloud, no credits.](screenshots/lab7os-site.png)
 
-*Lab 5.4 - the Veo studio: one prompt in, gemma4 writes the shot script, Veo 3.1 renders the clip.*
+*Lab 7-os - the open-source News Studio: 100% free and local - n8n + Ollama + TTS + ffmpeg, no cloud, no credits.*
 
-### Lab 5.5 - Build the Free Local Avatar Video Pipeline
+### Lab 8 - Interactive Avatar Brain (Aria, In-Browser)
 
-**Time:** 90 minutes
+**Time:** 45 minutes
 
-**Goal:** A local avatar video path using Ollama, generated speech, Wav2Lip-style rendering, and ffmpeg.
+**Goal:** A talking avatar you can interrupt: speech in, a gemma4 reply in about two seconds, and the mouth drawn live in the browser.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1831,25 +1030,25 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Concept | In one line |
 |---|---|
-| Open-source pipeline | Keeps video generation possible without cloud video credits. |
-| Render service | Separates heavy video work from the n8n orchestration flow. |
-| Audio-video sync | Aligns speech and face movement. |
-| Fallback strategy | Lets a production workflow continue when a paid provider is unavailable. |
+| Latency is the feature | The AI Agent node's ReAct loop took ~14 s per reply; the same model over raw HTTP answers in ~2 s. A receptionist needs none of that overhead. |
+| think: false | gemma4 is a thinking model - left alone it spends its whole token budget reasoning privately and returns an EMPTY reply. |
+| keep_alive: 30m | Keeps the 9.6 GB model resident in memory, so the next reply is not a cold load. |
+| Spoken sentences | One or two spoken sentences, no markdown, no URLs - this is a voice, not a document. |
 
 **Step-by-step**
 
-1. Open `lab7-opensource/README.md` and review the service architecture.
-2. Start the local render service using the provided start script for your platform.
-3. Import `lab7-opensource/os-news-avatar-flow.json` into n8n.
-4. Run a short script generation and render test.
-5. Open the website front end and play the generated output.
-6. Compare the local output against the HeyGen output using a quality rubric.
+1. Import `lab8/avatar-chat-flow.json` and set it Active. Note what is missing: there is NO AI Agent node, deliberately.
+2. Open the HTTP node that calls Ollama and find `think: false` and `keep_alive: '30m'` - be able to say what each prevents.
+3. Serve the `lab8` website and talk to Aria.
+4. Watch the timing breakdown the page prints after each reply.
+5. Screenshot the latency panel - that screenshot is your evidence.
+6. Interrupt her mid-reply and watch the conversation recover.
 
 **Checkpoint**
 
-- The local service accepts a render request.
-- The workflow returns a playable local video file.
-- The learner can explain quality and cost trade-offs versus HeyGen.
+- Aria replies in roughly two seconds.
+- Replies are one or two spoken sentences - no markdown, no URLs.
+- The latency-panel screenshot is captured.
 
 **Trainer facilitation notes**
 
@@ -1862,31 +1061,21 @@ The honest summary: **Wav2Lip is the fastest, MuseTalk looks the best, and only 
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Service does not start | Python dependencies or paths are missing. | Use the README setup commands and verify Python version. |
-| Video has no lip sync | The audio or image input was not passed to the renderer. | Check the render request payload and service logs. |
-| ffmpeg error | ffmpeg is not installed or not on PATH. | Install ffmpeg and reopen the terminal. |
+| Aria says 'sorry, I didn't catch that' | The model spent its whole budget thinking and returned an empty reply. | Set think: false in the request body. |
+| The first reply takes forever | The model is cold-loading. | keep_alive: '30m' keeps it resident after the first call - the second reply is fast. |
+| Replies read like essays | The prompt does not constrain the register. | Instruct: one or two spoken sentences, no markdown, no URLs. |
 
-**Deliverable:** A free local avatar video and comparison notes.
+**Deliverable:** A conversation with Aria plus the latency-panel screenshot proving ~2 s replies.
 
-## Topic 06 - Publishing, Interactive Avatars, and Capstone Operations
+![Lab 8 - Aria, rendered in the browser: speech in, gemma4 reply, and the mouth drawn live. The latency is printed, not claimed.](screenshots/lab8-interactive-avatar.png)
 
-Publish video outputs, deploy interactive avatars, monitor automations, and assemble a production-ready AI workforce capstone.
+*Lab 8 - Aria, rendered in the browser: speech in, gemma4 reply, and the mouth drawn live. The latency is printed, not claimed.*
 
-### Key concepts
+### Lab 9 - Interactive Avatar Session (Nova, HeyGen LiveAvatar)
 
-- **Publish the Avatar Video to YouTube:** An n8n publishing workflow that uploads a generated video with metadata.
-- **Build an Interactive Avatar That Renders in the Browser:** A talking avatar that listens, thinks and answers with no cloud avatar, no credits and no render wait - and a measured latency to prove it.
-- **Embed an Interactive HeyGen Avatar with LiveAvatar:** The same conversation as Lab 6.2, but with a photoreal streaming avatar - and a clear-eyed comparison of what that costs.
-- **Monitor, Debug, and Recover AI Workflows:** A monitoring checklist for failed executions, retries, and provider outages.
-- **Capstone - Build a Human-AI Workforce Automation:** An end-to-end workflow that combines RAG, voice, video, publishing, and monitoring.
+**Time:** 45 minutes
 
-
-
-### Lab 6.1 - Publish the Avatar Video to YouTube
-
-**Time:** 75 minutes
-
-**Goal:** An n8n publishing workflow that uploads a generated video with metadata.
+**Goal:** A cloud interactive avatar embedded in the page through a short-lived session URL minted by n8n - the API key never reaches the browser.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -1894,25 +1083,24 @@ Publish video outputs, deploy interactive avatars, monitor automations, and asse
 
 | Concept | In one line |
 |---|---|
-| Publishing automation | Moves from generated asset to distribution channel. |
-| OAuth credential | Authorizes YouTube upload without storing passwords. |
-| Metadata | Defines title, description, tags, and visibility. |
-| Review gate | Prevents unapproved videos from going public. |
+| Session minting | n8n calls LiveAvatar with the API key server-side and returns only a short-lived embed URL to the page. |
+| Cloud quality | Nova looks far better than Aria - photoreal, fluid - and costs credits for every session. |
+| The comparison | Aria: free, private, ~2 s, drawn mouth. Nova: photoreal, cloud, credits. Both are defensible - be able to say when. |
+| The same key instinct | Lab 4's signed URL, Lab 9's embed URL, Lab 10's proxy URL - the browser only ever receives short-lived, single-purpose tokens. |
 
 **Step-by-step**
 
-1. Create or import the YouTube upload workflow for Lab 6.
-2. Configure the YouTube OAuth credential in n8n.
-3. Use a generated video file or URL from a previous lab.
-4. Prepare title, description, tags, and visibility as workflow fields.
-5. Add a manual review gate before upload.
-6. Run an unlisted upload test and verify it appears in YouTube Studio.
+1. Import `lab9/liveavatar-session-flow.json` and set it Active.
+2. Add the `LiveAvatar API` credential in n8n.
+3. Serve the `lab9` website and start a session with Nova.
+4. Hold a short conversation and note the quality and the latency.
+5. Write down one thing Nova does better than Aria, and one thing Aria does better than Nova.
+6. Open the execution and find the session URL - confirm no API key ever reached the page.
 
 **Checkpoint**
 
-- The workflow uploads a video as unlisted or private first.
-- Metadata is populated from workflow fields.
-- A review gate exists before public publishing.
+- Nova loads and holds a conversation.
+- The Aria-versus-Nova scorecard has one honest entry in each column.
 
 **Trainer facilitation notes**
 
@@ -1925,125 +1113,21 @@ Publish video outputs, deploy interactive avatars, monitor automations, and asse
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| OAuth fails | Consent screen or redirect URL is not configured. | Follow n8n credential instructions and retry authorization. |
-| Video upload rejected | File URL is inaccessible or format unsupported. | Download the file locally or provide an MP4 path. |
-| Wrong visibility | Default visibility was not set intentionally. | Use private or unlisted during training. |
+| The session fails to start | The LiveAvatar credential is missing or invalid. | Fix the credential in n8n and read the execution error. |
+| The embed loads, then dies | The short-lived session URL expired. | Mint a fresh session - expiring quickly is the point of these URLs. |
+| A key is visible in the page source | Someone hardcoded it into the front end. | Remove it - the page must only ever receive the embed URL. |
 
-**Deliverable:** An unlisted YouTube upload test with approved metadata.
+**Deliverable:** A working Nova session plus the two-column scorecard comparing her against the browser-rendered avatar.
 
-### Lab 6.2 - Build an Interactive Avatar That Renders in the Browser
+![Lab 9 - the LiveAvatar embed: n8n mints a short-lived session URL, so the API key never reaches the browser.](screenshots/lab9-liveavatar-site.png)
 
-**Time:** 75 minutes
+*Lab 9 - the LiveAvatar embed: n8n mints a short-lived session URL, so the API key never reaches the browser.*
 
-**Goal:** A talking avatar that listens, thinks and answers with no cloud avatar, no credits and no render wait - and a measured latency to prove it.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| The interactive loop | Speech to text, then the agent, then text to speech, then the mouth - each stage adds latency the learner can measure. |
-| Latency engineering | The reply must arrive in about a second, or the conversation feels dead. Every design choice in this lab serves that. |
-| Barge-in | The learner can interrupt the avatar mid-sentence, exactly as they would interrupt a person. |
-| Drawn mouth vs real pixels | The mouth here is geometry drawn on a photo - free and instant, but not photoreal. Lab 6.3 is the honest comparison. |
-
-**Step-by-step**
-
-1. Import `lab8/avatar-chat-flow.json` and publish it.
-2. Start the website with `lab8/website/start.command` (Mac) or `start.bat` (Windows), then open `http://localhost:8100` in Chrome or Edge.
-3. Open the gear and paste the Production webhook URL of the Lab 6.2 flow.
-4. Pick a face, hold the mic, and ask about the academy's courses.
-5. Read the latency line under the stage and note where the time actually goes.
-6. Open the flow and find the three settings that buy that speed: `think: false`, `keep_alive`, and a small `num_predict`.
-7. Interrupt the avatar while it is speaking and confirm it stops and listens.
-
-**Checkpoint**
-
-- The avatar answers out loud in roughly a second, and the page prints the measured time.
-- Interrupting the avatar cuts it off immediately.
-- The learner can explain why the flow calls Ollama directly instead of using the AI Agent node, and why a thinking model must be told not to think.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| The avatar says it did not catch that | gemma4 is a thinking model: left alone it spends the whole token budget on an internal monologue and returns empty content. | Set `think: false` in the Ollama request and give `num_predict` enough room for two spoken sentences. |
-| The first reply takes several seconds | The 9.6 GB model was not resident and had to be loaded from disk. | Send a warm-up call when the page loads, and set `keep_alive` so the model stays in memory. |
-| No microphone | Speech recognition needs a secure context and a supported browser. | Serve the page from `http://localhost`, not `file://`, and use Chrome or Edge. |
-
-**Deliverable:** A working browser avatar, the measured latency, and a note naming the three settings that produced it.
-
-![Lab 6.2 - Aria, rendered in the browser: speech in, gemma4 reply, and the mouth drawn live. The latency is printed, not claimed.](screenshots/lab8-interactive-avatar.png)
-
-*Lab 6.2 - Aria, rendered in the browser: speech in, gemma4 reply, and the mouth drawn live. The latency is printed, not claimed.*
-
-### Lab 6.3 - Embed an Interactive HeyGen Avatar with LiveAvatar
-
-**Time:** 75 minutes
-
-**Goal:** The same conversation as Lab 6.2, but with a photoreal streaming avatar - and a clear-eyed comparison of what that costs.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| Streaming avatar | A real face, streamed from the cloud, that moves its head and holds eye contact. |
-| The ticket pattern | n8n exchanges the API key for a short-lived embed URL. The browser gets the ticket, never the key. |
-| Persona (context) | One face, several personalities - the context decides what the avatar knows and how it behaves. |
-| The honest trade-off | Photoreal costs credits, a network round trip and an account. Drawn geometry costs nothing. Neither is simply better. |
-
-**Step-by-step**
-
-1. Import `lab9/liveavatar-session-flow.json` and publish it.
-2. Create the LiveAvatar API credential in n8n as a header credential and select it on both HTTP nodes.
-3. Start the website with `lab9/website/start.command` (Mac) or `start.bat` (Windows), then open `http://localhost:8099`.
-4. Open the gear and paste the Production webhook URL of the Lab 6.3 session flow.
-5. Pick a persona from the dropdown - the page lists them by calling the flow, not by hardcoding ids.
-6. Start the session and hold the same conversation you held with Aria in Lab 6.2.
-7. Fill in a two-column scorecard: latency, realism, cost per minute, and setup effort.
-
-**Checkpoint**
-
-- The browser starts a live photoreal avatar session.
-- The learner can show that the API key is nowhere in the page source - only the short-lived embed URL is.
-- The scorecard states, in the learner's own words, when to reach for a streaming avatar and when the browser-rendered one is enough.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| The avatar does not start | The session flow returned no embed URL - usually a bad key or an avatar id the account cannot use. | Open the flow's last execution and read the LiveAvatar error message, then check the key and the avatar id. |
-| The persona dropdown is empty | The contexts webhook is not published, or the account has no contexts yet. | Publish the flow and confirm the contexts endpoint returns a list. |
-| The browser blocks the audio | Autoplay is blocked until the user interacts with the page. | Click into the page before starting the session, and allow the microphone. |
-
-**Deliverable:** A working streaming avatar session plus the two-column scorecard comparing it against the browser-rendered avatar.
-
-![Lab 6.3 - the LiveAvatar embed: n8n mints a short-lived session URL, so the API key never reaches the browser.](screenshots/lab9-liveavatar-site.png)
-
-*Lab 6.3 - the LiveAvatar embed: n8n mints a short-lived session URL, so the API key never reaches the browser.*
-
-### Lab 6.4 - Monitor, Debug, and Recover AI Workflows
+### Lab 10 - AI Video Generation with Gemini Veo 3 (Veo Studio)
 
 **Time:** 60 minutes
 
-**Goal:** A monitoring checklist for failed executions, retries, and provider outages.
+**Goal:** One sentence in, an 8-second cinematic clip with sound out: gemma4 writes the shot prompt, Veo 3.1 renders it, n8n proxies the file.
 
 **Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
 
@@ -2051,25 +1135,25 @@ Publish video outputs, deploy interactive avatars, monitor automations, and asse
 
 | Concept | In one line |
 |---|---|
-| Failure mode | A predictable way a workflow can break. |
-| Retry policy | Defines when to try again and when to stop. |
-| Fallback provider | Keeps service running with a lower-quality or local option. |
-| Runbook | A short procedure another person can follow during an incident. |
+| Shot prompt | gemma4 turns your idea into camera, lighting and motion language - a shot, not a summary. |
+| Generate, poll, fetch | The same long-running shape as Lab 7 - plus a third step to fetch the finished file. |
+| The /veo-file proxy | Google's download URL demands your API key, so n8n hands the page a URL pointing back at ITSELF, fetches the MP4 server-side, and streams it through. |
+| Prompt iteration | Change the shot wording, regenerate, and record what changed - that note is the deliverable. |
 
 **Step-by-step**
 
-1. List failure modes for LLM, vector store, Retell, Vapi, HeyGen, LiveAvatar, Veo, and YouTube.
-2. For each failure, define retry, fallback, and human notification behavior.
-3. Add an error branch to one existing workflow.
-4. Simulate a failed API call using a wrong key or test URL, then restore it.
-5. Write a runbook with symptoms, first checks, and recovery steps.
-6. Review the runbook with another learner and close unclear steps.
+1. Import `lab10/veo3-video-flow.json` and set it Active.
+2. Add the `Gemini API` credential, and confirm the `Ollama local` credential.
+3. Serve the `lab10` website and open the Veo Studio.
+4. Type one idea sentence and generate - then read the shot prompt gemma4 actually wrote.
+5. Wait for the poll to complete and play the clip IN the page, through the /veo-file proxy.
+6. Refine the prompt once, regenerate, and write one note on what changed between the two versions.
 
 **Checkpoint**
 
-- At least one workflow has an error branch.
-- The runbook covers credentials, quota, network, payload, and provider status.
-- The fallback decision is explicit, not improvised during failure.
+- The shot prompt names camera, lighting and motion - not a summary.
+- The clip plays in the page.
+- You can explain why the page never sees the Gemini key.
 
 **Trainer facilitation notes**
 
@@ -2082,60 +1166,15 @@ Publish video outputs, deploy interactive avatars, monitor automations, and asse
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| Errors disappear | Failed executions are not saved. | Enable failed execution saving during development. |
-| Workflow retries forever | No stop condition exists. | Limit retries and notify a human after threshold. |
-| Fallback is unclear | No provider decision was made. | Choose the open-source local avatar, the browser-rendered avatar, or manual review as the fallback. |
+| The clip will not play in the page | The page tried Google's URL directly and was refused. | Play it through the /veo-file proxy - n8n adds the key server-side. |
+| Generation fails immediately | API quota, or a malformed prompt payload. | Run a short test prompt and read the provider response in the execution. |
+| The clip ignores the idea | The shot prompt drifted from the subject. | Tighten the subject, camera and lighting wording, then regenerate. |
 
-**Deliverable:** A monitoring runbook and one tested error branch.
+**Deliverable:** A rendered Veo clip, the shot prompt that produced it, and a note on what changed between two prompt versions.
 
-### Lab 6.5 - Capstone - Build a Human-AI Workforce Automation
+![Lab 10 - the Veo studio: one prompt in, gemma4 writes the shot script, Veo 3.1 renders the clip.](screenshots/lab10-veo-site.png)
 
-**Time:** 120 minutes
-
-**Goal:** An end-to-end workflow that combines RAG, voice, video, publishing, and monitoring.
-
-**Why this matters:** This lab trains a practical part of the agentic AI loop. The important habit is to inspect evidence, not to assume that a fluent model output is correct.
-
-**Concepts**
-
-| Concept | In one line |
-|---|---|
-| System integration | Combines multiple agents and tools into one business process. |
-| Human-in-the-loop | Places review gates where quality or risk requires judgement. |
-| Operational handoff | Documents ownership, monitoring, and improvement process. |
-| Portfolio evidence | Packages screenshots, exports, rubrics, and demo outputs. |
-
-**Step-by-step**
-
-1. Choose a capstone scenario such as course advisory, appointment booking, or training content production.
-2. Draw the workflow from trigger to final output, including human review gates.
-3. Reuse at least three previous lab components.
-4. Add a quality rubric and run three test cases.
-5. Fix the highest-risk failure discovered by testing.
-6. Package the exported workflow, screenshots, video or call output, and a one-page operating guide.
-
-**Checkpoint**
-
-- The capstone completes a realistic business process end to end.
-- At least three agentic loop components are integrated.
-- Evidence includes test cases, evaluation results, and improvement notes.
-
-**Trainer facilitation notes**
-
-- Ask learners to show the exact execution or output that proves completion.
-- Ask one learner to run an edge case while another observes the trace.
-- Ask learners what they changed after evaluation and why.
-- Do not accept a screenshot alone if the lab requires a workflow export, scorecard, transcript, or generated media.
-
-**Common errors**
-
-| Error | Likely cause | Fix |
-|---|---|---|
-| Capstone is too broad | It tries to automate an entire department. | Reduce it to one trigger, one primary user, and one output. |
-| No review gate | The workflow publishes or contacts people automatically. | Add approval before external publishing or customer communication. |
-| Demo is fragile | It depends on many paid services at once. | Prepare a fallback path and a recorded output. |
-
-**Deliverable:** A capstone package suitable for trainer assessment and learner portfolio.
+*Lab 10 - the Veo studio: one prompt in, gemma4 writes the shot script, Veo 3.1 renders the clip.*
 
 ## How you are assessed
 
@@ -2168,24 +1207,25 @@ ask for the appeal form. State what you were marked NYC on and why you disagree.
 assessment is reviewed by a second assessor, and you are told the outcome in writing. Raising
 an appeal never counts against you.
 
-## Capstone assessment guidance
+## Preparing for the Case Study
 
-The capstone must combine at least three lab components. A strong capstone includes:
+The Case Study puts you back inside the four businesses you already built for - one task per business, each asking for the workflow, the design decisions and the trade-offs. Keep your workflow exports from the labs; the paper asks you to paste them.
 
-- A one-page workflow design canvas.
-- An n8n workflow export.
-- Test cases covering normal, edge, and unsafe input.
-- A quality rubric with scores and improvement notes.
-- A human review gate before external publishing or customer-impacting action.
-- A fallback plan if a paid provider is unavailable.
-- Screenshots, transcript, generated video, or other output evidence.
+| Business | What they want | You built it in |
+|---|---|---|
+| Cook & Bake Academy | A website chat agent grounded ONLY in the course brochures, honest about what it does not know | Lab 3 |
+| MediRefill | A voice FAQ assistant that never gives medical advice - refusal plus pharmacist callback | Lab 5 |
+| GG Hair Salon | A voice receptionist that checks the REAL Google Calendar and books into it | Lab 4 |
+| GG News Studio | A presenter video from the day's facts, plus a cloud-vs-open-source production recommendation | Labs 7 and 7-os |
 
-### Suggested capstone scenarios
+For each answer, bring the same three things every lab demanded: **the workflow export**, **the execution trace that proves it ran**, and **one failure case you deliberately provoked** - the refusal, the taken slot, the question outside the PDF.
 
-- Course advisory assistant that answers from brochures, captures leads, and notifies staff.
-- Voice booking assistant that confirms appointment details and escalates exceptions.
-- Training video factory that turns approved learning points into avatar videos or Veo 3.1 clips.
-- Customer support workflow that uses RAG, structured handoff, and monitoring.
+### What a strong answer includes
+
+- The n8n workflow JSON, exported after your own changes.
+- The nodes that matter, named and explained - not a node-by-node tour.
+- The guardrail and where it lives (prompt wording, credential boundary, refusal branch).
+- The trade-off, argued from what you saw in the labs, not from a vendor page.
 
 ### Assessment rubric
 
